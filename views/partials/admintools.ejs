@@ -1,0 +1,9 @@
+<div class="card" style="margin-bottom:8px;">
+  <div class="card-head">
+    <span class="card-head-title">Tools</span>
+  </div>
+  <ul class="list-group">
+    <li class="list-group-item <%= (state == "users")?"active":"" %>"><i class="fas fa-users-cog"></i><a  href="/admin" class="drawer-link drawer-icon-link">Edit Users</a></li>
+    <li class="list-group-item <%= (state == "articles")?"active":"" %>"><i class="fas fa-toolbox"></i><a  href="/admin/articles" class="drawer-link drawer-icon-link">Moderate Articles</a></li>
+  </ul>
+</div>

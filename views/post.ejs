@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" <% if(user != null){ %>data-theme="<%= user.theme %>" <% }else{ %> data-theme="dark" <% } %>>
+<%- include("partials/header.ejs"); %>
+
+<body>
+  <%- include("partials/nav.ejs"); %>
+  <div class="container" style="margin-top:32px;">
+    <div class="row">
+      <div class="col-md-3">
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <h5><%= post.title %></h5>
+          <img src="<%= post.image %>" class="post-img"/>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+</body>
+
+</html>

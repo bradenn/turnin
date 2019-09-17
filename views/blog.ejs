@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" <% if(user != null){ %>data-theme="<%= user.theme %>" <% }else{ %> data-theme="dark" <% } %>>
+<%- include("partials/header.ejs"); %>
+
+<body>
+  <%- include("partials/nav.ejs"); %>
+  <div class="header">
+    <div class="container">
+      <div class="row">
+        <div class="inline-header-container">
+          <img src="<%= blog.picture %>" class="header-image inline-header">
+          <h2 class="header-title inline-header"><%= blog.title %></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="container">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav navbar-nav mr-auto">
+          <% blog.pages.forEach(function(page){ %>
+            <li class="nav-item">
+              <a class="nav-link" href="blog/<%= blog._id %>/<%= page.page %>"><%= page.name %></a>
+            </li>
+          <% }); %>
+        </ul>
+        <ul class="nav navbar-nav mr-right">
+
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+  <div class="container" style="">
+    <div class="row">
+
+    </div>
+  </div>
+</body>
+
+</html>

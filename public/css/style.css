@@ -1,0 +1,232 @@
+body {
+  background-color: rgba(18, 18, 18, 1);
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.chat-window{
+  min-height: 500px;
+}
+
+.dropdown-divider{
+  border-color: rgba(215, 218, 220, 0.10);
+}
+
+.dropdown-header {
+  color: rgba(215, 218, 220, 0.75);
+}
+
+.mar-75 {
+  margin-left: 16px;
+}
+
+.card {
+  margin-bottom: 8px;
+}
+
+.realm-button {
+  margin: 16px;
+  margin-top: 0;
+}
+
+.realm-header {
+  background-color: rgb(10, 132, 255);
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.realm-header-title {
+  margin-left: 0;
+}
+
+.realm-nav {}
+
+.border-right {
+  border-right: 1px solid rgba(97, 97, 97, 0.5);
+}
+
+.text-brand {
+  color: rgb(10, 132, 255);
+}
+
+.nsfw-text {
+  filter: blur(6px);
+}
+
+.post-items {
+  color: rgb(215, 218, 220) !important;
+}
+
+.navbar-toggler {
+  color: rgba(226, 226, 226, 0.5);
+}
+
+.breadcrumb {
+  border: 1px solid rgba(97, 97, 97, 0.5);
+  background-color: rgba(31, 31, 31, 1);
+  color: rgb(215, 218, 220);
+}
+
+.list-inline-item+.list-inline-item::before {
+  content: "|";
+  display: inline-block;
+  padding-right: 0.5rem;
+  color: #555;
+}
+
+hr {
+  border-color: rgba(97, 97, 97, 0.5);
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: "|";
+}
+
+.ql-snow {
+  background-color: #fff;
+}
+
+.bg-light {
+  background-color: rgba(31, 31, 31, 1) !important;
+}
+
+.card-footer {
+  border-top: 1px solid rgba(97, 97, 97, 0.5);
+}
+
+.comment-body {
+  margin: 16px;
+  margin-top: 0;
+  padding-left: 8px;
+}
+
+.comment-header {
+  font-size: 14px;
+  color: rgba(215, 218, 220, 0.75);
+}
+
+.no-hover {
+  text-decoration: none;
+}
+
+.no-hover:hover {
+  text-decoration: none;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.card-footer {
+  padding: 0rem 0.75rem;
+  font-size: 200%;
+}
+
+.ql-editor {
+  min-height: 100px;
+  color: rgba(31, 31, 31, 1);
+}
+
+.navbar {
+  border-bottom: 1px solid rgba(97, 97, 97, 0.5);
+  background-color: rgba(31, 31, 31, 1);
+  color: rgba(226, 226, 226, 1) !important;
+  height: 48px;
+}
+
+.navbar a {
+  color: rgba(226, 226, 226, 1) !important;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.nav-drop {
+  background-color: rgba(31, 31, 31, 1) !important;
+  border: 1px solid rgba(31, 31, 31, 1);
+  margin-right: 4px;
+}
+
+.bottom-nav {
+  border-top: 1px solid rgba(97, 97, 97, 0.5);
+  height: 42px;
+}
+
+.nav-drop:hover {
+  border: 1px solid rgba(97, 97, 97, 1);
+}
+
+.username {
+  font-size: 14px;
+  color: rgb(215, 218, 220);
+  line-height: 16px;
+}
+
+.nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.selection-dropdown-menu {
+  width: 100%;
+}
+
+.sort-drop-menu {
+  width: 50%;
+}
+
+.nav-search {
+  color: rgb(215, 218, 220);
+  background-color: inherit;
+  border-radius: 2px;
+  padding-left: 0px;
+  border: 1px solid rgba(97, 97, 97, 1);
+}
+
+.no-bs {
+  color: inherit;
+}
+
+.nav-search:focus {
+  color: rgb(215, 218, 220);
+  background-color: inherit;
+  border-radius: 2px;
+  padding-left: 0px;
+  border: 1px solid rgba(97, 97, 97, 1);
+}
+
+.card-title-span {
+  color: rgb(215, 218, 220);
+  font-size: 18px;
+  padding: 16px 0px 0px 16px;
+  margin-bottom: 0;
+}
+
+.card {
+  border: 1px solid rgba(97, 97, 97, 0.5);
+}
+
+.card-body {
+  font-family: "Noto Sans", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: rgb(215, 218, 220);
+}
+
+.card-sub-span {
+  color: rgba(215, 218, 220, 0.5);
+  font-size: 12px;
+  padding: 0px 0px 0px 0px;
+}
+
+.selection-dropdown {
+  text-align: left;
+  width: 15vw;
+}
+
+.drop-carrot {
+  height: 24px;
+  color: rgb(215, 218, 220);
+}

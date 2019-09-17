@@ -1,0 +1,6 @@
+<% user.teams.forEach(function(team) { %>
+<a href="/team/<%= team._id %>" class="list-group-item list-group-item-action"><%= team.name %></a>
+<% }); %>
+<% if(user.teams.length == 0){ %>
+<a href="#" class="list-group-item list-group-item-action disabled">No teams</a>
+<% } %>

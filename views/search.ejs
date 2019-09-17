@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" <% if(user != null){ %>data-theme="<%= user.theme %>" <% }else{ %> data-theme="dark" <% } %>>
+<%- include("partials/header.ejs"); %>
+
+<body>
+  <%- include("partials/nav.ejs"); %>
+  <div class="container" style="margin-top:32px;">
+    <div class="row">
+      <div class="col-md-3">
+      </div>
+      <div class="col-md-6">
+        <form action="/search/" method="get">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" name="q" id="q" placeholder="Search Query" value="<%= query %>">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+          </div>
+        </form>
+        <div class="search-header">
+          <span class="text-light text-xl">Search results:</span>
+          <% if(topics.length != 0){ %>
+          <span class="text-muted text-sm">Query returned <%= topics.length %> item(s).</span>
+          <% } %>
+        </div>
+        <% if(users != null){ %>
+          <span class="text-light text-xl">Users:</span>
+        <% users.forEach(function(usr){ %>
+        <a href="/u/<%= usr.username %>" class="no-bs">
+          <div class="topic-inline">
+            <div class="topic-inline-element margin-right">
+              <img src="<%= usr.picture %>" class="topic-inline-image">
+            </div>
+            <div class="topic-inline-element">
+              <span class="topic-inline-title"><%= usr.username %></span>
+            </div>
+          </div>
+        </a>
+        <% }); } if(users.length == 0){ %>
+        <span class="text-muted">No results found for "<i><%= query %></i>"</span>
+        <% } %>
+        <% if(topics != null){ %>
+            <span class="text-light text-xl">Topics:</span>
+        <% topics.forEach(function(topic){ %>
+        <a href="/topic/<%= topic._id %>" class="no-bs">
+          <div class="topic-inline">
+            <div class="topic-inline-element margin-right">
+              <img src="<%= topic.owner.picture %>" class="topic-inline-image">
+            </div>
+            <div class="topic-inline-element">
+              <span class="topic-inline-title"><%- topic.title.replace(query, "<span class='text-danger'>" + query + "</span>") %></span>
+              <span class="topic-inline-subtext">Last updated <strong><%= timeSince(new Date(topic.date)) %> ago</strong></span>
+            </div>
+            <div class="topic-inline-preview">
+              <span class="topic-inline-preview-text"><%- topic.body %></span>
+            </div>
+          </div>
+        </a>
+        <% }); } if(topics.length == 0){ %>
+        <span class="text-muted">No results found for "<i><%= query %></i>"</span>
+        <% } %>
+      </div>
+      <br>
+    </div>
+  </div>
+</body>
+
+</html>
+<%
+
+function timeSince(date) {
+
+  var seconds = Math.floor((new Date() - date) / 1000);
+
+  var interval = Math.floor(seconds / 31536000);
+
+  if (interval > 1) {
+    return interval + " years";
+  }
+  interval = Math.floor(seconds / 2592000);
+  if (interval > 1) {
+    return interval + " months";
+  }
+  interval = Math.floor(seconds / 86400);
+  if (interval > 1) {
+    return interval + " days";
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {
+    return interval + " hours";
+  }
+  interval = Math.floor(seconds / 60);
+  if (interval > 1) {
+    return interval + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+}
+var aDay = 24*60*60*1000
+%>

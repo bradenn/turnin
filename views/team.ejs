@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" <% if(user != null){ %>data-theme="<%= user.theme %>"<% }else{ %> data-theme="dark" <% } %>>
+<%- include("partials/header.ejs"); %>
+
+<body>
+  <%- include("partials/nav.ejs"); %>
+  <div class="container" style="margin-top:32px;">
+    <div class="row">
+
+      <div class="col-md-9">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-head-title"><%= team.name %></span>
+            <span class="float-right">
+              <div class="dropdown show">
+                <a class="dropdown-toggle text-primary" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Members
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <% team.members.forEach(function(member) { %>
+                  <a class="dropdown-item" href="#"><%= member.username %></a>
+                  <% }); %>
+                </div>
+              </div>
+            </span>
+          </div>
+
+          <div class="card-body">
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-head-title">Teams</span>
+          </div>
+          <div class="card-body" style="margin:-16px; margin-top: 16px;">
+            <ul class="list-group list-group-flush" style="margin:-16px;">
+              <%- include("partials/teams.ejs"); %>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+</body>
+
+</html>

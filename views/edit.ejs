@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" <% if(user != null){ %>data-theme="<%= user.theme %>" <% }else{ %> data-theme="dark" <% } %>>
+<%- include("partials/header.ejs"); %>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<body>
+  <%- include("partials/nav.ejs"); %>
+  <div class="container" style="margin-top:32px; opacity:1;">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="topic">
+          <div class="topic-element margin-right">
+            <img src="<%= topic.owner.picture %>" class="topic-image">
+          </div>
+          <div class="topic-element">
+            <span class="topic-title"><%= topic.title %>&nbsp;<span class="badge badge-primary"><% var hh = topic.section; var ht = hh.charAt(0); var hy = ht.toUpperCase() + hh.substr(1); %> <%= hy %></span></span>
+            <span class="topic-subtext">posted by <strong><a href="/u/<%= topic.owner.username %>" class="no-bs"><%= topic.owner.username %></a></strong></span>
+          </div>
+          <div class="topic-element float-right">
+            <span class="topic-subtext">Last updated <strong><%= timeSince(new Date(topic.date)) %> ago</strong></span>
+          </div>
+          <div class="topic-preview">
+            <span class="topic-preview-text" style="opacity:1;">
+              <form action="/topic/edit/<%= topic._id %>/update" method="post">
+                <div class="form-group">
+                  <input type="text" name="body" id="body" hidden>
+                  <div id="quillEditor">
+                    <%- topic.body %>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+              </form>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script>
+  var quill = new Quill('#quillEditor', {
+    modules: {
+      toolbar: [
+        ['bold', 'italic'],
+        ['link', 'blockquote', 'code-block', 'image'],
+        [{
+          list: 'ordered'
+        }, {
+          list: 'bullet'
+        }]
+      ]
+    },
+    placeholder: 'Write here...',
+    theme: 'snow'
+  });
+  var justHtmlContent = document.getElementById('body');
+  quill.on("text-change", function() {
+    var justHtml = quill.root.innerHTML;
+    justHtmlContent.value = justHtml;
+  });
+</script>
+
+</html>
+
+
+
+<%
+
+function timeSince(date) {
+
+  var seconds = Math.floor((new Date() - date) / 1000);
+
+  var interval = Math.floor(seconds / 31536000);
+
+  if (interval >= 1) {
+    return interval + " years";
+  }
+  interval = Math.floor(seconds / 2592000);
+  if (interval >= 1) {
+    return interval + " months";
+  }
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) {
+    return interval + " days";
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) {
+    return interval + " hours";
+  }
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) {
+    return interval + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+}
+var aDay = 24*60*60*1000
+%>
