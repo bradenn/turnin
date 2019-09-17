@@ -1,0 +1,6 @@
+{
+  "pages": [{
+    "url": "/",
+    "route": "./routes/home.js"
+  }]
+}

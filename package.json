@@ -1,15 +1,14 @@
 {
-  "name": "blog",
+  "name": "turnin",
   "version": "0.0.1",
-  "description": "Free blogs for all",
+  "description": "Turn in your shit",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bradenn/blog.git"
+    "url": "git+https://github.com/bradenn/turnin.git"
   },
   "author": "Braden Nicholson Media",
   "license": "ISC",
