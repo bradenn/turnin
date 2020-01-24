@@ -1,0 +1,6 @@
+{
+  "checks": [{
+    "output": "What is your name",
+    "input": "test"
+  }]
+}

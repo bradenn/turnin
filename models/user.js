@@ -15,34 +15,19 @@ let UserSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
-  notifications: [{
+  type: {
+    type: String,
+    enum: ['user', 'instructor'],
+    default: 'user'
+  },
+  classes: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Notification',
+    ref: 'Class',
     autopopulate: true
-  }],
-  following: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    autopopulate: true
-  }],
-  saved: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Topic'
   }],
   firstname: String,
   lastname: String,
   password: String,
-  picture: String,
-  theme: {
-    type: String,
-    enum: ['dark', 'light'],
-    default: 'dark'
-  },
-  account: {
-    type: String,
-    enum: ['banned', 'user', 'writer', 'admin', 'superadmin'],
-    default: 'user'
-  },
   date: String
 });
 

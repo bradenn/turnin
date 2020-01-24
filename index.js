@@ -10,7 +10,7 @@ var favicon = require('serve-favicon');
 //app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 //connect to MongoDB
-mongoose.connect(config.mongourl, { useNewUrlParser: true });
+mongoose.connect(config.mongourl, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 mongoose.set('useCreateIndex', true);
 //handle mongo error

@@ -1,0 +1,66 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+
+        <h4 class="d-inline-block">Assignments</h4>
+        <div class="d-inline-block float-right">
+        <a href="/assignments/new" class="btn btn-primary btn-sm">New Assignment</a>
+
+      </div>
+
+
+        <table class="table table-light">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Students</th>
+              <th scope="col">Assignments</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
+            <tr>
+
+              <td scope="row"><a href="/class/<%= clas._id %>" class="table-title"><%= clas.name %></a></td>
+              <td><span class="badge badge-primary"><%= clas.students.length %> Total</span></td>
+              <td>
+                <span class="badge badge-primary"><%= clas.assignments.length %> Active</span>
+                <span class="badge badge-dark"><%= clas.assignments.length %> Total</span>
+              </td>
+              <td>
+                <div class="dropdown">
+
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Actions
+                    </a>
+
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="#"><i class="fas fa-archive"></i>&nbsp;Archive Class</a>
+                    <a class="dropdown-item" href="#"><i class="fas fa-user-cog"></i>&nbsp;Manage Students</a>
+                  </div>
+                </div>
+              </td>
+              <% }); }else{ %>
+              <td>No classes</td>
+              <td></td>
+              <td></td>
+              <td></td>
+
+            </tr>
+            <% } %>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

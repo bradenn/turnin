@@ -1,6 +1,18 @@
 {
   "pages": [{
     "url": "/",
-    "route": "./routes/home.js"
+    "route": "./home.js"
+  }, {
+    "url": "/login",
+    "route": "./login.js"
+  }, {
+    "url": "/register",
+    "route": "./register.js"
+  }, {
+    "url": "/manage",
+    "route": "./manage.js"
+  }, {
+    "url": "/assignments",
+    "route": "./assignments.js"
   }]
 }

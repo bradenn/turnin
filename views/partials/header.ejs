@@ -1,66 +1,10 @@
 <head>
-  <% if(typeof topic != 'undefined'){ %>
-  <title><%= topic.title %></title>
-  <% }else{ %>
-  <title><%= title %></title>
-  <% } %>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "WebSite",
-      "name": "Name Brand News",
-      "url": "https://namebrandnews.com",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://namebrandnews.com/search/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-  </script>
-
-  <% if(typeof topic != "undefined"){ %>
-    <script type="application/ld+json">
-    { "@context": "https://schema.org",
-     "@type": "Article",
-     "headline": "<%= topic.title %>",
-     "image": "<%= topic.picture %>",
-     "author": "<%= topic.owner.firstname %> <%= topic.owner.lastname %>",
-     "genre": "<%= topic.section %>",
-     "keywords": "<%= topic.tags.join(' ') %>",
-    "publisher": {
-        "@type": "Organization",
-        "name": "NameBrandNews"
-      },
-     "url": "https://namebrandnews.com",
-     "datePublished": "<%= topic.date %>",
-     "description": "<%= topic.desc %>",
-     "articleBody": "<%= topic.body %>"
-     }
-    </script>
-  <% } %>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" href="/css/bootstrap.css" crossorigin="anonymous">
+  <title>Turnin</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/custom.css">
-  <script src="https://kit.fontawesome.com/4a4edf243a.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Round" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Teko:500&display=swap" rel="stylesheet">
-  <script src="/js/jquery.min.js"></script>
-  <script src="/js/popper.min.js"></script>
-  <script src="/js/bootstrap.min.js"></script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146403582-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-146403582-1');
-  </script>
-
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css" integrity="sha256-piqEf7Ap7CMps8krDQsSOTZgF+MU/0MPyPW2enj5I40=" crossorigin="anonymous" />
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>

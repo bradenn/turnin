@@ -1,0 +1,59 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+
+        <h4>New Assignment</h4>
+        <hr>
+
+        <form action="/assignments/new" method="post">
+          <div class="form-group">
+            <label>Assignent name</label>
+            <input type="text" class="form-control" name="assignmentName" placeholder="Name">
+            <small class="text-muted">Duplicate names are allowed but not reccomended.</small>
+          </div>
+          <div class="form-group">
+            <label>Class</label>
+            <select class="form-control" name="assignmentClass">
+              <% classes.forEach(function(classObject){ %>
+              <option value="<%= classObject._id %>"><%= classObject.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Required files</label>
+            <input type="text" class="form-control" name="assignmentFiles" placeholder="Files">
+            <small class="text-muted">Seperate with a comma (if multiple). ie. lab1.cpp, lab1b.cpp</small>
+          </div>
+          <div class="form-group">
+            <label>Due date</label>
+            <input type="date" class="form-control" name="assignmentDueDate" placeholder="Date">
+            <small class="text-muted">Late assignments will be accepted but flagged as late</small>
+          </div>
+          <div class="form-group">
+            <label>Checkfile</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="assignmentCheckFile">
+              <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+            <small class="text-muted">Should be a generated JSON file</small>
+          </div>
+
+          <div class="form-group">
+            <button class="btn btn-primary">Save as Draft</button><br>
+            <small class="text-muted">You can preview your assignment (and assign) from the Assignments page.</small>
+          </div>
+
+        </form>
+
+
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+
+        <h4 class="d-inline-block">Classes</h4>
+        <div class="dropdown d-inline-block float-right">
+          <a href="#" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownNewClass">New Class</a>
+          <form class="dropdown-menu p-4" style="min-width:256px !important;" action="/manage/new/class" method="post" aria-labelledby="dropdownNewClass">
+            <div class="form-group">
+              <label for="className">Name</label>
+              <input type="text" class="form-control" id="classname" name="classname" placeholder="Class Name">
+            </div>
+            <div class="form-group">
+              <label for="classSection">Section</label>
+              <input type="number" class="form-control" id="classsection" name="classsection" min="0" max="20" step="1">
+            </div>
+            <button type="submit" class="btn btn-primary">Create Class</button>
+          </form>
+        </div>
+
+
+        <table class="table table-light">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Students</th>
+              <th scope="col">Assignments</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
+            <tr>
+
+              <td scope="row"><a href="/class/<%= clas._id %>" class="table-title"><%= clas.name %></a></td>
+              <td><span class="badge badge-primary"><%= clas.students.length %> Total</span></td>
+              <td>
+                <span class="badge badge-primary">0 Active</span>
+                <span class="badge badge-dark">0 Total</span>
+              </td>
+              <td>
+                <div class="dropdown">
+
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Actions
+                    </a>
+
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="#"><i class="fas fa-archive"></i>&nbsp;Archive Class</a>
+                    <a class="dropdown-item" href="#"><i class="fas fa-user-cog"></i>&nbsp;Manage Students</a>
+                  </div>
+                </div>
+              </td>
+              <% }); }else{ %>
+              <td>No classes</td>
+              <td></td>
+              <td></td>
+              <td></td>
+
+            </tr>
+            <% } %>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
