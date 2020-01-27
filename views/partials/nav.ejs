@@ -1,24 +1,25 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:32px;">
   <div class="container">
-    <a class="navbar-brand" href="#">Turn in</a>
+    <a class="navbar-brand" href="/">Turn in</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="/"><i class="fas fa-home"></i>&nbsp;Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
-        <% if(user.type == "instructor"){ %>
+        <% if(user.type > 0){ %>
           <li class="nav-item active">
-            <a class="nav-link" href="/manage"><i class="fas fa-users"></i>&nbsp;Classes</a>
+            <a class="nav-link" href="/manage">Classes</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/assignments"><i class="fas fa-copy"></i>&nbsp;Assignments</a>
+            <a class="nav-link" href="/assignments/new">New Assignment</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/assignments/new"><i class="fas fa-folder-plus"></i>&nbsp;New Assignment</a>
+            <a class="nav-link" href="/assignments">Assignments</a>
           </li>
+
         <% } %>
       </ul>
       <span class="navbar-text">

@@ -3,88 +3,96 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-  <div class="container">
+<div class="container">
     <div class="row">
-      <div class="col-8">
-        <h4>Current Assignments</h4>
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Class</th>
-              <th scope="col">Assignment</th>
-              <th scope="col">Due Date</th>
-              <th scope="col">Requirements</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if(typeof user.classes != "undefined"){ user.classes.forEach(function(clas){ clas.assignments.forEach(function(assignment){ %>
-            <tr>
-              <td><%= clas.name %></td>
-              <td><%= assignment.name %></td>
-              <td><%= new Date(assignment.duedate).toDateString() %></td>
-              <td><%= assignment.files.join(' ') %></td>
-              <% }); }); }else{ %>
-              <td>No assignments</td>
-              <td></td>
-              <td></td>
-              <td></td>
+        <div class="col-12">
+            <h4>Current Assignments</h4>
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Class</th>
+                    <th scope="col">Assignment</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Requirements</th>
+                    <th scope="col">Attempts</th>
+                    <th scope="col">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% if(typeof user.classes != "undefined"){ user.classes.forEach(function(clas){ clas.assignments.forEach(function(assignment){
+                    let resps = [];
+                    assignment.responses.filter(response => response.student.toString() === user._id.toString()).forEach(resp => {
+                        let passed = (resp.passed)?"text-success":"text-danger";
+                        resps.push(`<a href="/response/${resp._id}" class="${passed}">${new Date(resp.date).toDateString()}:${new Date(resp.date).toLocaleTimeString()}</a>`);
+                    });
+                %>
+                <tr>
+                    <td><%= clas.name %></td>
+                    <td><%= assignment.name %></td>
+                    <td><%= new Date(assignment.duedate).toDateString() %></td>
+                    <td><%= assignment.files.join(' ') %></td>
+                    <td><%- resps.join(", ") %></td>
+                    <td><a href="/submit/<%= assignment._id %>" class="btn btn-primary btn-sm">Submit</a></td>
+                    <% }); }); }else{ %>
 
-            </tr>
-            <% } %>
+                </tr>
+                <% } %>
 
-          </tbody>
-        </table>
+                </tbody>
+            </table>
 
-      </div>
-      <div class="col-4">
-        <h4 class="d-inline-block">Classes</h4>
-        <div class="dropdown d-inline-block float-right">
-          <a href="#" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownNewClass">Join Class</a>
-          <form class="dropdown-menu p-4" style="min-width:256px !important;" action="/join" method="post" aria-labelledby="dropdownNewClass">
-            <div class="form-group">
-              <label for="className">Class</label>
-              <select class="form-control" id="classInput" name="classInput">
-                  <% if(typeof allClasses != 'undefined'){ allClasses.forEach(function(clas){ %>
-                <option value="<%= clas._id %>"><%= clas.name %></option>
-                <% }); } %>
-
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Join Class</button>
-          </form>
         </div>
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Section</th>
-              <th scope="col">Instructor</th>
-              <th scope="col">Options</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
-            <tr>
+        <div class="col-6 mt-5">
+            <h4 class="d-inline-block">Classes</h4>
+            <div class="dropdown d-inline-block float-right">
+                <a href="#" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true"
+                   aria-expanded="false" id="dropdownNewClass">Join Class</a>
+                <form class="dropdown-menu p-4" style="min-width:256px !important;" action="/join" method="post"
+                      aria-labelledby="dropdownNewClass">
+                    <div class="form-group">
+                        <label for="className">Class</label>
+                        <select class="form-control" id="classInput" name="classInput">
+                            <% if(typeof allClasses != 'undefined'){ allClasses.forEach(function(clas){ %>
+                                <option value="<%= clas._id %>"><%= clas.name %></option>
+                            <% }); } %>
 
-              <td><%= clas.name %></td>
-              <td><%= clas.section %></td>
-              <td><%= clas.instructor.firstname %> <%= clas.instructor.lastname %></td>
-              <td><%= clas.assignments.length %></td>
-              <% }); }else{ %>
-              <td>No assignments</td>
-              <td></td>
-              <td></td>
-              <td></td>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Join Class</button>
+                </form>
+            </div>
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Section</th>
+                    <th scope="col">Instructor</th>
+                    <th scope="col">Assignments</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
+                <tr>
 
-            </tr>
-            <% } %>
+                    <td><%= clas.name %></td>
+                    <td><%= clas.section %></td>
+                    <td><%= clas.instructor.firstname %> <%= clas.instructor.lastname %></td>
+                    <td><%= clas.assignments.length %></td>
+                    <% }); }else{ %>
+                        <td>No assignments</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
 
-          </tbody>
-        </table>
+                </tr>
+                <% } %>
 
-      </div>
+                </tbody>
+            </table>
+
+        </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>
@@ -92,30 +100,29 @@
 <%
 function timeSince(date) {
 
-  var seconds = Math.floor((new Date() - date) / 1000);
+    var seconds = Math.floor((new Date() - date) / 1000);
 
-  var interval = Math.floor(seconds / 31536000);
+    var interval = Math.floor(seconds / 31536000);
 
-  if (interval >= 1) {
-    return interval + ((interval == 1)? " year": " years");
-  }
-  interval = Math.floor(seconds / 2592000);
-  if (interval >= 1) {
-    return interval + ((interval == 1)? " month": " months");
-  }
-  interval = Math.floor(seconds / 86400);
-  if (interval >= 1) {
-    return interval + ((interval == 1)? " day": " days");
-  }
-  interval = Math.floor(seconds / 3600);
-  if (interval >= 1) {
-    return interval + ((interval == 1)? " hour": " hours");
-  }
-  interval = Math.floor(seconds / 60);
-  if (interval >= 1) {
-    return interval + ((interval == 1)? " minute": " minutes");
-  }
-  return Math.floor(seconds) + " seconds";
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
 }
-
 %>

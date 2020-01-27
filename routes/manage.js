@@ -7,13 +7,13 @@ router.get('/', function(req, res, next) {
     Class.find({
       instructor: req.session.userId
     }, function(err, classes) {
-      if (user != null && user.type == "instructor") {
-        return res.render("manage", {
+      if (user != null && user.type > 0) {
+        res.render("manage", {
           user: user,
           classes: classes
         });
       } else {
-        return res.redirect("/login");
+        res.redirect("/login");
       }
     });
   });
@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/new/class', function(req, res, next) {
   User.findById(req.session.userId, function(err, user) {
-    if (user != null && user.type == "instructor") {
+    if (user != null && user.type > 0) {
       var classData = {
         name: req.body.classname,
         section: req.body.classsection,
@@ -35,7 +35,7 @@ router.post('/new/class', function(req, res, next) {
         }
       });
     }else{
-      return res.redirect("/");
+      res.redirect("/");
     }
   });
 });

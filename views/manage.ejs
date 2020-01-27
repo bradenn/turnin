@@ -37,25 +37,10 @@
             <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
             <tr>
 
-              <td scope="row"><a href="/class/<%= clas._id %>" class="table-title"><%= clas.name %></a></td>
-              <td><span class="badge badge-primary"><%= clas.students.length %> Total</span></td>
-              <td>
-                <span class="badge badge-primary">0 Active</span>
-                <span class="badge badge-dark">0 Total</span>
-              </td>
-              <td>
-                <div class="dropdown">
-
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Actions
-                    </a>
-
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="#"><i class="fas fa-archive"></i>&nbsp;Archive Class</a>
-                    <a class="dropdown-item" href="#"><i class="fas fa-user-cog"></i>&nbsp;Manage Students</a>
-                  </div>
-                </div>
-              </td>
+              <td><%= clas.name %></td>
+              <td><%= clas.students.length %> Students</td>
+              <td><%= clas.assignments.length %> Assignments</td>
+              <td><a href="#" class="btn btn-primary btn-sm">Delete</a></td>
               <% }); }else{ %>
               <td>No classes</td>
               <td></td>

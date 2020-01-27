@@ -1,18 +1,32 @@
 {
-  "pages": [{
-    "url": "/",
-    "route": "./home.js"
-  }, {
-    "url": "/login",
-    "route": "./login.js"
-  }, {
-    "url": "/register",
-    "route": "./register.js"
-  }, {
-    "url": "/manage",
-    "route": "./manage.js"
-  }, {
-    "url": "/assignments",
-    "route": "./assignments.js"
-  }]
+  "pages": [
+    {
+      "url": "/",
+      "route": "./home.js"
+    },
+    {
+      "url": "/login",
+      "route": "./login.js"
+    },
+    {
+      "url": "/register",
+      "route": "./register.js"
+    },
+    {
+      "url": "/manage",
+      "route": "./manage.js"
+    },
+    {
+      "url": "/assignments",
+      "route": "./assignments.js"
+    },
+    {
+      "url": "/response",
+      "route": "./response.js"
+    },
+    {
+      "url": "/submit",
+      "route": "./submit.js"
+    }
+  ]
 }

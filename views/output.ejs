@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/header") %>
+<%- include("partials/nav") %>
+<body>
+<style>
+    .str{
+        text-decoration: line-through;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2><%= output.test.name %></h2>
+            <span class="<%= (output.passed) ? "text-success" : "text-danger" %>">Test <%= (output.passed) ? "passed" : "failed" %></span>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th><%= output.test.name %>.out</th>
+                    <th><%= output.test.name %>.myout</th>
+                    <th>diff</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="font-family: monospace;">
+                    <td>
+                        <% output.test.outputs.forEach((ln) => { %>
+                            <span style="white-space: pre;"><%- ln.replace(" ", "&nbsp;"); %></span><br>
+                        <% }); %>
+                    </td>
+                    <td>
+                        <% output.output.forEach((ln) => { %>
+                            <span style="white-space: pre;"><%- (ln != null)?ln.replace(" ", "&nbsp;"):ln %></span><br>
+                        <% }); %>
+                    </td>
+                    <td>
+                        <% JSON.parse(output.diff).forEach((ln) => { %>
+                                <% ln.forEach((pt) => { if(pt.removed || pt.added){ %>
+                                    <span style="white-space: pre;" class="<%= (pt.added) ? "text-success" : (pt.removed) ? "text-danger str" : "" %>"><%= pt.value %></span>
+                                <% } }); %><br>
+                        <% }); %>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</div>
+</body>
+
+</html>

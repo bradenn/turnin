@@ -16,9 +16,8 @@ let UserSchema = new mongoose.Schema({
     required: true
   },
   type: {
-    type: String,
-    enum: ['user', 'instructor'],
-    default: 'user'
+    type: Number,
+    default: 0
   },
   classes: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -51,7 +50,7 @@ UserSchema.statics.authenticate = function(username, password, callback) {
         callback();
       }
     });
-}
+};
 
 // Hash password on password change
 UserSchema.pre('save', function(next) {
@@ -78,6 +77,6 @@ function verifyHash(password, original) {
 
 }
 
-var User = mongoose.model('User', UserSchema);
+let User = mongoose.model('User', UserSchema);
 
 module.exports = User;

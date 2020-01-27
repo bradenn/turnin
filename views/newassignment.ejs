@@ -25,22 +25,19 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Required files</label>
+            <label>Make command</label>
+            <input type="text" class="form-control" name="makeCommand" placeholder="g++ lab1.cpp">
+            <small class="text-muted">Can be any bash/zsh command</small>
+          </div>
+          <div class="form-group">
+            <label>File Names</label>
             <input type="text" class="form-control" name="assignmentFiles" placeholder="Files">
-            <small class="text-muted">Seperate with a comma (if multiple). ie. lab1.cpp, lab1b.cpp</small>
+            <small class="text-muted">Separate multiple with comma, ie. lab1.cpp, lab1b.cpp</small>
           </div>
           <div class="form-group">
             <label>Due date</label>
             <input type="date" class="form-control" name="assignmentDueDate" placeholder="Date">
             <small class="text-muted">Late assignments will be accepted but flagged as late</small>
-          </div>
-          <div class="form-group">
-            <label>Checkfile</label>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" id="assignmentCheckFile">
-              <label class="custom-file-label" for="customFile">Choose file</label>
-            </div>
-            <small class="text-muted">Should be a generated JSON file</small>
           </div>
 
           <div class="form-group">

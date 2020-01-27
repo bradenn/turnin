@@ -46,7 +46,7 @@ app.use('/', routes);
 app.use(function (req, res, next) {
   var err = new Error('File Not Found');
   err.status = 404;
-  next(err);
+  //next(err);
 });
 
 // error handler

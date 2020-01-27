@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/header") %>
+<%- include("partials/nav") %>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2><%= assignment.name %></h2>
+            <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <div class="card" style="">
+                <div class="card-body">
+                    <form method="post" action="/submit/<%= assignment._id %>" enctype="multipart/form-data">
+                            <% assignment.files.forEach(file => { %>
+                        <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="image" id="inputGroupFile01">
+                                    <label class="custom-file-label"
+                                           for="inputGroupFile01"><%= file %></label>
+                                </div>
+                        </div>
+                            <% }); %>
+                        <button type="submit" class="btn btn-primary float-right">Submit</button>
+                        <small class="text-danger">
+                            <% if(typeof error != 'undefined'){ if(error.type == "login"){ %> <%= error.message %>
+                            <% } } %>
+                        </small>
+                        <span class="" style="vertical-align:middle;">There <%= (assignment.tests.length == 1)?"is":"are" %> <%= assignment.tests.length %> test<%= (assignment.tests.length == 1)?"":"s" %>.</span>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</body>
+
+</html>

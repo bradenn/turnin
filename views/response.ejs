@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/header") %>
+<%- include("partials/nav") %>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2><%= result.assignment.name %></h2>
+            <span class="<%= (result.passed) ? "text-success" : "text-danger" %>">Tests <%= (result.passed) ? "passed" : "failed" %></span>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Test</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% result.outputs.forEach(function(test){ %>
+                <tr>
+
+                    <td><%= test.test.name %></td>
+                    <td>
+                        <span class="<%= (test.passed) ? "text-success" : "text-danger" %>"><%= (test.passed) ? "Passed" : "Failed" %></span>
+                    </td>
+                    <td><a href="/response/output/<%= test._id %>">View test</a></td>
+
+                    <% }); %>
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</div>
+</body>
+
+</html>

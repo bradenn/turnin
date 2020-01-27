@@ -14,9 +14,9 @@ router.get('/logout', function(req, res, next) {
     // Destory session
     req.session.destroy(function(err) {
       if (err) {
-        return next(err);
+        next(err);
       } else {
-        return res.redirect('/');
+        res.redirect('/');
       }
     });
   }

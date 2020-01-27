@@ -1,0 +1,81 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+
+            <h4><%= assignment.name %></h4>
+            <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
+
+            <hr>
+            <h4 class="d-inline-block">Tests</h4>
+            <a class="d-inline-block btn btn-primary btn-sm float-right" data-toggle="modal" href="#newtest">Add
+                Tests</a>
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Input</th>
+                    <th scope="col">Output</th>
+                    <th scope="col">Pass Rate</th>
+                    <th scope="col">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% assignment.tests.forEach(function(test){ %>
+                    <tr>
+                        <td><%= test.name %></td>
+                        <td><%= test.inputs.length %> inputs</td>
+                        <td><%= test.outputs.length %> outputs</td>
+                        <td><%= Math.round((outputs.filter(output => output.test._id.toString() === test._id.toString()).filter(out => out.passed == true).length / outputs.filter(output => output.test._id.toString() === test._id.toString()).length)*100) %>% Pass Rate</td>
+                        <td><a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Remove</a></td>
+                    </tr>
+                <% }); %>
+
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+</div>
+</body>
+
+<div id="newtest" class="modal fade">
+    <div class="modal-dialog modal-login">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New Test</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <form action="/assignments/edit/<%= assignment._id %>" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" name="testName" placeholder="Name">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
+                            <label class="custom-file-label" for="inputGroupFile01">t.in</label>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="output" id="inputGroupFile01">
+                            <label class="custom-file-label" for="inputGroupFile01">t.out</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary pull-right" value="Add Test">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</html>

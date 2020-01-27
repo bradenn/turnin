@@ -1,0 +1,67 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <h4><%= assignment.name %></h4>
+            <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
+
+            <hr>
+            <h4 class="d-inline-block">Classes</h4>
+            <div class="dropdown d-inline-block float-right">
+                <a href="#" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true"
+                   aria-expanded="false" id="dropdownNewClass">New Class</a>
+                <form class="dropdown-menu p-4" style="min-width:256px !important;" action="/manage/new/class"
+                      method="post" aria-labelledby="dropdownNewClass">
+                    <div class="form-group">
+                        <label for="className">Name</label>
+                        <input type="text" class="form-control" id="classname" name="classname"
+                               placeholder="Class Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="classSection">Section</label>
+                        <input type="number" class="form-control" id="classsection" name="classsection" min="0" max="20"
+                               step="1">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Class</button>
+                </form>
+            </div>
+
+
+            <table class="table table-light">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Attempts</th>
+                    <th scope="col">Grade</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <% students.forEach(student => {
+                %>
+                    <tr>
+                        <td><%= student.firstname %> <%= student.lastname %></td>
+                        <td><%= student.username %></td>
+                        <td><%= assignment.responses.filter(response => response.student._id.toString() == student._id.toString()).length %></td>
+                        <td><span class="<%= (assignment.responses.filter(response => response.student._id.toString() == student._id.toString()).find(resp => resp.passed))?"text-success":"text-danger" %>"><%= (assignment.responses.filter(response => response.student._id.toString() == student._id.toString()).find(resp => resp.passed))?"Passed":"Failed" %></span></td>
+
+
+                    </tr>
+
+                <%
+                }); %>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
