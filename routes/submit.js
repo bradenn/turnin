@@ -68,7 +68,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                         if(results) results.forEach(result => {
                             testResults.push({
                                 test: result._id,
-                                output: (result.stdout)?result.stdout.lines:[""],
+                                output: result.stdout.lines,
                                 exit: result.code,
                                 stdout: [""],
                                 stderr: result.stderr.lines,
@@ -76,6 +76,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                             });
                         });
                         Output.create(testResults, (err, tst) => {
+
                             tst.forEach((ts) => {
                                 resp.outputs.push(ts);
                             });
