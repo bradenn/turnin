@@ -76,7 +76,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                             });
                         });
                         Output.create(testResults, (err, tst) => {
-
+                            console.log({err: err, tst: tst});
                             tst.forEach((ts) => {
                                 resp.outputs.push(ts);
                             });

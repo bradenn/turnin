@@ -6,7 +6,6 @@ let Output = require('../models/output');
 let Test = require('../models/test');
 let diffJs = require('diff');
 
-
 let utils = require('../services/utils');
 let rest = require('../services/rest');
 
@@ -14,7 +13,6 @@ utils.getRouteWithUser('/grade/:response', router, (req, res, user) => {
     Result.findById(req.params.response, (err, result) => {
         result.outputs.forEach((outputSchema) => {
             Output.findById(outputSchema._id, (err, out) => {
-
                 let diff = [];
                 for (let i = 0; i < out.output.length; i++) {
                     diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", (typeof out.test != 'undefined') ? out.test.outputs[i] : ""));
