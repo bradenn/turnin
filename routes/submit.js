@@ -66,6 +66,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
 
                         let testResults = [];
                         if(results) results.forEach(result => {
+                            console.log(result.stdout.lines);
                             testResults.push({
                                 test: result._id,
                                 output: result.stdout.lines,
