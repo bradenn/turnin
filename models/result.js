@@ -17,7 +17,18 @@ let ResultSchema = new mongoose.Schema({
         ref: 'Output',
         autopopulate: 1
     }],
-    passed: Boolean,
+    files: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'File'
+    }],
+    stderr: String,
+    stdout: String,
+    signal: String,
+    exit: Number,
+    passed: {
+        type: Boolean,
+        default: true
+    },
     date: String
 });
 

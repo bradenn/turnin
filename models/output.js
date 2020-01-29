@@ -8,7 +8,11 @@ let OutputSchema = new mongoose.Schema({
         ref: 'Test',
         autopopulate: 1
     },
-    status: String,
+    signal: String,
+    stderr: [String],
+    stdout: [String],
+    code: String,
+    message: String,
     passed: Boolean,
     diff: String,
     output: {

@@ -18,6 +18,7 @@
                 <tr>
                     <th scope="col">Test</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Note</th>
                     <th scope="col">Options</th>
                 </tr>
                 </thead>
@@ -29,6 +30,7 @@
                     <td>
                         <span class="<%= (test.passed) ? "text-success" : "text-danger" %>"><%= (test.passed) ? "Passed" : "Failed" %></span>
                     </td>
+                    <td><%= (test.signal === "SIGTERM")?"Infinite Loop; process killed.":"None" %></td>
                     <td><a href="/response/output/<%= test._id %>">View test</a></td>
 
                     <% }); %>
@@ -38,7 +40,20 @@
         </div>
 
 
+        <div class="col-6">
+
+            <h4>Info</h4>
+            <hr>
+            <p>Make Command:&nbsp; <code><%= result.assignment.command %></code></p>
+            <p>Compiler:</p>
+            <p>&nbsp;signal:&nbsp; <code><%= (result.status)?result.signal:"none" %></code></p>
+            <p>&nbsp;exit code:&nbsp; <code><%= result.exit %></code></p>
+            <p>&nbsp;stderr:&nbsp; <code><%= (result.stderr)?result.stderr:"no errors" %></code></p>
+            <p>&nbsp;stdout:&nbsp; <code><%= (result.stdout)?result.stdout:"no output" %></code></p>
+        </div>
+
     </div>
+
 </div>
 </body>
 

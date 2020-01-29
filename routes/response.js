@@ -10,44 +10,34 @@ let diffJs = require('diff');
 let utils = require('../services/utils');
 let rest = require('../services/rest');
 
-utils.getRouteWithUser('/:response', router, (req, res, user) => {
+utils.getRouteWithUser('/grade/:response', router, (req, res, user) => {
     Result.findById(req.params.response, (err, result) => {
         result.outputs.forEach((outputSchema) => {
             Output.findById(outputSchema._id, (err, out) => {
-                if (out.diff == null) {
-                    let diff = [];
-                    for (let i = 0; i < out.test.outputs.length; i++) {
-                        diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", out.test.outputs[i]));
-                    }
-                    out.diff = JSON.stringify(diff);
-                    out.save((err, o) => {
-                    });
+                let diff = [];
+                for (let i = 0; i < out.output.length; i++) {
+                    diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", (typeof out.test != 'undefined') ? out.test.outputs[i] : ""));
                 }
+                out.passed = (out.test.outputs.toString() === out.output.toString());
+                out.diff = JSON.stringify(diff);
+                out.save((err, o) => {
+
+                });
             });
         });
-        result.outputs.forEach((test) => {
-            if (typeof test.passed == 'undefined') {
-                let passed = true;
-                Output.findById(test._id, (err, out) => {
-                    out.passed = (test.test.outputs.toString() === test.output.toString());
-                    if (test.test.outputs.toString() !== test.output.toString()) passed = false;
-                    out.save((err, o) => {
-                    });
-                });
-            }
-        });
-        let passed = true;
-        result.outputs.forEach((test) => {
-            if (test.passed == false) passed = false;
-        });
-        result.passed = passed;
-        result.save((err, result) => {
-
-            res.render("response", {user: user, result: result});
-        });
-
 
     });
+
+    res.redirect('/response/' + req.params.response);
+});
+
+utils.getRouteWithUser('/:response', router, (req, res, user) => {
+    Result.findById(req.params.response, (err, result) => {
+        if (result.outputs.filter((output) => (!output.passed)).length >= 1) result.passed = false;
+        result.save((err, resu) => {
+            res.render("response", {user: user, result: resu});
+        });
+    }).populate("files");
 });
 
 utils.getRouteWithUser('/output/:output', router, (req, res, user) => {
