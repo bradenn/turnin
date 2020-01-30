@@ -42,8 +42,8 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                 method: "POST",
                 json: {
                     make: assignment.command,
-                    files: {files},
-                    tests: {tests}
+                    files,
+                    tests
                 }
             });
             re.on('response', function (response) {
@@ -66,7 +66,6 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
 
                         let testResults = [];
                         if(results) results.forEach(result => {
-                            console.log(result.stdout.lines);
                             testResults.push({
                                 test: result._id,
                                 output: result.stdout.lines,
@@ -77,7 +76,6 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                             });
                         });
                         Output.create(testResults, (err, tst) => {
-                            console.log({err: err, tst: tst});
                             tst.forEach((ts) => {
                                 resp.outputs.push(ts);
                             });
