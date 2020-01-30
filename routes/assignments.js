@@ -73,7 +73,7 @@ router.get('/grades/:assignment', function (req, res) {
 
 let utils = require('../services/utils');
 
-utils.postRouteWithUserAndFiles('/edit/:assignment', router, function (req, res, user) {
+utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (req, res, user) {
     Assignment.findById(req.params.assignment, function (err, assignment) {
         Test.create({
             name: req.body.testName,
@@ -86,6 +86,29 @@ utils.postRouteWithUserAndFiles('/edit/:assignment', router, function (req, res,
                     res.redirect(req.get('referer'));
                 });
             });
+        });
+
+    });
+});
+let tar = require('tar-stream');
+let fs = require("fs");
+utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, res, user) {
+    Assignment.findById(req.params.assignment, function (err, assignment) {
+        utils.unpackTar(req.files[0].filename, (fss) => {
+            console.log(fss);
+        });
+        Test.create({
+            name: req.body.testName,
+            inputs: String("").split("\n"),
+            outputs: String("").split("\n")
+        }, (err, test) => {
+
+            assignment.tests.push(test._id);
+            // test.save(dd => {
+            //   assignment.save((assignment) => {
+           // res.redirect(req.get('referer'));
+            //   });
+            // });
         });
 
     });

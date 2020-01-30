@@ -17,7 +17,7 @@ utils.getRouteWithUser('/grade/:response', router, (req, res, user) => {
                 for (let i = 0; i < out.output.length; i++) {
                     diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", (typeof out.test != 'undefined') ? out.test.outputs[i] : ""));
                 }
-                out.passed = (out.test.outputs.toString() === out.output.toString());
+                if(out.test) out.passed = (out.test.outputs.toString() === out.output.toString());
                 out.diff = JSON.stringify(diff);
                 out.save((err, o) => {
 
