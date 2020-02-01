@@ -5,7 +5,13 @@ let autopopulate = require('mongoose-autopopulate');
 let TestSchema = new mongoose.Schema({
     name: String,
     inputs: [String],
-    outputs: [String]
+    outputs: [String],
+    error: [String],
+    cmd: String,
+    code: {
+        type: Number,
+        default: 0
+    }
 });
 
 // Load plugin to automatically populate nested queries

@@ -9,8 +9,11 @@ let ResultSchema = new mongoose.Schema({
     },
     assignment: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Assignment',
-        autopopulate: 1
+        ref: 'Assignment'
+    },
+    test: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Test'
     },
     outputs: [{
         type: mongoose.Schema.Types.ObjectId,

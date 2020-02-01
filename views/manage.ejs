@@ -3,59 +3,51 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-  <div class="container">
+<div class="container-fluid">
+    <h1>Classes</h1>
+    <h6>Instructor <%= classes[0].instructor.firstname %> <%= classes[0].instructor.lastname %></h6>
+    <hr>
     <div class="row">
-      <div class="col-8">
+        <div class="col-12">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Students</th>
+                    <th scope="col">Assignments</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="">
+                <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
+                <tr>
 
-        <h4 class="d-inline-block">Classes</h4>
-        <div class="dropdown d-inline-block float-right">
-          <a href="#" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownNewClass">New Class</a>
-          <form class="dropdown-menu p-4" style="min-width:256px !important;" action="/manage/new/class" method="post" aria-labelledby="dropdownNewClass">
-            <div class="form-group">
-              <label for="className">Name</label>
-              <input type="text" class="form-control" id="classname" name="classname" placeholder="Class Name">
-            </div>
-            <div class="form-group">
-              <label for="classSection">Section</label>
-              <input type="number" class="form-control" id="classsection" name="classsection" min="0" max="20" step="1">
-            </div>
-            <button type="submit" class="btn btn-primary">Create Class</button>
-          </form>
+                    <td><%= clas.name %></td>
+                    <td><%= clas.students.length %> Students</td>
+                    <td>
+                        <% clas.assignments.forEach(assignment => { %>
+                            <span class="badge badge-dark"><%= assignment.name %></span>
+                        <% }); %>
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-primary btn-sm">New Assignment</a>
+                        <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                    <% }); }else{ %>
+                        <td>No classes</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                </tr>
+                <% } %>
+
+                </tbody>
+            </table>
+
         </div>
-
-
-        <table class="table table-light">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Students</th>
-              <th scope="col">Assignments</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
-            <tr>
-
-              <td><%= clas.name %></td>
-              <td><%= clas.students.length %> Students</td>
-              <td><%= clas.assignments.length %> Assignments</td>
-              <td><a href="#" class="btn btn-primary btn-sm">Delete</a></td>
-              <% }); }else{ %>
-              <td>No classes</td>
-              <td></td>
-              <td></td>
-              <td></td>
-
-            </tr>
-            <% } %>
-
-          </tbody>
-        </table>
-
-      </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

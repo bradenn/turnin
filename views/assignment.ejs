@@ -3,9 +3,9 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
 
             <h4><%= assignment.name %></h4>
             <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
@@ -20,21 +20,22 @@
                 <thead class="thead-dark">
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Input</th>
-                    <th scope="col">Output</th>
-                    <th scope="col">Pass Rate</th>
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Outputs</th>
+                    <th scope="col">Errors</th>
+                    <th scope="col">Exit</th>
                     <th scope="col">Options</th>
                 </tr>
                 </thead>
                 <tbody>
-                <% assignment.tests.forEach(function(test){ %>
+                <% assignment.tests.forEach(function(test){
+                %>
                     <tr>
                         <td><%= test.name %></td>
                         <td><%= test.inputs.length %> inputs</td>
                         <td><%= test.outputs.length %> outputs</td>
-                        <td><%= Math.round((outputs.filter(output => output.test._id.toString() === test._id.toString()).filter(out => out.passed == true).length / outputs.filter(output => output.test._id.toString() === test._id.toString()).length) * 100) %>
-                            % Pass Rate
-                        </td>
+                        <td><%= test.error.length %> errors</td>
+                        <td><%= test.code %> exit</td>
                         <td><a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Remove</a>
                         </td>
                     </tr>

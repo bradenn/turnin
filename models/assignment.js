@@ -7,7 +7,7 @@ let AssignmentSchema = new mongoose.Schema({
   tests: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Test',
-    autopopulate: true
+    autopopulate: 1
   }],
   responses: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -17,6 +17,7 @@ let AssignmentSchema = new mongoose.Schema({
   command: String,
   files: [String],
   duedate: String,
+  late: String,
   assigned: {
     type: Boolean,
     default: false
@@ -26,6 +27,6 @@ let AssignmentSchema = new mongoose.Schema({
 
 AssignmentSchema.plugin(autopopulate);
 
-var Assignment = mongoose.model('Assignment', AssignmentSchema);
+let Assignment = mongoose.model('Assignment', AssignmentSchema);
 
 module.exports = Assignment;

@@ -19,7 +19,7 @@ utils.getRouteWithUser('/:assignment', router, (req, res, user) => {
 
 let request = require('request');
 
-utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
+utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) => {
     Assignment.findById(req.params.assignment, (err, assignment) => {
         let files = [];
         let dbFiles = [];
@@ -46,6 +46,10 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                     tests
                 }
             });
+            process.on('uncaughtException', function (err) {
+               // return res.send(`The system's code compilation services are unreachable. <a href="${req.get('referer')}">Click here to try again</a>`);
+
+            });
             re.on('response', function (response) {
                 let body = '';
                 response.on('data', function (chunk) {
@@ -65,7 +69,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                         let results = JSON.parse(body).tests;
 
                         let testResults = [];
-                        if(results) results.forEach(result => {
+                        if (results) results.forEach(result => {
                             testResults.push({
                                 test: result._id,
                                 output: result.stdout.lines,
@@ -76,6 +80,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                             });
                         });
                         Output.create(testResults, (err, tst) => {
+
                             tst.forEach((ts) => {
                                 resp.outputs.push(ts);
                             });
@@ -83,7 +88,9 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
                             });
                             assignment.responses.push(resp);
                             assignment.save((assignment) => {
+
                                 res.redirect('/response/grade/' + resp._id);
+
                             });
                         });
 
@@ -92,6 +99,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user) => {
             });
 
         });
+
     });
 });
 

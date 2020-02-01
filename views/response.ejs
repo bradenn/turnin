@@ -3,7 +3,7 @@
 <%- include("partials/header") %>
 <%- include("partials/nav") %>
 <body>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-6">
             <h2><%= result.assignment.name %></h2>
@@ -19,6 +19,7 @@
                     <th scope="col">Test</th>
                     <th scope="col">Status</th>
                     <th scope="col">Note</th>
+                    <th scope="col">Lines</th>
                     <th scope="col">Options</th>
                 </tr>
                 </thead>
@@ -31,6 +32,7 @@
                         <span class="<%= (test.passed) ? "text-success" : "text-danger" %>"><%= (test.passed) ? "Passed" : "Failed" %></span>
                     </td>
                     <td><%= (test.signal === "SIGTERM")?"Infinite Loop; process killed.":"None" %></td>
+                    <td></td>
                     <td><a href="/response/output/<%= test._id %>">View test</a></td>
 
                     <% }); %>
