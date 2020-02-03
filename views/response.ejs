@@ -43,6 +43,9 @@
                 <span><%= (result.stdout)?result.stdout:"none" %></span>
                 <strong>Standard error:</strong>
                 <span><%= (result.stderr)?result.stderr:"none" %></span>
+                <br>
+                <strong>Debug:</strong>
+                <span><%= result.debug_server %>:<%= result.debug_node %>:<%= result.debug_instance %></span>
             </div>
         </div>
     </div>

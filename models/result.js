@@ -28,6 +28,9 @@ let ResultSchema = new mongoose.Schema({
     stdout: String,
     signal: String,
     exit: Number,
+    debug_server: String,
+    debug_node: String,
+    debug_instance: String,
     passed: {
         type: Boolean,
         default: true

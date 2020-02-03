@@ -4,6 +4,7 @@ let Class = require('../models/class');
 let Test = require('../models/test');
 let Assignment = require('../models/assignment');
 let Result = require('../models/result');
+let config = require('../config.json');
 let Output = require('../models/output');
 let File = require('../models/file');
 
@@ -40,7 +41,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                     tests.push({name: test.name, _id: test._id, input: test.inputs, output: test.outputs});
                 });
                 let re = request({
-                    url: "http://localhost:5555/api/test",
+                    url: config.worker,
                     method: "POST",
                     json: {
                         make: assignment.command,
@@ -61,12 +62,17 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                     });
                     response.on('end', function () {
                         let compile = JSON.parse(body).compile;
+                        let debug = JSON.parse(body).debug;
+                        console.log(debug);
                         Result.create({
                             student: user._id,
                             assignment: assignment._id,
                             stderr: compile.stderr,
                             stdout: compile.stdout,
                             exit: compile.code,
+                            debug_server: debug.server,
+                            debug_node: debug.node,
+                            debug_instance: debug.instance,
                             files: filesM.map(file => file._id),
                             date: new Date
                         }, (err, resp) => {
