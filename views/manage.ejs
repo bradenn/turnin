@@ -3,12 +3,17 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-<div class="container-fluid">
-    <h1>Classes</h1>
-    <h6>Instructor <%= classes[0].instructor.firstname %> <%= classes[0].instructor.lastname %></h6>
-    <hr>
+<div class="container">
     <div class="row">
+        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
         <div class="col-12">
+            <h1>Classes</h1>
+
+            <div class="d-flex flex-row justify-content-between">
+                <span>Instructor <%= classes[0].instructor.firstname %> <%= classes[0].instructor.lastname %></span>
+                <a href="#" class="btn btn-primary btn-sm">New Class</a>
+            </div>
+            <hr>
             <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>

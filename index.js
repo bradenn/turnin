@@ -30,8 +30,8 @@ app.use(session({
 }));
 
 // parse incoming requests
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '5mb'}));
+app.use(bodyParser.urlencoded({ extended: false, limit: '5mb' }));
 
 app.set('view engine', 'ejs');
 // serve static files from template
@@ -53,7 +53,7 @@ app.use(function (req, res, next) {
 // define as the last app.use callback
 app.use(function (err, req, res, next) {
   res.status(err.status || 500);
-  res.send(err.message);
+  //res.send(err.message);
 });
 
 

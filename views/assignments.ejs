@@ -3,17 +3,24 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
-        <div class="col-8">
 
+        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
+        <div class="col-12">
+            <h1>Assignments</h1>
+            <div class="d-flex flex-row justify-content-between">
+                <span>All active assignments</span>
+                <a href="/assignments/new" class="btn btn-primary btn-sm">New Assignment</a>
+            </div>
+            <hr>
             <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
-                <h4 class=""><%= clas.name %></h4>
-                <table class="table table-light">
+                <h3><%= clas.name %>.<%= clas.section %></h3>
+                <table class="table table-bordered">
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">Name</th>
-                        <th scope="col">Files</th>
+                        <th scope="col">Required Files</th>
                         <th scope="col">Tests</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -23,9 +30,9 @@
                         <tr>
                             <td><%= assignment.name %></td>
                             <td><%= assignment.files %></td>
-                            <td><%= assignment.tests.length %></td>
-                            <td><a href="/assignments/grades/<%= assignment._id %>" class="btn btn-primary btn-sm">Results</a>&nbsp;
-                                <a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Edit</a>
+                            <td><%= assignment.tests.map(test => test.name).join(", ") %></td>
+                            <td><a href="/assignments/grades/<%= assignment._id %>" class="btn btn-primary btn-sm">Grades</a>&nbsp;
+                                <a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Edit Assignment</a>
                             </td>
                         </tr>
                     <% }); } %>

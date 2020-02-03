@@ -33,6 +33,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                 });
                 files.push({name: assignment.files[i], contents: String(req.files[i].buffer).split("\n")});
             }
+
             File.create(dbFiles, (err, filesM) => {
                 let tests = [];
                 assignment.tests.forEach((test) => {
@@ -47,9 +48,11 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                         tests
                     }
                 });
+                process.on("uncaughtException", (err) => {
+                    res.render("submit", {user: user, assignment: assignment, error: "largefile"});
+                });
                 re.on('error', function (err) {
                     res.render("submit", {user: user, assignment: assignment, error: "noserver"});
-                    next();
                 });
                 re.on('response', function (response) {
                     let body = '';
@@ -57,7 +60,6 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                         body += chunk;
                     });
                     response.on('end', function () {
-                        console.log(body);
                         let compile = JSON.parse(body).compile;
                         Result.create({
                             student: user._id,
@@ -90,7 +92,6 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                                 });
                                 assignment.responses.push(resp);
                                 assignment.save((assignment) => {
-
                                     res.redirect('/response/grade/' + resp._id);
 
                                 });
@@ -102,7 +103,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
 
             });
         }else{
-            res.render("submit", {user: user, assignment: assignment, error: "nofile"});
+            return res.render("submit", {user: user, assignment: assignment, error: "nofile"});
         }
     });
 });

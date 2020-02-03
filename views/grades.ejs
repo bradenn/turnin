@@ -3,15 +3,35 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
+        <a href="/assignments"><i class="fas fa-chevron-left"></i> Assignments</a>
         <div class="col-12">
-            <h4><%= assignment.name %></h4>
-            <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
+            <h1><%= assignment.name %></h1>
+            <div class="d-flex flex-row justify-content-between">
+                <span><%= lecture.name %>.<%= lecture.section %> | Due <%= new Date(assignment.duedate).toLocaleDateString() %></span>
+                <div>
+                    <span class="badge badge-success">Passed</span>
+                    <span class="badge badge-danger">Failed</span>
+                    <span class="badge badge-warning">Infinite Loop</span>
+                </div>
 
+            </div>
             <hr>
+            <h4>Statistics</h4>
+            <strong>Total submissions:</strong>
+            <span><%= assignment.responses.length %></span><br>
+            <strong>Students without submission:</strong>
+            <span><%= students.filter(student => assignment.responses.filter(resp => resp.student._id.toString() === student._id.toString()) === 0).length %></span>
 
-
+            <br><br>
+            <div class="d-flex flex-row justify-content-between">
+                <h4>Test results</h4>
+                <div>
+                    <a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Download CSV</a>
+                    <a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Download JSON</a>
+                </div>
+            </div>
             <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>
@@ -19,7 +39,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Username</th>
                     <th scope="col">Attempts</th>
-                    <th scope="col" >Results</th>
+                    <th scope="col">Results</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -35,9 +55,10 @@
                         <% attempts.forEach(attempt => {
                             let diff = attempt.outputs.filter(output => output.passed).length;
                             let total = attempt.outputs;
+                            let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
                         %>
                         <a href="/response/<%= attempt._id %>">
-                            <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= attempts.findIndex(attempt_ => attempt_ == attempt) + 1 %>
+                            <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9)?"0":"" %><%= index %>
                                 <% attempt.outputs.forEach(tst => { %>
                                     <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
                                 <% }) %>

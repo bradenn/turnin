@@ -10,9 +10,9 @@
 </style>
 <div class="container">
     <div class="row">
-        <div class="col-12">
         <a href="/response/<%= response._id %>"><i class="fas fa-chevron-left"></i> Results</a>
-            <h2><%= output.test.name %></h2>
+        <div class="col-12">
+            <h2><%= response.assignment.name %> - <%= output.test.name %></h2>
             <div class="d-flex justify-content-between">
                 <span class="text-<%= (output.passed) ? "success" : "danger" %>">Test <%= (output.passed) ? "passed" : "failed" %></span>
                 <div>Difference key:

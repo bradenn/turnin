@@ -21,6 +21,9 @@
                 <% if(error == "noserver") { %>
                     <span class="text-danger">The grading servers are currently occupied. Please try again in a moment.</span>
                 <% } %>
+                <% if(error == "largefile") { %>
+                    <span class="text-danger">That's quite the file you've got there... Lets try another one.</span>
+                <% } %>
             <% } %>
             <div class="card" style="">
                 <div class="card-body">

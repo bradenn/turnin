@@ -5,7 +5,10 @@
 <body>
 <div class="container">
     <div class="row">
+
         <div class="col-12">
+            <h1>Dashboard</h1>
+            <hr>
             <h4>Current Assignments</h4>
             <table class="table table-bordered">
                 <thead class="thead-dark">
@@ -13,7 +16,7 @@
                     <th scope="col">Class</th>
                     <th scope="col">Assignment</th>
                     <th scope="col">Due Date</th>
-                    <th scope="col">Requirements</th>
+                    <th scope="col">Cutoff</th>
                     <th scope="col">Attempts</th>
                     <th scope="col">Options</th>
                 </tr>
@@ -26,11 +29,13 @@
                     <td><%= clas.name %>.<%= clas.section %></td>
                     <td><%= assignment.name %></td>
                     <td><%= new Date(assignment.duedate).toDateString() %></td>
-                    <td><%= assignment.files.join(' ') %></td>
-                    <td>
-                        <% attempts.forEach(attempt => { %>
+                    <td><%= new Date(assignment.late).toDateString() %></td>
+                    <td style="max-width: 20vw;">
+                        <% attempts.forEach(attempt => {
+                        let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                        %>
                             <a href="/response/<%= attempt._id %>" class="no-bs">
-                                <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= attempts.findIndex(attempt_ => attempt_ == attempt) + 1 %>
+                                <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9)?"0":"" %><%= index %>
                                     <% attempt.outputs.forEach(tst => { %>
                                         <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
                                     <% }) %>
@@ -38,7 +43,7 @@
                             </a>
                         <% }); %>
                     </td>
-                    <td><a href="/submit/<%= assignment._id %>"><span class="badge badge-primary">Submit</span></a></td>
+                    <td><a href="/submit/<%= assignment._id %>" class="btn btn-primary btn-sm">Submit</a></td>
                     <% }); }); %>
                 </tr>
                 </tbody>

@@ -3,54 +3,62 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-  <div class="container-fluid">
+<div class="container">
     <div class="row">
-      <div class="col-8">
+        <a href="/assignments"><i class="fas fa-chevron-left"></i> Assignments</a>
+        <div class="col-12">
 
-        <h4>New Assignment</h4>
-        <hr>
+            <h1>New Assignment</h1>
+            <hr>
+        </div>
+        <div class="col-6">
+            <form action="/assignments/new" method="post">
+                <div class="form-group">
+                    <label>Assignment name</label>
+                    <input type="text" class="form-control" name="assignmentName" placeholder="Name">
+                    <small class="text-muted">Duplicate names are allowed but not reccomended.</small>
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select class="form-control" name="assignmentClass">
+                        <% classes.forEach(function(classObject){ %>
+                            <option value="<%= classObject._id %>"><%= classObject.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Make command</label>
+                    <input type="text" class="form-control" name="makeCommand" placeholder="g++ lab1.cpp">
+                    <small class="text-muted">Can be any bash/zsh command</small>
+                </div>
+                <div class="form-group">
+                    <label>File Names</label>
+                    <input type="text" class="form-control" name="assignmentFiles" placeholder="Files">
+                    <small class="text-muted">Separate multiple with comma, ie. lab1.cpp, lab1b.cpp</small>
+                </div>
+                <div class="form-group">
+                    <label>Due date</label>
+                    <input type="date" class="form-control" name="assignmentDueDate" placeholder="Date">
+                    <small class="text-muted">Late assignments will be accepted but flagged as late</small>
+                </div>
+                <div class="form-group">
+                    <label>Late due date</label>
+                    <input type="date" class="form-control" name="assignmentLateDueDate" placeholder="Date">
+                    <small class="text-muted">Absolute cutoff for assignments</small>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary">Continue to tests</button>
+                    <br>
+                    <small class="text-muted">You can preview your assignment (and assign) from the Assignments
+                        page.</small>
+                </div>
 
-        <form action="/assignments/new" method="post">
-          <div class="form-group">
-            <label>Assignent name</label>
-            <input type="text" class="form-control" name="assignmentName" placeholder="Name">
-            <small class="text-muted">Duplicate names are allowed but not reccomended.</small>
-          </div>
-          <div class="form-group">
-            <label>Class</label>
-            <select class="form-control" name="assignmentClass">
-              <% classes.forEach(function(classObject){ %>
-              <option value="<%= classObject._id %>"><%= classObject.name %></option>
-              <% }); %>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Make command</label>
-            <input type="text" class="form-control" name="makeCommand" placeholder="g++ lab1.cpp">
-            <small class="text-muted">Can be any bash/zsh command</small>
-          </div>
-          <div class="form-group">
-            <label>File Names</label>
-            <input type="text" class="form-control" name="assignmentFiles" placeholder="Files">
-            <small class="text-muted">Separate multiple with comma, ie. lab1.cpp, lab1b.cpp</small>
-          </div>
-          <div class="form-group">
-            <label>Due date</label>
-            <input type="date" class="form-control" name="assignmentDueDate" placeholder="Date">
-            <small class="text-muted">Late assignments will be accepted but flagged as late</small>
-          </div>
-
-          <div class="form-group">
-            <button class="btn btn-primary">Save as Draft</button><br>
-            <small class="text-muted">You can preview your assignment (and assign) from the Assignments page.</small>
-          </div>
-
-        </form>
+            </form>
 
 
-      </div>
+        </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

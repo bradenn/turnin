@@ -4,13 +4,13 @@
 <%- include("partials/nav") %>
 <body>
 <div class="container">
-        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
     <div class="row">
-        <div class="col-8">
+        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
+        <div class="col-12">
             <h2><%= result.assignment.name %></h2>
             <div class="d-flex justify-content-between">
                 <span class="text-<%= (result.passed) ? "success" : "danger" %>">Submission <%= (result.passed) ? "passed" : "failed" %></span>
-                <a href="/submit/<%= result.assignment._id %>"><span class="badge badge-primary">Submit again</span></a>
+                <a href="/submit/<%= result.assignment._id %>" class="btn btn-primary btn-sm">Submit again</a>
             </div>
             <hr>
         </div>

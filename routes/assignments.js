@@ -65,7 +65,7 @@ router.get('/grades/:assignment', function (req, res) {
     User.findById(req.session.userId, function (userError, user) {
         Assignment.findById(req.params.assignment, function (err, assignment) {
             Class.findOne({assignments: assignment._id}, function (err, lecture) {
-                res.render('grades', {user: user, assignment: assignment, students: lecture.students});
+                res.render('grades', {user: user, assignment: assignment, students: lecture.students, lecture: lecture});
             }).populate("students");
         }).populate("responses");
     });
@@ -157,6 +157,7 @@ router.post('/new', function (req, res, next) {
                     name: req.body.assignmentName,
                     files: req.body.assignmentFiles.split(", "),
                     duedate: req.body.assignmentDueDate,
+                    late: req.body.assignmentLateDueDate,
                     command: req.body.makeCommand,
                     date: new Date()
                 };

@@ -43,7 +43,7 @@ utils.getRouteWithUser('/output/:output', router, (req, res, user) => {
     Output.findById(req.params.output, (err, output) => {
         Result.findOne({outputs: {$in: [output._id]}}, (err, resp) => {
             res.render("output", {user: user, output: output, response: resp});
-        });
+        }).populate("assignment");
     });
 });
 
