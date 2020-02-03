@@ -17,7 +17,7 @@ utils.getRouteWithUser('/grade/:response', router, (req, res, user) => {
                 for (let i = 0; i < out.output.length; i++) {
                     diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", (typeof out.test != 'undefined') ? out.test.outputs[i] : ""));
                 }
-                if(out.test) out.passed = (out.test.outputs.toString() === out.output.toString());
+                if (out.test) out.passed = (out.test.outputs.toString() === out.output.toString());
                 out.diff = JSON.stringify(diff);
                 out.save((err, o) => {
 
@@ -41,8 +41,9 @@ utils.getRouteWithUser('/:response', router, (req, res, user) => {
 
 utils.getRouteWithUser('/output/:output', router, (req, res, user) => {
     Output.findById(req.params.output, (err, output) => {
-
-        res.render("output", {user: user, output: output});
+        Result.findOne({outputs: {$in: [output._id]}}, (err, resp) => {
+            res.render("output", {user: user, output: output, response: resp});
+        });
     });
 });
 

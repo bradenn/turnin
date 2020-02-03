@@ -12,7 +12,7 @@
             <hr>
 
 
-            <table class="table table-light">
+            <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>
 
@@ -31,13 +31,17 @@
                     <td><%= student.firstname %> <%= student.lastname %></td>
                     <td><%= student.username %></td>
                     <td><%= attempts.length %></td>
-                    <td style="max-width: 50%;">
+                    <td>
                         <% attempts.forEach(attempt => {
-                        let diff = attempt.outputs.filter(output => output.passed).length;
-                        let total = attempt.outputs.length;
+                            let diff = attempt.outputs.filter(output => output.passed).length;
+                            let total = attempt.outputs;
                         %>
-
-                        <a href="/response/<%= attempt._id %>"> <span class="badge badge-<%= (attempt.passed)?'success':(attempt.signal === "SIGTERM")?'warning':'danger' %>">Attempt <%= attempts.findIndex(attempt_ => attempt_ == attempt) + 1 %> (<%= diff %>/<%= total %>)</span></a>
+                        <a href="/response/<%= attempt._id %>">
+                            <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= attempts.findIndex(attempt_ => attempt_ == attempt) + 1 %>
+                                <% attempt.outputs.forEach(tst => { %>
+                                    <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
+                                <% }) %>
+                            </span></a>
                         <% }); %>
                     </td>
 

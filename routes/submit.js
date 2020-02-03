@@ -1,4 +1,4 @@
-var router = require('express').Router();
+let router = require('express').Router();
 let User = require('../models/user');
 let Class = require('../models/class');
 let Test = require('../models/test');
@@ -21,85 +21,89 @@ let request = require('request');
 
 utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) => {
     Assignment.findById(req.params.assignment, (err, assignment) => {
-        let files = [];
-        let dbFiles = [];
-        for (let i = 0; i < assignment.files.length; i++) {
-            dbFiles.push({
-                name: assignment.files[i],
-                date: new Date(),
-                student: user._id,
-                content: String(req.files[i].buffer).split("\n")
-            });
-            files.push({name: assignment.files[i], contents: String(req.files[i].buffer).split("\n")});
-        }
-        File.create(dbFiles, (err, filesM) => {
-            let tests = [];
-            assignment.tests.forEach((test) => {
-                tests.push({name: test.name, _id: test._id, input: test.inputs, output: test.outputs});
-            });
-            let re = request({
-                url: "http://localhost:5555/api/test",
-                method: "POST",
-                json: {
-                    make: assignment.command,
-                    files,
-                    tests
-                }
-            });
-            process.on('uncaughtException', function (err) {
-               // return res.send(`The system's code compilation services are unreachable. <a href="${req.get('referer')}">Click here to try again</a>`);
-
-            });
-            re.on('response', function (response) {
-                let body = '';
-                response.on('data', function (chunk) {
-                    body += chunk;
+        if(req.files.length === assignment.files.length) {
+            let files = [];
+            let dbFiles = [];
+            for (let i = 0; i < assignment.files.length; i++) {
+                dbFiles.push({
+                    name: assignment.files[i],
+                    date: new Date(),
+                    student: user._id,
+                    content: String(req.files[i].buffer).split("\n")
                 });
-                response.on('end', function () {
-                    let compile = JSON.parse(body).compile;
-                    Result.create({
-                        student: user._id,
-                        assignment: assignment._id,
-                        stderr: compile.stderr,
-                        stdout: compile.stdout,
-                        exit: compile.code,
-                        files: filesM.map(file => file._id),
-                        date: new Date
-                    }, (err, resp) => {
-                        let results = JSON.parse(body).tests;
+                files.push({name: assignment.files[i], contents: String(req.files[i].buffer).split("\n")});
+            }
+            File.create(dbFiles, (err, filesM) => {
+                let tests = [];
+                assignment.tests.forEach((test) => {
+                    tests.push({name: test.name, _id: test._id, input: test.inputs, output: test.outputs});
+                });
+                let re = request({
+                    url: "http://localhost:5555/api/test",
+                    method: "POST",
+                    json: {
+                        make: assignment.command,
+                        files,
+                        tests
+                    }
+                });
+                re.on('error', function (err) {
+                    res.render("submit", {user: user, assignment: assignment, error: "noserver"});
+                    next();
+                });
+                re.on('response', function (response) {
+                    let body = '';
+                    response.on('data', function (chunk) {
+                        body += chunk;
+                    });
+                    response.on('end', function () {
+                        console.log(body);
+                        let compile = JSON.parse(body).compile;
+                        Result.create({
+                            student: user._id,
+                            assignment: assignment._id,
+                            stderr: compile.stderr,
+                            stdout: compile.stdout,
+                            exit: compile.code,
+                            files: filesM.map(file => file._id),
+                            date: new Date
+                        }, (err, resp) => {
+                            let results = JSON.parse(body).tests;
 
-                        let testResults = [];
-                        if (results) results.forEach(result => {
-                            testResults.push({
-                                test: result._id,
-                                output: result.stdout.lines,
-                                exit: result.code,
-                                stdout: [""],
-                                stderr: result.stderr.lines,
-                                signal: result.signal
+                            let testResults = [];
+                            if (results) results.forEach(result => {
+                                testResults.push({
+                                    test: result._id,
+                                    output: result.stdout.lines,
+                                    exit: result.code,
+                                    stdout: [""],
+                                    stderr: result.stderr.lines,
+                                    signal: result.signal
+                                });
                             });
+                            Output.create(testResults, (err, tst) => {
+
+                                tst.forEach((ts) => {
+                                    resp.outputs.push(ts);
+                                });
+                                resp.save((err, r) => {
+                                });
+                                assignment.responses.push(resp);
+                                assignment.save((assignment) => {
+
+                                    res.redirect('/response/grade/' + resp._id);
+
+                                });
+                            });
+
                         });
-                        Output.create(testResults, (err, tst) => {
-
-                            tst.forEach((ts) => {
-                                resp.outputs.push(ts);
-                            });
-                            resp.save((err, r) => {
-                            });
-                            assignment.responses.push(resp);
-                            assignment.save((assignment) => {
-
-                                res.redirect('/response/grade/' + resp._id);
-
-                            });
-                        });
-
                     });
                 });
+
             });
-
-        });
-
+        }else{
+            res.render("submit", {user: user, assignment: assignment, error: "nofile"});
+        }
     });
 });
 

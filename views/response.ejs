@@ -3,57 +3,48 @@
 <%- include("partials/header") %>
 <%- include("partials/nav") %>
 <body>
-<div class="container-fluid">
+<div class="container">
+        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
     <div class="row">
-        <div class="col-6">
+        <div class="col-8">
             <h2><%= result.assignment.name %></h2>
-            <span class="<%= (result.passed) ? "text-success" : "text-danger" %>">Tests <%= (result.passed) ? "passed" : "failed" %></span>
+            <div class="d-flex justify-content-between">
+                <span class="text-<%= (result.passed) ? "success" : "danger" %>">Submission <%= (result.passed) ? "passed" : "failed" %></span>
+                <a href="/submit/<%= result.assignment._id %>"><span class="badge badge-primary">Submit again</span></a>
+            </div>
+            <hr>
         </div>
     </div>
-    <hr>
     <div class="row">
-        <div class="col-6">
-            <table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Test</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Note</th>
-                    <th scope="col">Lines</th>
-                    <th scope="col">Options</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% result.outputs.forEach(function(test){ %>
-                <tr>
-
-                    <td><%= test.test.name %></td>
-                    <td>
-                        <span class="<%= (test.passed) ? "text-success" : "text-danger" %>"><%= (test.passed) ? "Passed" : "Failed" %></span>
-                    </td>
-                    <td><%= (test.signal === "SIGTERM")?"Infinite Loop; process killed.":"None" %></td>
-                    <td></td>
-                    <td><a href="/response/output/<%= test._id %>">View test</a></td>
-
-                    <% }); %>
-
-                </tbody>
-            </table>
+        <div class="col-8">
+            <h5>Tests</h5>
+            <% result.outputs.forEach(function(test){ %>
+                <a href="/response/output/<%= test._id %>" class="no-bs">
+                    <div class="card p-2 pl-3 m-1 border-<%= (test.passed) ? "success" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (test.passed) ? "success" : "danger" %>">
+                        <span class=""><strong><%= test.test.name %></strong>
+                        &nbsp;<%= (test.passed) ? "Program passed test" : (test.signal === "SIGTERM") ? "Infinite loop produced; program terminated" : "Unexpected output" %>
+                        </span>
+                        <span class="">Click to view results</span>
+                    </div>
+                </a>
+            <% }); %>
         </div>
-
-
-        <div class="col-6">
-
-            <h4>Info</h4>
+        <div class="col-8">
             <hr>
-            <p>Make Command:&nbsp; <code><%= result.assignment.command %></code></p>
-            <p>Compiler:</p>
-            <p>&nbsp;signal:&nbsp; <code><%= (result.status)?result.signal:"none" %></code></p>
-            <p>&nbsp;exit code:&nbsp; <code><%= result.exit %></code></p>
-            <p>&nbsp;stderr:&nbsp; <code><%= (result.stderr)?result.stderr:"no errors" %></code></p>
-            <p>&nbsp;stdout:&nbsp; <code><%= (result.stdout)?result.stdout:"no output" %></code></p>
+            <h5>Make Compile</h5>
+            <div class="card p-2 pl-3 m-1">
+                <strong>Command:</strong>
+                <span><%= result.assignment.command %></span>
+                <strong>Signal:</strong>
+                <span><%= (result.signal)?result.signal:"none" %></span>
+                <strong>Code:</strong>
+                <span><%= result.exit %></span>
+                <strong>Standard output:</strong>
+                <span><%= (result.stdout)?result.stdout:"none" %></span>
+                <strong>Standard error:</strong>
+                <span><%= (result.stderr)?result.stderr:"none" %></span>
+            </div>
         </div>
-
     </div>
 
 </div>

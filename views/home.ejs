@@ -3,7 +3,7 @@
 <%- include("partials/nav.ejs") %>
 
 <body>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         <div class="col-12">
             <h4>Current Assignments</h4>
@@ -19,40 +19,28 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% if(typeof user.classes != "undefined"){ user.classes.forEach(function(clas){ clas.assignments.forEach(function(assignment){
-                    let resps = [];
+                <% user.classes.forEach(function(clas){ clas.assignments.forEach(function(assignment){
                     let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
-                    assignment.responses.filter(response => response.student.toString() === user._id.toString()).forEach(resp => {
-                        let passed = (resp.passed) ? "text-success" : "text-danger";
-                        resps.push(`<a href="/response/${resp._id}" class="${passed}">${new Date(resp.date).toDateString()}:${new Date(resp.date).toLocaleTimeString()}</a>`);
-
-                    });
                 %>
-
                 <tr>
                     <td><%= clas.name %>.<%= clas.section %></td>
                     <td><%= assignment.name %></td>
                     <td><%= new Date(assignment.duedate).toDateString() %></td>
                     <td><%= assignment.files.join(' ') %></td>
                     <td>
-                        <% attempts.forEach(attempt => {
-                            let diff = attempt.outputs.filter(output => output.passed).length;
-                            let total = attempt.outputs;
-                        %>
-                        <a href="/response/<%= attempt._id %>">
-                            <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= attempts.findIndex(attempt_ => attempt_ == attempt) + 1 %>
-                                <% attempt.outputs.forEach(tst => { %>
-                                    <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
-                                <% }) %>
-                            </span></a>
+                        <% attempts.forEach(attempt => { %>
+                            <a href="/response/<%= attempt._id %>" class="no-bs">
+                                <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= attempts.findIndex(attempt_ => attempt_ == attempt) + 1 %>
+                                    <% attempt.outputs.forEach(tst => { %>
+                                        <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
+                                    <% }) %>
+                                </span>
+                            </a>
                         <% }); %>
                     </td>
-                    <td><a href="/submit/<%= assignment._id %>" class="btn btn-primary btn-sm">Submit</a></td>
-                    <% }); }); }else{ %>
-
+                    <td><a href="/submit/<%= assignment._id %>"><span class="badge badge-primary">Submit</span></a></td>
+                    <% }); }); %>
                 </tr>
-                <% } %>
-
                 </tbody>
             </table>
 

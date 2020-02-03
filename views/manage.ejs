@@ -15,7 +15,6 @@
                     <th scope="col">Name</th>
                     <th scope="col">Students</th>
                     <th scope="col">Assignments</th>
-                    <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody class="">
@@ -26,12 +25,8 @@
                     <td><%= clas.students.length %> Students</td>
                     <td>
                         <% clas.assignments.forEach(assignment => { %>
-                            <span class="badge badge-dark"><%= assignment.name %></span>
+                           <a href="/assignments/grades/<%= assignment._id %>"><span class="badge badge-dark"><%= assignment.name %></span></a>
                         <% }); %>
-                    </td>
-                    <td>
-                        <a href="#" class="btn btn-primary btn-sm">New Assignment</a>
-                        <a href="#" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                     <% }); }else{ %>
                         <td>No classes</td>

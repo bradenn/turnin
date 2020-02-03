@@ -21,3 +21,22 @@ body{
 
   text-decoration: none;
 }
+
+.badge .badge{
+  border: 1px solid #fff;
+}
+
+
+
+.no-bs{
+  text-decoration: none;
+  color: inherit;
+}
+.no-bs:hover{
+  text-decoration: none;
+  color: inherit;
+}
+
+.badge {
+  margin: 0.15em;
+}
