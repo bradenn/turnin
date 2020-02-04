@@ -10,7 +10,7 @@
         <div class="col-12">
             <h1>Assignments</h1>
             <div class="d-flex flex-row justify-content-between">
-                <span>All active assignments</span>
+                <span class="sub-header">All active assignments</span>
                 <a href="/assignments/new" class="btn btn-primary btn-sm">New Assignment</a>
             </div>
             <hr>
@@ -31,8 +31,18 @@
                             <td><%= assignment.name %></td>
                             <td><%= assignment.files %></td>
                             <td><%= assignment.tests.map(test => test.name).join(", ") %></td>
-                            <td><a href="/assignments/grades/<%= assignment._id %>" class="btn btn-primary btn-sm">Grades</a>&nbsp;
-                                <a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Edit Assignment</a>
+                            <td>
+                                <div>
+                                    <div>
+
+                                        <a href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"
+                                           class="btn btn-primary btn-sm"><%= (assignment.assigned) ? "Unassign" : "Assign" %></a>
+                                        <a href="/assignments/grades/<%= assignment._id %>"
+                                           class="btn btn-primary btn-sm">Grades</a>
+                                        <a href="/assignments/edit/<%= assignment._id %>"
+                                           class="btn btn-primary btn-sm">Edit Assignment</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     <% }); } %>
@@ -47,5 +57,5 @@
     </div>
 </div>
 </body>
-
+<%- include("partials/footer.ejs") %>
 </html>

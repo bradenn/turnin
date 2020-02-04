@@ -73,6 +73,7 @@ router.get('/grades/:assignment', function (req, res) {
 
 let utils = require('../services/utils');
 
+
 utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (req, res, user) {
     Assignment.findById(req.params.assignment, function (err, assignment) {
         Test.create({
@@ -90,6 +91,18 @@ utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (re
 
     });
 });
+
+utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, user) => {
+    Assignment.findById(req.params.assignment, function (err, assignment) {
+        if(user.type >= 1){
+            assignment.assigned = req.params.assign;
+            assignment.save((err, assignment) => {
+                res.redirect(req.get('referer'));
+            });
+        }
+    });
+});
+
 let tar = require('tar-stream');
 let fs = require("fs");
 utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, res, user) {

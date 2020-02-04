@@ -3,7 +3,9 @@
 <%- include("partials/header") %>
 
 <body><br>
-  <div class="container-fluid">
+  <div class="container">
+        <h2>CSCI Turn in</h2>
+        <hr>
     <div class="row">
       <div class="col-md-6">
         <h5>Register</h5>
@@ -38,6 +40,7 @@
               </div>
               <button type="submit" class="btn btn-primary">Signup</button>
               <small class="text-warning"><% if(typeof error != 'undefined'){ if(error.type == "register"){ %> <%= error.message %> <% } } %></small>
+              <a href="/login" class="float-right" style="vertical-align:middle;">Login</a>
             </form>
           </div>
         </div>
@@ -45,5 +48,5 @@
     </div>
   </div>
 </body>
-
+<%- include("partials/footer.ejs") %>
 </html>

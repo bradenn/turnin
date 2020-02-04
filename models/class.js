@@ -19,13 +19,13 @@ let ClassSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Assignment',
     autopopulate: true
-  }]
-
+  }],
+  code: String
 });
 
 // Load plugin to automatically populate nested queries
 ClassSchema.plugin(autopopulate);
 
-var Class = mongoose.model('Class', ClassSchema);
+let Class = mongoose.model('Class', ClassSchema);
 
 module.exports = Class;

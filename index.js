@@ -7,7 +7,7 @@ let session = require('express-session');
 let MongoStore = require('connect-mongo')(session);
 var favicon = require('serve-favicon');
 
-//app.use(favicon(__dirname + '/public/images/favicon.ico'));
+app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 //connect to MongoDB
 mongoose.connect(config.mongourl, { useNewUrlParser: true, useUnifiedTopology: true });

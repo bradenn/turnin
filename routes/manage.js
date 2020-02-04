@@ -1,4 +1,4 @@
-var router = require('express').Router();
+let router = require('express').Router();
 let User = require('../models/user');
 let Class = require('../models/class');
 
@@ -22,11 +22,13 @@ router.get('/', function(req, res, next) {
 router.post('/new/class', function(req, res, next) {
   User.findById(req.session.userId, function(err, user) {
     if (user != null && user.type > 0) {
-      var classData = {
-        name: req.body.classname,
-        section: req.body.classsection,
-        instructor: user._id
-      }
+      console.log(req.body);
+      let classData = {
+        name: req.body.name,
+        section: req.body.section,
+        instructor: user._id,
+        code: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
+      };
       Class.create(classData, function(error, clas) {
         if (error) {
           res.send("Whoopsies... Get braden.. or try again..");

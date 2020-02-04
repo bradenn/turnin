@@ -8,6 +8,10 @@
 
         <div class="col-12">
             <h1>Dashboard</h1>
+            <div class="d-flex flex-row justify-content-between align-items-center">
+                <span class="sub-header"><%= (user.classes.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${user.classes.length} class${ (user.classes.length === 1)?"":"es" }.` %></span>
+                <a class="d-inline-block btn btn-primary btn-sm float-right mr-1" data-toggle="modal" href="#joinClass">Enroll in class</a>
+            </div>
             <hr>
             <h4>Current Assignments</h4>
             <table class="table table-bordered">
@@ -22,77 +26,118 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% user.classes.forEach(function(clas){ clas.assignments.forEach(function(assignment){
+                <% user.classes.forEach(clas => {
+                    let assignments = clas.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) > 0);
+                assignments.forEach(assignment => {
                     let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
                 %>
                 <tr>
                     <td><%= clas.name %>.<%= clas.section %></td>
                     <td><%= assignment.name %></td>
-                    <td><%= new Date(assignment.duedate).toDateString() %></td>
-                    <td><%= new Date(assignment.late).toDateString() %></td>
+                    <td><%= new Date(assignment.duedate).toLocaleDateString() %>
+                        <br>(<%= timeTill(new Date(assignment.duedate)) %>)
+                    </td>
+                    <td><%= new Date(assignment.late).toLocaleDateString() %>
+                        <br>(<%= timeTill(new Date(assignment.late)) %>)
+                    </td>
                     <td style="max-width: 20vw;">
-                        <% attempts.forEach(attempt => {
-                        let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                        %>
+                        <div class="">
+                            <% attempts.reverse().forEach(attempt => {
+                                let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                            %>
                             <a href="/response/<%= attempt._id %>" class="no-bs">
-                                <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9)?"0":"" %><%= index %>
+                                <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9) ? "0" : "" %><%= index %>
                                     <% attempt.outputs.forEach(tst => { %>
                                         <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
                                     <% }) %>
                                 </span>
                             </a>
-                        <% }); %>
+                            <% }); %>
+                        </div>
                     </td>
                     <td><a href="/submit/<%= assignment._id %>" class="btn btn-primary btn-sm">Submit</a></td>
-                    <% }); }); %>
+                    <% }); %>
+                    <% if(assignments.length === 0){ %>
+                        <td>You have no assignments.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    <% } }); if(user.classes.length === 0){ %>
+                        <td>You have no classes.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    <% } %>
                 </tr>
                 </tbody>
             </table>
 
         </div>
-        <div class="col-6 mt-5">
-            <h4 class="d-inline-block">Classes</h4>
-            <div class="dropdown d-inline-block float-right">
-                <a href="#" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true"
-                   aria-expanded="false" id="dropdownNewClass">Join Class</a>
-                <form class="dropdown-menu p-4" style="min-width:256px !important;" action="/join" method="post"
-                      aria-labelledby="dropdownNewClass">
-                    <div class="form-group">
-                        <label for="className">Class</label>
-                        <select class="form-control" id="classInput" name="classInput">
-                            <% if(typeof allClasses != 'undefined'){ allClasses.forEach(function(clas){ %>
-                                <option value="<%= clas._id %>"><%= clas.name %></option>
-                            <% }); } %>
-
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Join Class</button>
-                </form>
-            </div>
+        <div class="col-12">
+            <h4>Past Assignments</h4>
             <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>
                     <th scope="col">Class</th>
-                    <th scope="col">Instructor</th>
-                    <th scope="col">Assignments</th>
+                    <th scope="col">Assignment</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Cutoff</th>
+                    <th scope="col">Attempts</th>
+                    <th scope="col">Options</th>
                 </tr>
                 </thead>
                 <tbody>
-                <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
+                <% user.classes.forEach(clas => {
+                    let assignments = clas.assignments.filter((assignment) => assignment.assigned && (new Date() - new Date(assignment.late)) > 0);
+                assignments.forEach(assignment => {
+                    let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
+                %>
                 <tr>
-
                     <td><%= clas.name %>.<%= clas.section %></td>
-                    <td><%= clas.instructor.firstname %> <%= clas.instructor.lastname %></td>
-                    <td><%= clas.assignments.length %></td>
-                    <% }); }else{ %>
-                        <td>No assignments</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                    <td><%= assignment.name %></td>
+                    <td><%= new Date(assignment.duedate).toLocaleDateString() %>
+                        <br>(<%= timeSince(new Date(assignment.duedate)) %> ago)
+                    </td>
+                    <td><%= new Date(assignment.late).toLocaleDateString() %>
+                        <br>(<%= timeSince(new Date(assignment.late)) %> ago)
+                    </td>
+                    <td style="max-width: 20vw;">
+                        <% attempts.forEach(attempt => {
+                            let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                        %>
+                        <a href="/response/<%= attempt._id %>" class="no-bs">
+                                <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9) ? "0" : "" %><%= index %>
+                                    <% attempt.outputs.forEach(tst => { %>
+                                        <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
+                                    <% }) %>
+                                </span>
+                        </a>
+                        <% }); %>
+                    </td>
 
+                    <td><a href="/submit/<%= assignment._id %>" class="btn btn-primary btn-sm">Submit</a></td>
+                    <% }); %>
+                    <% if(assignments.length === 0){ %>
+                        <td>You have no assignments.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    <% } }); %>
+                    <% if(user.classes.length === 0){ %>
+                        <td>You have no classes.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    <% } %>
                 </tr>
-                <% } %>
-
                 </tbody>
             </table>
 
@@ -100,10 +145,58 @@
     </div>
 </div>
 </body>
-
+<div id="joinClass" class="modal fade">
+    <div class="modal-dialog modal-login">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Join Class</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <form action="/join" method="post">
+                <div class="modal-body">
+                    <div class="input-group input-group">
+                        <input type="text" class="form-control" name="code" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Class Code">
+                        <div class="input-group-append">
+                            <input type="submit" class="btn btn-primary pull-right" value="Enroll">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<%- include("partials/footer.ejs") %>
 </html>
 
 <%
+function timeTill(date) {
+
+    var seconds = Math.floor((date - new Date()) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+
 function timeSince(date) {
 
     var seconds = Math.floor((new Date() - date) / 1000);
