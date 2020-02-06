@@ -21,7 +21,7 @@ let UserSchema = new mongoose.Schema({
   },
   classes: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Class',
+    ref: 'Course',
     autopopulate: true
   }],
   firstname: String,

@@ -1,4 +1,5 @@
-<html>
+<!doctype html>
+<html lang="en">
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
 
@@ -7,11 +8,10 @@
     <div class="row">
         <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
         <div class="col-12">
-            <h1>Classes</h1>
-
+            <h1>Courses</h1>
             <div class="d-flex flex-row justify-content-between">
                 <span class="sub-header">Instructor <%= user.firstname %> <%= user.lastname %></span>
-                <a class="btn btn-primary btn-sm" data-toggle="modal" href="#newClass">New Class</a>
+                <a class="btn btn-primary btn-sm" data-toggle="modal" href="#newClass">New Course</a>
             </div>
             <hr>
             <table class="table table-bordered">
@@ -24,27 +24,20 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
+                <% courses.forEach(function(course){ %>
                 <tr>
-                    <td><%= clas.name %></td>
-                    <td><%= clas.code %></td>
-                    <td><%= clas.students.length %> Students</td>
+                    <td><%= course.name %></td>
+                    <td><%= course.code %></td>
+                    <td><%= course.students.length %> Students</td>
                     <td>
-                        <% clas.assignments.forEach(assignment => { %>
-                           <a href="/assignments/grades/<%= assignment._id %>"><span class="badge badge-dark"><%= assignment.name %></span></a>
+                        <% course.assignments.forEach(assignment => { %>
+                            <a href="/assignments/grades/<%= assignment._id %>"><span
+                                        class="badge badge-dark"><%= assignment.name %></span></a>
                         <% }); %>
                     </td>
-                    <% }); } if(classes.length === 0){ %>
-                        <td>No classes</td>
-                        <td></td>
-                        <td></td>
-
-                </tr>
-                <% } %>
-
+                    <% }); %>
                 </tbody>
             </table>
-
         </div>
     </div>
 </div>
@@ -53,10 +46,10 @@
     <div class="modal-dialog modal-login">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">New Class</h4>
+                <h4 class="modal-title">New Course</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
-            <form action="/manage/new/class" method="post">
+            <form action="/courses" method="post">
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Name</label>
@@ -68,7 +61,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary pull-right" value="Create Class">
+                    <input type="submit" class="btn btn-primary pull-right" value="Create Course">
                 </div>
             </form>
         </div>

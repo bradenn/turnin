@@ -1,5 +1,26 @@
 let User = require('../models/user');
 
+let getUser = (req, res, next) => {
+    if (req.session.userId) {
+        User.findById(req.session.userId, (err, user) => {
+            if (user && !err) {
+                req.user = user;
+            } else {
+                next(new Error("User not found"));
+                return;
+            }
+            next();
+        });
+    } else {
+        next();
+    }
+};
+
+let authenticateUser = (user) => {
+    return (user == null || user.type < 1);
+};
+
+
 let getRouteWithUser = (route, router, cb) => {
     router.get(route, (req, res) => {
         User.findById(req.session.userId, (err, user) => {
@@ -51,7 +72,7 @@ let unpackTar = (file, original, cb) => {
         file: file,
         cwd: `${process.cwd()}/cache/`
     }, [original], err => {
-        if(err) cb(err, null);
+        if (err) cb(err, null);
         fs.readdir(`${process.cwd()}/cache/${original.replace(".tar", "")}/tests`, (err, files) => {
             let regex = new RegExp(`^((?!\.\_).)*$`);
             let testFiles = files.filter((file) => regex.exec(file));
@@ -94,6 +115,8 @@ module.exports.readFile = readFile;
 module.exports.getRouteWithUser = getRouteWithUser;
 module.exports.postRouteWithUser = postRouteWithUser;
 module.exports.unpackTar = unpackTar;
+module.exports.getUser = getUser;
+module.exports.authenticateUser = authenticateUser;
 module.exports.postRouteWithUserAndFile = postRouteWithUserAndFile;
 module.exports.postRouteWithUserAndFiles = postRouteWithUserAndFiles;
 module.exports.postRouteWithUserAndTar = postRouteWithUserAndTar;

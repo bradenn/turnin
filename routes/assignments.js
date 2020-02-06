@@ -1,6 +1,6 @@
 var router = require('express').Router();
 let User = require('../models/user');
-let Class = require('../models/class');
+let Class = require('../models/course');
 let Test = require('../models/test');
 let Assignment = require('../models/assignment');
 let Output = require('../models/output');

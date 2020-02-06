@@ -13,8 +13,8 @@
       "route": "./register.js"
     },
     {
-      "url": "/manage",
-      "route": "./manage.js"
+      "url": "/courses",
+      "route": "./course.js"
     },
     {
       "url": "/assignments",
