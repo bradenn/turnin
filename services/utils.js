@@ -37,9 +37,9 @@ let postRouteWithUserAndFiles = (route, router, cb) => {
     });
 };
 let postRouteWithUserAndTar = (route, router, cb) => {
-    router.post(route, tarF.any(), (req, res) => {
+    router.post(route, tarF.any(), (req, res, next) => {
         User.findById(req.session.userId, (err, user) => {
-            cb(req, res, user);
+            cb(req, res, next, user);
         });
     });
 };
@@ -50,7 +50,8 @@ let unpackTar = (file, original, cb) => {
     tar.extract({
         file: file,
         cwd: `${process.cwd()}/cache/`
-    }).then((e) => {
+    }, [original], err => {
+        if(err) cb(err, null);
         fs.readdir(`${process.cwd()}/cache/${original.replace(".tar", "")}/tests`, (err, files) => {
             let regex = new RegExp(`^((?!\.\_).)*$`);
             let testFiles = files.filter((file) => regex.exec(file));
@@ -67,8 +68,7 @@ let unpackTar = (file, original, cb) => {
                     tests.push({name: file.split(".")[0], files: [file]});
                 }
             });
-            console.log(tests);
-            cb(tests);
+            cb(null, tests);
         });
     });
 };

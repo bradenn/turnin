@@ -12,6 +12,18 @@
             <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
 
             <hr>
+            <% if(error != null){ %>
+                <div class="alert alert-danger border-danger" role="alert">
+                    <% if(error === "TAR_BAD_ARCHIVE"){ %>
+                        <a href="/assignments/edit/<%= assignment._id %>" class="no-bs">
+                            <div class="d-flex justify-content-between">
+                                <span><strong>Upload Failed</strong> The file you upload was not a valid tar file...</span>
+                                <span>Click to close this warning</span>
+                            </div>
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
             <h4 class="d-inline-block">Tests</h4>
             <a class="d-inline-block btn btn-primary btn-sm float-right" data-toggle="modal"
                href="#newtest">Add Test</a>

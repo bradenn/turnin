@@ -55,7 +55,7 @@ router.get('/edit/:assignment', function (req, res, next) {
     User.findById(req.session.userId, function (userError, user) {
         Assignment.findById(req.params.assignment, function (err, assignment) {
             Output.find({test: {$in: assignment.tests.map((test) => test._id)}}, function (err, outputs) {
-                res.render('assignment', {user: user, assignment: assignment, outputs: outputs});
+                res.render('assignment', {user: user, assignment: assignment, outputs: outputs, error: req.query.error});
             });
         }).populate("tests");
     });
@@ -105,12 +105,15 @@ utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, us
 
 let tar = require('tar-stream');
 let fs = require("fs");
-utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, res, user) {
+utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, res, next, user) {
     Assignment.findById(req.params.assignment, function (err, assignment) {
-        utils.unpackTar("./uploads/" + req.files[0].filename, req.files[0].originalname, (e) => {
+        utils.unpackTar("./uploads/" + req.files[0].filename, req.files[0].originalname, (error, files) => {
+            if(error){
+                res.redirect(req.get('referer')+"?error="+error.code);
+            }
             let formattedData = [];
             // {name: 't00', files: [{name: "t01.in", lines: [""]}]}
-            e.forEach(test => {
+            files.forEach(test => {
                 let inputs = [];
                 let outputs = [];
                 let errors = [];
