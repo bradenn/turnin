@@ -5,8 +5,8 @@
 <body>
 <div class="container">
     <div class="row">
-        <a href="/assignments"><i class="fas fa-chevron-left"></i> Assignments</a>
         <div class="col-12">
+        <a href="/assignments"><i class="fas fa-chevron-left"></i> Assignments</a>
 
             <h1>New Assignment</h1>
             <hr>
@@ -21,8 +21,8 @@
                 <div class="form-group">
                     <label>Course</label>
                     <select class="form-control" name="assignmentClass">
-                        <% classes.forEach(function(classObject){ %>
-                            <option value="<%= classObject._id %>"><%= classObject.name %></option>
+                        <% courses.forEach(function(course){ %>
+                            <option value="<%= course._id %>"><%= course.name %></option>
                         <% }); %>
                     </select>
                 </div>

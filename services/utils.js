@@ -71,7 +71,7 @@ let unpackTar = (file, original, cb) => {
     tar.extract({
         file: file,
         cwd: `${process.cwd()}/cache/`
-    }, [original], err => {
+    }, err => {
         if (err) cb(err, null);
         fs.readdir(`${process.cwd()}/cache/${original.replace(".tar", "")}/tests`, (err, files) => {
             let regex = new RegExp(`^((?!\.\_).)*$`);

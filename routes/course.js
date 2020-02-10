@@ -25,14 +25,16 @@ router.post('/', async (req, res, next) => {
 });
 
 router.get('/:course', async (req, res, next) => {
-    let user = await User.findById(req.session.userId).exec();
-    if (utils.authenticateUser(user)) return res.redirect("/");
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
     let course = await Course.findById(req.params.course).exec();
-    res.render("course", {user: user, course: course});
+    res.render("course", {user: req.user, course: course});
 });
 
-router.put('/:course', async (req, res, next) => {
-
+router.get('/:course/delete', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    let course = await Course.deleteOne({_id: req.params.course}).then();
+    let courses = await Course.find({instructor: req.session.userId}).exec();
+    res.render("courses", {user: req.user, courses: courses, status: "removed class"});
 });
 
 router.delete('/:course', async (req, res, next) => {

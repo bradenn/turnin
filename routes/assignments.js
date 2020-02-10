@@ -1,78 +1,107 @@
-var router = require('express').Router();
+let router = require('express').Router();
 let User = require('../models/user');
-let Class = require('../models/course');
+let Course = require('../models/course');
 let Test = require('../models/test');
 let Assignment = require('../models/assignment');
 let Output = require('../models/output');
+let Result = require('../models/result');
+let utils = require('../services/utils');
+let File = require('../models/file');
 
-
-// Handle /assignments requests
-router.get('/', function (req, res, next) {
-    // Query USER, CLASS, and ASSIGNMENTS
-    User.findById(req.session.userId, function (userError, user) {
-        Class.find({
-            instructor: req.session.userId
-        }, function (classError, classes) {
-            // Check user status
-            if (user != null && user.type > 0) {
-                // Render assignments page
-                res.render("assignments", {
-                    user: user,
-                    classes: classes
-                });
-            } else {
-                // to login if user isnt logged in or allowed
-                res.redirect("/login");
-            }
-        });
-    });
+router.get('/', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    let courses = await Course.find({instructor: req.user._id}).exec();
+    res.render("assignments", {user: req.user, courses: courses});
 });
 
-// Handle requests for creating a new assignment
-router.get('/new', function (req, res, next) {
-    // Query USER primaily to check permissions
-    User.findById(req.session.userId, function (userError, user) {
-        // Query for all classes taught by said instructor
-        Class.find({
-            instructor: req.session.userId
-        }, function (classError, classes) {
-            // Check to see if the user is allowed to make a new assignment
-            if (user != null && user.type > 0) {
-                // Render new assignment page with relivant data
-                res.render("newassignment", {
-                    user: user,
-                    classes: classes
-                });
-            } else {
-                // to login if not logged in or allowed
-                res.redirect("/login");
-            }
-        });
-    });
+router.get('/new', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    let courses = await Course.find({instructor: req.user._id}).exec();
+    res.render("newassignment", {user: req.user, courses: courses});
 });
 
-router.get('/edit/:assignment', function (req, res, next) {
+router.get('/:assignment', function (req, res, next) {
     User.findById(req.session.userId, function (userError, user) {
         Assignment.findById(req.params.assignment, function (err, assignment) {
             Output.find({test: {$in: assignment.tests.map((test) => test._id)}}, function (err, outputs) {
-                res.render('assignment', {user: user, assignment: assignment, outputs: outputs, error: req.query.error});
+                res.render('assignment', {
+                    user: user,
+                    assignment: assignment,
+                    outputs: outputs,
+                    back: req.back,
+                    error: req.query.error
+                });
             });
-        }).populate("tests");
+        }).populate("tests").populate("shared_files", "name");
+    });
+});
+
+router.get('/:assignment/delete', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    let assignment = await Assignment.findOne({_id: req.params.assignment}).exec();
+    Test.deleteMany({_id: {$in: assignment.tests.map(test => test._id)}}, (err) => {
+        File.deleteMany({_id: {$in: assignment.shared_files}}, (err) => {
+            Output.deleteMany({_id: {$in: assignment.responses.outputs}}, (err) => {
+                File.deleteMany({_id: {$in: assignment.responses.files}}, (err) => {
+                    Result.deleteMany({_id: {$in: assignment.responses}}, (err) => {
+                        Assignment.deleteOne({_id: req.params.assignment}, (err) => {
+                            res.redirect("/assignments");
+                        });
+                    });
+                });
+            });
+        });
     });
 });
 
 router.get('/grades/:assignment', function (req, res) {
     User.findById(req.session.userId, function (userError, user) {
         Assignment.findById(req.params.assignment, function (err, assignment) {
-            Class.findOne({assignments: assignment._id}, function (err, lecture) {
-                res.render('grades', {user: user, assignment: assignment, students: lecture.students, lecture: lecture});
+            Course.findOne({assignments: assignment._id}, function (err, course) {
+                res.render('grades', {
+                    user: user,
+                    assignment: assignment,
+                    students: course.students,
+                    course: course,
+                    back: req.back
+                });
             }).populate("students");
         }).populate("responses");
     });
 });
 
-let utils = require('../services/utils');
+router.get('/edit/:assignment/file/remove/:file', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    Assignment.findOneAndUpdate({_id: req.params.assignment}, {$pullAll: {shared_files: [req.params.file]}}, (err, assignment) => {
+        File.findOneAndDelete({_id: req.params.file}, (err, file) => {
+            res.redirect("back");
+        });
+    });
+});
 
+utils.postRouteWithUserAndFiles('/edit/:assignment/file/add', router, (req, res, user) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    Assignment.findById(req.params.assignment, function (err, assignment) {
+        let dbFiles = [];
+        for (let i = 0; i < req.files.length; i++) {
+            dbFiles.push({
+                name: req.files[i].originalname,
+                date: new Date(),
+                student: user._id,
+                content: String(req.files[i].buffer).split("\n")
+            });
+        }
+
+        File.create(dbFiles, (err, filesM) => {
+            filesM.forEach((file) => assignment.shared_files.push(file._id));
+            assignment.save((err, assignment) => {
+                res.redirect("back");
+            });
+        });
+
+    });
+
+});
 
 utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (req, res, user) {
     Assignment.findById(req.params.assignment, function (err, assignment) {
@@ -94,7 +123,7 @@ utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (re
 
 utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, user) => {
     Assignment.findById(req.params.assignment, function (err, assignment) {
-        if(user.type >= 1){
+        if (user.type >= 1) {
             assignment.assigned = req.params.assign;
             assignment.save((err, assignment) => {
                 res.redirect(req.get('referer'));
@@ -108,8 +137,8 @@ let fs = require("fs");
 utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, res, next, user) {
     Assignment.findById(req.params.assignment, function (err, assignment) {
         utils.unpackTar("./uploads/" + req.files[0].filename, req.files[0].originalname, (error, files) => {
-            if(error){
-                res.redirect(req.get('referer')+"?error="+error.code);
+            if (error) {
+                res.redirect(req.get('referer') + "?error=" + error.code);
             }
             let formattedData = [];
             // {name: 't00', files: [{name: "t01.in", lines: [""]}]}
@@ -151,7 +180,6 @@ utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, re
                 });
             });
             Test.create(formattedData, (err, tests) => {
-                console.log(tests);
                 tests.forEach(test => assignment.tests.push(test._id));
                 assignment.save((err, save) => {
                     res.redirect(req.get('referer'));
@@ -166,7 +194,7 @@ router.post('/new', function (req, res, next) {
     // Query USER primaily to check permissions
     User.findById(req.session.userId, function (userError, user) {
         // Query for all classes taught by said instructor
-        Class.findById(req.body.assignmentClass, function (classError, classes) {
+        Course.findById(req.body.assignmentClass, function (classError, classes) {
             // Check to see if the usconsole.log(classError);
             if (user != null && user.type > 0) {
                 let e = {
@@ -181,7 +209,7 @@ router.post('/new', function (req, res, next) {
                     classes.assignments.push(assignment);
                     classes.save((err, classes) => {
 
-                        res.redirect('/assignments/edit/' + assignment._id);
+                        res.redirect('/assignments/' + assignment._id);
                     });
 
                 });

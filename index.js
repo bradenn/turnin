@@ -6,11 +6,13 @@ let mongoose = require('mongoose');
 let session = require('express-session');
 let MongoStore = require('connect-mongo')(session);
 var favicon = require('serve-favicon');
+let User = require('./models/user');
+
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 //connect to MongoDB
-mongoose.connect(config.mongourl, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(config.mongourl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 var db = mongoose.connection;
 mongoose.set('useCreateIndex', true);
 //handle mongo error
@@ -38,7 +40,16 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
 // include routes
-var routes = require('./routes/');
+let routes = require('./routes/');
+
+app.use((req, res, next) => {
+  User.findById(req.session.userId, (err, user) => {
+    if(err || !user) next();
+    req.back = req.get("referer");
+    req.user = user;
+    next();
+  });
+});
 
 app.use('/', routes);
 

@@ -1,9 +1,7 @@
 const config = require("../config.json");
 let crypto = require('crypto');
 let mongoose = require('mongoose');
-let autopopulate = require('mongoose-autopopulate');
 
-// Define schema for `user` database collection
 let UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -19,10 +17,9 @@ let UserSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  classes: [{
+  courses: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course',
-    autopopulate: true
+    ref: 'Course'
   }],
   firstname: String,
   lastname: String,
@@ -30,10 +27,6 @@ let UserSchema = new mongoose.Schema({
   date: String
 });
 
-// Load plugin to automatically populate nested queries
-UserSchema.plugin(autopopulate);
-
-// Handle Authentication by verifying password hash
 UserSchema.statics.authenticate = function(username, password, callback) {
   User.findOne({ "username" : { $regex : new RegExp(username, "i") } })
     .exec(function(err, user) {

@@ -9,6 +9,10 @@ let AssignmentSchema = new mongoose.Schema({
     ref: 'Test',
     autopopulate: 1
   }],
+  shared_files: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'File'
+  }],
   responses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Result',

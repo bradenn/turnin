@@ -7,18 +7,16 @@ let CourseSchema = new mongoose.Schema({
     section: Number,
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        autopopulate: 1
+        ref: 'User'
     },
     students: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        autopopulate: false
+        ref: 'User'
     }],
     assignments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Assignment',
-        autopopulate: true
+        autopopulate: 1
     }],
     code: String
 });

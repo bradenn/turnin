@@ -25,6 +25,14 @@
       "route": "./response.js"
     },
     {
+      "url": "/test",
+      "route": "./test.js"
+    },
+    {
+      "url": "/file",
+      "route": "./file.js"
+    },
+    {
       "url": "/submit",
       "route": "./submit.js"
     }

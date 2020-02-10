@@ -34,7 +34,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                 });
                 files.push({name: assignment.files[i], contents: String(req.files[i].buffer).split("\n")});
             }
-
+            assignment.shared_files.forEach(file => files.push({name: file.name, contents: file.content}));
             File.create(dbFiles, (err, filesM) => {
                 let tests = [];
                 assignment.tests.forEach((test) => {

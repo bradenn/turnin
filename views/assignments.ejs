@@ -1,58 +1,73 @@
-<html>
+<!doctype html>
+<html lang="en">
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
 
 <body>
 <div class="container">
+    <%
+    let buttons = [` <a href="/assignments/new" class=""><i class="fas fa-plus"></i>&nbsp;New Assignment</a>`]
+    %>
+    <%- include("partials/title.ejs", {title: "Assignments", subtitle: courses.map(course => course.assignments.length).reduce((a, b) => a + b) + ` assignments in ${courses.length} classes`,
+    buttons: buttons, backName: "Home", backLink: "/"}) %>
+
     <div class="row">
 
-        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
         <div class="col-12">
-            <h1>Assignments</h1>
-            <div class="d-flex flex-row justify-content-between">
-                <span class="sub-header">All active assignments</span>
-                <a href="/assignments/new" class="btn btn-primary btn-sm">New Assignment</a>
-            </div>
-            <hr>
-            <% if(typeof classes != 'undefined'){ classes.forEach(function(clas){ %>
-                <h3><%= clas.name %>.<%= clas.section %></h3>
-                <table class="table table-bordered">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Required Files</th>
-                        <th scope="col">Tests</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% if(typeof clas.assignments != 'undefined'){ clas.assignments.forEach(function(assignment){ %>
+            <% courses.forEach((course) => { %>
+                <h3><%= course.name %>.<%= course.section %></h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                            <td><%= assignment.name %></td>
-                            <td><%= assignment.files %></td>
-                            <td><%= assignment.tests.map(test => test.name).join(", ") %></td>
-                            <td>
-                                <div>
-                                    <div>
-
-                                        <a href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"
-                                           class="btn btn-primary btn-sm"><%= (assignment.assigned) ? "Unassign" : "Assign" %></a>
-                                        <a href="/assignments/grades/<%= assignment._id %>"
-                                           class="btn btn-primary btn-sm">Grades</a>
-                                        <a href="/assignments/edit/<%= assignment._id %>"
-                                           class="btn btn-primary btn-sm">Edit Assignment</a>
-                                    </div>
-                                </div>
-                            </td>
+                            <th scope="col">Name</th>
+                            <th scope="col" class="text-center" style="width: 1em;">Status</th>
+                            <th scope="col">Due Date</th>
+                            <th scope="col" nowrap>Late Due Date</th>
+                            <th scope="col">Submissions</th>
+                            <th scope="col">Required Files</th>
+                            <th scope="col">Tests</th>
+                            <th scope="col" style="width: 1em;"><i class="fas fa-pencil-alt"></i></th>
                         </tr>
-                    <% }); } %>
-                    </tbody>
-                </table>
-                <hr>
-            <% }); }else{ %>
-
-            <% } %>
-
+                        </thead>
+                        <tbody>
+                        <% course.assignments.forEach(function(assignment){ %>
+                            <tr>
+                                <td nowrap><a href="/assignments/<%= assignment._id %>"><%= assignment.name %></a></td>
+                                <td class="text-center" nowrap>
+                                    <strong><%= (assignment.assigned) ? "Assigned" : "Draft" %></strong></td>
+                                <td nowrap><%= assignment.duedate %></td>
+                                <td><%= assignment.late %></td>
+                                <td><%= assignment.responses.length %></td>
+                                <td><%= assignment.files.join(", "); %></td>
+                                <td><%- assignment.tests.map(test => `<a href="/test/${test._id}">${test.name}</a>`).join(", ") %></td>
+                                <td>
+                                    <div class="dropdown text-center">
+                                        <a class="" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                                           aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-left"
+                                             aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item"
+                                               href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"><i
+                                                        class="fas fa-external-link-alt"></i>&nbsp;<%= (assignment.assigned) ? "Unassign" : "Assign" %>
+                                            </a>
+                                            <a class="dropdown-item" href="/assignments/grades/<%= assignment._id %>"><i
+                                                        class="fas fa-user-edit"></i>&nbsp;Grades</a>
+                                            <a class="dropdown-item" href="/assignments/<%= assignment._id %>"><i
+                                                        class="fas fa-edit"></i>&nbsp;Edit Assignment</a>
+                                            <a class="dropdown-item" href="/assignments/<%= assignment._id %>/delete"><i
+                                                        class="fas fa-trash-alt"></i>&nbsp;Delete</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% }); %>
         </div>
     </div>
 </div>

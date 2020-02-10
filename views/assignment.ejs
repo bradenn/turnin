@@ -1,17 +1,17 @@
-<html>
+<!doctype html>
+<html lang="en">
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
 
 <body>
 <div class="container">
+    <%
+    let buttons = [`<a href="/assignments/grades/${assignment._id}">View Grades</a>`]
+    %>
+    <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<strong>Due:</strong> ${ new Date(assignment.duedate).toDateString() }&nbsp; <strong>Late:</strong> ${ new Date(assignment.late).toDateString() }`,
+    buttons: buttons, backName: "Assignments", backLink: "/assignments"}) %>
     <div class="row">
-        <a href="/assignments"><i class="fas fa-chevron-left"></i> Assignments</a>
         <div class="col-12">
-
-            <h1><%= assignment.name %></h1>
-            <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
-
-            <hr>
             <% if(error != null){ %>
                 <div class="alert alert-danger border-danger" role="alert">
                     <% if(error === "TAR_BAD_ARCHIVE"){ %>
@@ -24,38 +24,87 @@
                     <% } %>
                 </div>
             <% } %>
-            <h4 class="d-inline-block">Tests</h4>
-            <a class="d-inline-block btn btn-primary btn-sm float-right" data-toggle="modal"
-               href="#newtest">Add Test</a>
-            <a class="d-inline-block btn btn-primary btn-sm float-right mr-1" data-toggle="modal"
-               href="#newtar">Add Tests (tarball)</a>
-            <table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Inputs</th>
-                    <th scope="col">Outputs</th>
-                    <th scope="col">Errors</th>
-                    <th scope="col">Exit</th>
-                    <th scope="col">Options</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% assignment.tests.forEach(function(test){
-                %>
-                    <tr>
-                        <td><%= test.name %></td>
-                        <td><%= test.inputs.length %> inputs</td>
-                        <td><%= test.outputs.length %> outputs</td>
-                        <td><%= test.error.length %> errors</td>
-                        <td><%= test.code %> exit</td>
-                        <td><a href="/assignments/edit/<%= assignment._id %>" class="btn btn-primary btn-sm">Remove</a>
-                        </td>
-                    </tr>
-                <% }); %>
+            <div class="d-flex justify-content-between">
+                <h4 class="">Files</h4>
+                <form action="/assignments/edit/<%= assignment._id %>/file/add" method="post"
+                      enctype="multipart/form-data">
+                    <div class="input-group mb-2">
+                        <div class="custom-file mr-1">
+                            <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
+                            <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
+                                file... (*.*)</label>
+                        </div>
+                        <input type="submit" class="btn btn-primary btn-sm" value="Add Files">
+                    </div>
+                </form>
+            </div>
 
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="">
+                    <tr>
+                        <th scope="col">Filename</th>
+                        <th scope="col" style="width: 1em;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% assignment.shared_files.forEach(shared_file => {
+                    %>
+                        <tr>
+                            <td><a href="/file/<%= shared_file._id %>"><%= shared_file.name %></a></td>
+                            <td><a href="/assignments/edit/<%= assignment._id %>/file/remove/<%= shared_file._id %>">Remove</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    <% if(assignment.shared_files.length == 0){ %>
+                        <tr>
+                            <td>No Files</td>
+                            <td></td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between">
+                <h4 class="">Tests</h4>
+                <form action="/assignments/edit/<%= assignment._id %>/tar" method="post" enctype="multipart/form-data">
+                    <div class="input-group mb-2">
+                        <div class="custom-file mr-1">
+                            <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
+                            <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
+                                file... (*.tar)</label>
+                        </div>
+                        <input type="submit" class="btn btn-primary btn-sm" value="Add tests">
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Inputs</th>
+                        <th scope="col">Outputs</th>
+                        <th scope="col">Errors</th>
+                        <th scope="col">Exit Code</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% assignment.tests.forEach(function(test){
+                    %>
+                        <tr>
+                            <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
+                            <td><%= test.inputs.length %> inputs</td>
+                            <td><%= test.outputs.length %> outputs</td>
+                            <td><%= test.error.length %> errors</td>
+                            <td><%= test.code %></td>
+                        </tr>
+                    <% }); %>
+
+                    </tbody>
+                </table>
+            </div>
 
 
         </div>
@@ -96,29 +145,11 @@
         </div>
     </div>
 </div>
-
-<div id="newtar" class="modal fade">
-    <div class="modal-dialog modal-login">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Tarball Upload</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <form action="/assignments/edit/<%= assignment._id %>/tar" method="post" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
-                            <label class="custom-file-label" for="inputGroupFile01">*.tar</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary pull-right" value="Add tests">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <%- include("partials/footer.ejs") %>
 </html>
+
+<script>
+    $('input[type="file"]').change((e) => {
+        $('#inputGroupFile01Label').html(e.target.files[0].name);
+    });
+</script>

@@ -1,0 +1,25 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+<div class="container">
+    <%
+    let buttons = [];
+
+    %>
+    <%- include("partials/title.ejs", {title: file.name, subtitle: `<strong>Uploaded by:</strong> ${file.student.firstname} ${file.student.lastname} (${file.student.username}) : ${new Date(file.date).toLocaleString()}`,
+    buttons: buttons, backName: "Back", backLink: back}) %>
+    <div class="row">
+        <div class="col-12">
+            <div class="card p-2 pl-3">
+                <% file.content.forEach((ln) => { %>
+                    <code><%= ln %></code>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<%- include("partials/footer.ejs") %>
+</html>

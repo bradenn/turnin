@@ -1,0 +1,43 @@
+<html>
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body>
+<div class="container">
+    <%
+    let buttons = [];
+    %>
+    <%- include("partials/title.ejs", {title: test.name, subtitle: `<strong>Command:</strong> ${(!test.cmd)?'Not specified':test.cmd} <strong>Exit Code:</strong> ${test.code}`,
+    buttons: buttons, backName: "Back", backLink: back}) %>
+    <div class="row">
+        <div class="col-4">
+            <h4><%= test.name %>.in</h4>
+            <div class="card p-2 pl-3">
+                <% test.inputs.forEach((input) => { %>
+                    <code><%= input %></code>
+                <% }); %>
+            </div>
+        </div>
+        <div class="col-4">
+            <h4><%= test.name %>.out</h4>
+            <div class="card p-2 pl-3">
+
+                <% test.outputs.forEach((out) => { %>
+                    <code><%= out %></code>
+                <% }); %>
+
+            </div>
+        </div>
+        <div class="col-4">
+            <h4><%= test.name %>.err</h4>
+            <div class="card p-2 pl-3">
+                <% test.error.forEach((err) => { %>
+                    <code><%= err %></code>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<%- include("partials/footer.ejs") %>
+</html>

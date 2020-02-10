@@ -5,42 +5,47 @@
 
 <body>
 <div class="container">
+    <%
+    let buttons = [` <a class="" data-toggle="modal" href="#newClass"><i class="fas fa-plus"></i>&nbsp;New Course</a>`]
+    %>
+    <%- include("partials/title.ejs", {title: "Courses", subtitle: `Instructor ${ user.firstname } ${ user.lastname }`,
+    buttons: buttons, backName: "Home", backLink: "/"}) %>
     <div class="row">
-        <div class="col-12">
-        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
-            <h1>Courses</h1>
-            <div class="d-flex flex-row justify-content-between">
-                <span class="sub-header">Overview of your courses</span>
-                <a class="" data-toggle="modal" href="#newClass">New Course</a>
-            </div>
-            <hr>
+        <div class="col-md-12">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
-                    <thead class="">
+                    <thead>
                     <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Code</th>
+                        <th scope="col">Course / Section</th>
+                        <th scope="col" class="text-center" style="width: 1em;">Code</th>
                         <th scope="col">Students</th>
                         <th scope="col">Assignments</th>
-                        <th scope="col">Options</th>
+                        <th scope="col" style="width: 1em;"><i class="fas fa-pencil-alt"></i></th>
                     </tr>
                     </thead>
                     <tbody>
                     <% courses.forEach(function(course){ %>
                         <tr>
                             <td><%= course.name %>.<%= course.section %></td>
-                            <td><%= course.code %></td>
+                            <td class="text-center text-monospace"><span
+                                        class="text-uppercase"><strong><%= course.code %></strong></span></td>
                             <td><%= course.students.length %> Students</td>
                             <td>
-                                <% course.assignments.forEach(assignment => { %>
-                                    <a href="/assignments/grades/<%= assignment._id %>"><span
-                                                class="badge badge-dark"><%= assignment.name %></span></a>
-                                <% }); %>
-                                <%= (course.assignments.length == 0) ? "No assignments" : "" %>
+                                <%- course.assignments.map(assignment => `<a href="/assignments/${assignment._id}">${assignment.name}</a>`).join(", ") %>
                             </td>
                             <td>
-                                <a href="#" class=""><i class="fas fa-users"></i> Manage Students</a>&nbsp;
-                                <a href="#" class=""><i class="fas fa-edit"></i> Edit Course</a>
+                                <div class="dropdown text-center">
+                                    <a class="" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                                       aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="#"><i class="fas fa-users"></i> Manage
+                                            Students</a>
+                                        <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> Edit Course</a>
+                                        <a class="dropdown-item text-danger" href="/courses/<%= course._id %>/delete"><i class="fas fa-trash-alt"></i> Delete Course</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     <% }); %>

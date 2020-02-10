@@ -14,19 +14,30 @@ utils.getRouteWithUser('/grade/:response', router, (req, res, user) => {
         result.outputs.forEach((outputSchema) => {
             Output.findById(outputSchema._id, (err, out) => {
                 let diff = [];
+                let errorDiff = [];
+                for (let i = 0; i < out.stderr.length; i++) {
+                    errorDiff.push(diffJs.diffWords((out.stderr[i] !== null) ? out.stderr[i] : "", (typeof out.test != 'undefined') ? out.test.error[i] : ""));
+                }
                 for (let i = 0; i < out.output.length; i++) {
                     diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", (typeof out.test != 'undefined') ? out.test.outputs[i] : ""));
                 }
-                if (out.test) out.passed = (out.test.outputs.toString() === out.output.toString());
+                let outMatch = (out.test.outputs.toString() === out.output.toString());
+                let errMatch = (out.test.error.toString() === out.stderr.toString());
+                let exitMatch = out.code === out.test.code;
+
+                if (!outMatch) out.error_type.push('stdout');
+                if (!errMatch) out.error_type.push('stderr');
+                if (!exitMatch) out.error_type.push('exit');
+                if (out.signal === "SIGTERM") out.error_type.push('loop');
+                out.passed = outMatch && errMatch && exitMatch;
                 out.diff = JSON.stringify(diff);
+                out.error_diff = JSON.stringify(errorDiff);
                 out.save((err, o) => {
 
                 });
             });
         });
-
     });
-
     res.redirect('/response/' + req.params.response);
 });
 
@@ -34,7 +45,7 @@ utils.getRouteWithUser('/:response', router, (req, res, user) => {
     Result.findById(req.params.response, (err, result) => {
         if (result.outputs.filter((output) => (!output.passed)).length >= 1) result.passed = false;
         result.save((err, resu) => {
-            res.render("response", {user: user, result: resu});
+            res.render("response", {user: user, result: resu, back: req.back});
         });
     }).populate(["assignment", "files"]);
 });

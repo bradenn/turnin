@@ -1,57 +1,22 @@
-var router = require('express').Router();
+let router = require('express').Router();
 let User = require('../models/user');
-let Class = require('../models/course');
+let Course = require('../models/course');
 let Assignments = require('../models/assignment');
 
-// Handle root requests
-router.get('/', function (req, res, next) {
-    // Query for USER and CLASS
-    User.findById(req.session.userId, function (userError, user) {
-        // Define query for getting all classes
-        Class.find({}, function (classError, allClasses) {
-            // Check if user is not null (not logged in)
-            if (user != null) {
-                // Render home page with data
-
-                return res.render("home", {
-                    user: user,
-                    classes: user.classes,
-                    allClasses: allClasses
-                });
-            } else {
-                // Send user to login if not logged in
-                return res.redirect("/login");
-            }
-        });
+router.get('/', async (req, res, next) => {
+    if (!req.user) return res.redirect("/login");
+    let courses = await Course.find({_id: {$in: req.user.courses}});
+    return res.render("home", {
+        user: req.user,
+        courses: courses
     });
 });
 
-// Add user to class
-router.post('/join', function (req, res, next) {
-    // Query for USER and CLASS
-    User.findById(req.session.userId, function (userError, user) {
-        Class.findOne({code: req.body.code}, function (classError, classSelection) {
-            if (!classError || classSelection != null) {
-                // Add student to class
-                classSelection.students.push(user._id);
-                // Save change
-                classSelection.save(function (classSelectionOutput) {
-                    // Add class to user 'classes' array
-                    user.classes.push(classSelection._id);
-                    // Save change
-                    user.save(function (userOutput) {
-                        // Go back to form
-                        res.redirect(req.get('referer'));
-                    });
-                });
-            }else{
-              res.render("home", {
-                user: user,
-                classes: user.classes,
-                error: "Invalid class code."
-              });
-            }
-        });
+router.post('/', async (req, res, next) => {
+    let course = await Course.findOne({code: req.body.code});
+    if (!course) return res.redirect("/");
+    User.findOneAndUpdate({_id: req.user._id}, {$addToSet: {courses: course._id}}, (err, user) => {
+        return res.redirect("back")
     });
 });
 
