@@ -111,7 +111,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
         }else{
             return res.render("submit", {user: user, assignment: assignment, error: "nofile"});
         }
-    });
+    }).populate("shared_files");
 });
 
 
