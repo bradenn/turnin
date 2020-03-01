@@ -24,8 +24,8 @@ let ResultSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'File'
     }],
-    stderr: String,
-    stdout: String,
+    stderr: [String],
+    stdout: [String],
     signal: String,
     exit: Number,
     debug_server: String,

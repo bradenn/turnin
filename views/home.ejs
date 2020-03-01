@@ -17,8 +17,8 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                     <tr>
-                        <th scope="col">Course</th>
                         <th scope="col">Assignment</th>
+                        <th scope="col">Course</th>
                         <th scope="col">Due Date</th>
                         <th scope="col">Cutoff</th>
                         <th scope="col">Attempts</th>
@@ -32,8 +32,8 @@
                         let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
                     %>
                     <tr>
+                        <td><strong><%= assignment.name %></strong></td>
                         <td><%= course.name %>.<%= course.section %></td>
-                        <td><%= assignment.name %></td>
                         <td><%= new Date(assignment.duedate).toLocaleDateString() %>
                             - <%= timeTill(new Date(assignment.duedate)) %>
 
@@ -43,95 +43,24 @@
                         </td>
                         <td style="max-width: 20vw;">
                             <div class="">
-                                <% attempts.reverse().forEach(attempt => {
+                                <% let set = attempts.map(attempt => {
                                     let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                                    let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
+                                    return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                });
                                 %>
-                                <a href="/response/<%= attempt._id %>" class="no-bs">
-                                    <span class="text-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9) ? "0" : "" %><%= index %>
-
-                                    </span>
-                                </a>
-                                <% }); %>
+                                <%- set.join(", ") %>
                             </div>
                         </td>
                         <td><a href="/submit/<%= assignment._id %>" class="">Submit</a></td>
                         <% }); %>
-                        <% if(assignments.length === 0){ %>
-                            <td>You have no assignments.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        <% } }); if(courses.length === 0){ %>
+                        <% }); if(courses.length === 0){ %>
                             <td>You have no classes.</td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
-                        <% } %>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-        <div class="col-12">
-            <h4>Past Assignments</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="">
-                    <tr>
-                        <th scope="col">Course</th>
-                        <th scope="col">Assignment</th>
-                        <th scope="col">Due Date</th>
-                        <th scope="col">Cutoff</th>
-                        <th scope="col">Attempts</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% courses.forEach(course => {
-                        let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date() - new Date(assignment.late)) > 0);
-                    assignments.forEach(assignment => {
-                        let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
-                    %>
-                    <tr>
-                        <td><%= course.name %>.<%= course.section %></td>
-                        <td><%= assignment.name %></td>
-                        <td><%= new Date(assignment.duedate).toLocaleDateString() %>
-                            <br>(<%= timeSince(new Date(assignment.duedate)) %> ago)
-                        </td>
-                        <td><%= new Date(assignment.late).toLocaleDateString() %>
-                            <br>(<%= timeSince(new Date(assignment.late)) %> ago)
-                        </td>
-                        <td style="max-width: 20vw;">
-                            <% attempts.forEach(attempt => {
-                                let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                            %>
-                            <a href="/response/<%= attempt._id %>" class="no-bs">
-                                <span class="text-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9) ? "0" : "" %><%= index %>
-                                </span>
-                            </a>
-                            <% }); %>
-                        </td>
-
-                        <% }); %>
-                        <% if(assignments.length === 0){ %>
-                            <td>You have no past assignments.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
-                        <% } }); %>
-                        <% if(courses.length === 0){ %>
-                            <td>You have no classes.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
                         <% } %>
                     </tr>
                     </tbody>

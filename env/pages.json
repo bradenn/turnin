@@ -29,6 +29,10 @@
       "route": "./test.js"
     },
     {
+      "url": "/manage",
+      "route": "./manage.js"
+    },
+    {
       "url": "/file",
       "route": "./file.js"
     },

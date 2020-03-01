@@ -1,7 +1,6 @@
 let mongoose = require('mongoose');
 let autopopulate = require('mongoose-autopopulate');
 
-// Define schema for `Output` database collection
 let OutputSchema = new mongoose.Schema({
     test: {
         type: mongoose.Schema.Types.ObjectId,
@@ -11,7 +10,7 @@ let OutputSchema = new mongoose.Schema({
     signal: String,
     stderr: [String],
     stdout: [String],
-    code: String,
+    exit: Number,
     message: String,
     passed: Boolean,
     diff: String,
@@ -21,10 +20,7 @@ let OutputSchema = new mongoose.Schema({
         enum: ['stdout', 'stderr', 'exit', 'loop', 'none'],
         default: 'none'
     }],
-    output: {
-        type: [String],
-        default: [""]
-    }
+    output: [String]
 });
 
 // Load plugin to automatically populate nested queries

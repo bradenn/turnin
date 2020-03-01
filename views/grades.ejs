@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
 
@@ -38,21 +39,17 @@
                         <td><%= student.firstname %> <%= student.lastname %></td>
                         <td><%= student.username %></td>
                         <td><%= attempts.length %></td>
-                        <td>
-                            <% attempts.forEach(attempt => {
-                                let diff = attempt.outputs.filter(output => output.passed).length;
-                                let total = attempt.outputs;
-                                let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                            %>
-                            <a href="/response/<%= attempt._id %>">
-                            <span class="badge badge-<%= (attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger' %>">Attempt <%= (index <= 9) ? "0" : "" %><%= index %>
-                                <% attempt.outputs.forEach(tst => { %>
-                                    <span class="badge badge-<%= (tst.passed === true) ? 'success' : (tst.signal === "SIGTERM") ? 'warning' : 'danger' %>"><%= tst.test.name %></span>
-                                <% }) %>
-                            </span></a>
-                            <% }); %>
+                        <td style="max-width: 20vw;">
+                            <div class="">
+                                <% let set = attempts.reverse().map(attempt => {
+                                    let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                                    let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
+                                    return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                });
+                                %>
+                                <%- set.join(", ") %>
+                            </div>
                         </td>
-
                     </tr>
 
                     <%

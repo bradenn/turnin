@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-    let course = await Course.findOne({code: req.body.code});
+    let course = await Course.findOne({code: req.body.code.toLowerCase()});
     if (!course) return res.redirect("/");
     User.findOneAndUpdate({_id: req.user._id}, {$addToSet: {courses: course._id}}, (err, user) => {
         return res.redirect("back")

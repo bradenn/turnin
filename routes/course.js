@@ -5,10 +5,9 @@ let User = require('../models/user');
 let Course = require('../models/course');
 
 router.get('/', async (req, res, next) => {
-    let user = await User.findById(req.session.userId).exec();
-    if (utils.authenticateUser(user)) return res.redirect("/");
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
     let courses = await Course.find({instructor: req.session.userId}).exec();
-    res.render("courses", {user: user, courses: courses});
+    res.render("courses", {user: req.user, courses: courses});
 });
 
 router.post('/', async (req, res, next) => {

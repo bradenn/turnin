@@ -55,13 +55,17 @@
                 <strong>Command:</strong>
                 <span><%= result.assignment.command %></span>
                 <strong>Signal:</strong>
-                <span><%= (result.signal)?result.signal:"none" %></span>
+                <span><%= (result.signal) ? result.signal : "none" %></span>
                 <strong>Code:</strong>
                 <span><%= result.exit %></span>
                 <strong>Standard output:</strong>
-                <span><%= (result.stdout)?result.stdout:"none" %></span>
+                <span>
+                    <% result.stdout.forEach((ln) => { %>
+                        <%- ln %><br>
+                    <% }); %>
+                </span>
                 <strong>Standard error:</strong>
-                <span><%= (result.stderr)?result.stderr:"none" %></span>
+                <span><%- (result.stderr) ? result.stderr.join("\n") : "none" %></span>
                 <br>
                 <strong>API Server:</strong>
                 <span><%= result.debug_server %>:<%= result.debug_node %>:<%= result.debug_instance %></span>

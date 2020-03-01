@@ -93,4 +93,26 @@ pre{
 }
 code{
   font-family: monospace;
+  white-space: pre-wrap;
+  color: #000;
+}
+
+.diff-remove{
+
+}
+
+.diff-add{
+  background-color: rgba(232, 72, 93, 0.5);
+  margin: 0;
+  font-family: monospace;
+  font-size: 87.5%;
+  padding: 0;
+}
+
+.beta{
+  color: #333;
+  background: url(/images/support.jpg) no-repeat;
+  background-size: cover;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

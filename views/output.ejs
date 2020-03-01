@@ -9,79 +9,63 @@
     }
 </style>
 <div class="container">
+    <%
+    let buttons = [];
+    %>
+    <%- include("partials/title.ejs", {title: `${response.assignment.name} - ${output.test.name}`, subtitle: `<strong>Exit Code:</strong> ${output.exit} <strong>Signal:</strong> ${output.signal} <strong>Submit:</strong> ${new Date(response.date).toLocaleString()} <strong>Errors:</strong> ${output.error_type}`,
+    buttons: buttons, backName: "Back", backLink: back}) %>
     <div class="row">
-        <a href="/response/<%= response._id %>"><i class="fas fa-chevron-left"></i> Results</a>
         <div class="col-12">
-            <h2><%= response.assignment.name %> - <%= output.test.name %></h2>
-            <div class="d-flex justify-content-between">
-                <span class="text-<%= (output.passed) ? "success" : "danger" %>">Test <%= (output.passed) ? "passed" : "failed" %></span>
-                <div>Difference key:
-                <span class="text-success">Missing</span> /
-                <span class="text-danger">Unexpected</span> output</div>
+            <h5>Standard output</h5>
+            <div class="card">
+                <div class="d-flex" style="">
+                    <div class="m-3 flex-fill">
+                        <strong>Expected Output</strong><br>
+                        <% output.test.outputs.forEach((ln) => { %>
+                            <code><%= ln %></code><br>
+                        <% }); %>
+                    </div>
+                    <div class="m-3 flex-fill">
+                        <strong>Submission Output</strong><br>
+                        <% JSON.parse(output.diff).forEach((ln) => { %>
+                            <% ln.forEach((pt) => { if(!pt.added) { %>
+                                <code class="<%= (pt.added) ? "diff-add" : (pt.removed) ? "diff-remove" : "" %>"><%= pt.value %></code>
+                                <br>
+                            <% }else{ %>
+                                <code class="diff-add"> No output </code><br>
+                            <% } }); %>
+                        <% }); %>
+                    </div>
+
+
+                </div>
             </div>
         </div>
     </div>
-            <hr>
-
+    <br>
     <div class="row">
-        <div class="col-6">
-            <h5>Standard output</h5>
-            <% if(!output.output.length <= 1 && !output.output[0] == ""){ %>
-            <div class="card">
-                <div class="d-flex d-inline-flex justify-content-after" style="">
-                    <div class="m-3">
-                        <strong><%= output.test.name %>.out</strong><br>
-                        <% output.test.outputs.forEach((ln) => { %>
-                            <span style="white-space: pre;"><%- ln.replace(" ", "&nbsp;"); %></span><br>
-                        <% }); %>
-                    </div>
-                    <div class="m-3">
-                        <strong><%= output.test.name %>.myout</strong><br>
-                        <% JSON.parse(output.diff).forEach((ln) => { %>
-                            <% ln.forEach((pt) => { %>
-                                <span style="white-space: pre;"
-                                      class="<%= (pt.added) ? "text-success" : (pt.removed) ? "text-danger str" : "" %>"><%= pt.value %></span>
-                            <% }); %><br>
-                        <% }); %>
-                    </div>
-
-
-                </div>
-            </div>
-            <% }else{ %>
-
-                    <div class="card p-2 pl-3 m-1 border-<%= (output.signal === "SIGTERM") ? "warning" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (output.signal === "SIGTERM") ? "warning" : "danger" %>">
-                        <span class=""><strong>No output</strong>
-                        &nbsp;<%= (output.signal === "SIGTERM") ? "Your program produced an infinite loop. Make sure all of your loops terminate." : "Your program had no output, make sure you submitted the correct file." %>
-                        </span>
-                    </div>
-
-            <% } %>
-        </div>
-        <div class="col-6">
-            <% if(!output.test.error.length <= 1 && !output.test.error[0] === ""){ %>
+        <div class="col-12">
             <h5>Standard error output</h5>
             <div class="card">
-                <div class="d-flex d-inline-flex justify-content-after" style="">
-                    <div class="m-3">
+                <div class="d-flex" style="">
+                    <div class="m-3 flex-fill">
                         <strong><%= output.test.name %>.err</strong><br>
                         <% output.test.error.forEach((ln) => { %>
-                            <span style="white-space: pre;"><%- ln.replace(" ", "&nbsp;"); %></span><br>
+                            <%= ln %>
                         <% }); %>
                     </div>
-                    <div class="m-3">
+                    <div class="m-3 flex-fill">
                         <strong><%= output.test.name %>.myerr</strong><br>
-                        <% output.stderr.forEach((ln) => { %>
-
-                            <span style="white-space: pre;" class=""><%= ln %></span><br>
-
+                        <% JSON.parse(output.error_diff).forEach((ln) => { %>
+                            <% ln.forEach((pt) => { %>
+                                <span class="<%= (pt.added) ? "text-success" : (pt.removed) ? "text-danger str" : "" %>"><%= pt.value %></span>
+                            <% }); %>
                         <% }); %>
                     </div>
 
 
                 </div>
             </div>
-            <% } %>
 
         </div>
 

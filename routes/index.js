@@ -1,4 +1,4 @@
-const config = require("../pages.json");
+const config = require("../env/pages.json");
 let express = require('express');
 let router = express.Router();
 

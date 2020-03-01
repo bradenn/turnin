@@ -9,32 +9,40 @@ let diffJs = require('diff');
 let utils = require('../services/utils');
 let rest = require('../services/rest');
 
-utils.getRouteWithUser('/grade/:response', router, (req, res, user) => {
-    Result.findById(req.params.response, (err, result) => {
-        result.outputs.forEach((outputSchema) => {
-            Output.findById(outputSchema._id, (err, out) => {
-                let diff = [];
-                let errorDiff = [];
-                for (let i = 0; i < out.stderr.length; i++) {
-                    errorDiff.push(diffJs.diffWords((out.stderr[i] !== null) ? out.stderr[i] : "", (typeof out.test != 'undefined') ? out.test.error[i] : ""));
-                }
-                for (let i = 0; i < out.output.length; i++) {
-                    diff.push(diffJs.diffWords((out.output[i] !== null) ? out.output[i] : "", (typeof out.test != 'undefined') ? out.test.outputs[i] : ""));
-                }
-                let outMatch = (out.test.outputs.toString() === out.output.toString());
-                let errMatch = (out.test.error.toString() === out.stderr.toString());
-                let exitMatch = out.code === out.test.code;
+router.get('/grade/:response', async (req, res, next) => {
+    let result = await Result.findById(req.params.response).exec();
+    result.outputs.forEach((outputSchema) => {
+        Output.findById(outputSchema._id, (err, out) => {
+            let diff = [];
+            let errorDiff = [];
+            for (let i = 0; i < out.test.error.length; i++) {
+                let test = (typeof out.test.error[i] != 'undefined') ? out.test.error[i] : "";
+                let input = (typeof out.stderr[i] != 'undefined') ? out.stderr[i] : "";
+                errorDiff.push(diffJs.diffChars(input, test));
+            }
+            for (let i = 0; i < out.test.outputs.length; i++) {
+                let test = (typeof out.test.outputs[i] != 'undefined') ? out.test.outputs[i] : "";
+                let input = (typeof out.output[i] != 'undefined') ? out.output[i] : "";
+                diff.push(diffJs.diffChars(input, test));
+            }
 
-                if (!outMatch) out.error_type.push('stdout');
-                if (!errMatch) out.error_type.push('stderr');
-                if (!exitMatch) out.error_type.push('exit');
-                if (out.signal === "SIGTERM") out.error_type.push('loop');
-                out.passed = outMatch && errMatch && exitMatch;
-                out.diff = JSON.stringify(diff);
-                out.error_diff = JSON.stringify(errorDiff);
-                out.save((err, o) => {
+            let outMatch = (out.test.outputs.toString() === out.output.toString());
+            let errMatch = (out.test.error.toString() === out.stderr.toString());
+            let exitMatch = (out.exit === out.test.code);
 
-                });
+            out.error_type = [];
+            if (!outMatch) out.error_type.push('stdout');
+            if (!errMatch) out.error_type.push('stderr');
+            if (!exitMatch) out.error_type.push('exit');
+
+            if (out.signal === "SIGTERM") out.error_type.push('loop');
+
+            out.passed = outMatch && errMatch && exitMatch;
+            out.diff = JSON.stringify(diff);
+            out.error_diff = JSON.stringify(errorDiff);
+
+            out.save((err, o) => {
+
             });
         });
     });
@@ -53,7 +61,7 @@ utils.getRouteWithUser('/:response', router, (req, res, user) => {
 utils.getRouteWithUser('/output/:output', router, (req, res, user) => {
     Output.findById(req.params.output, (err, output) => {
         Result.findOne({outputs: {$in: [output._id]}}, (err, resp) => {
-            res.render("output", {user: user, output: output, response: resp});
+            res.render("output", {user: user, output: output, response: resp, back: req.back});
         }).populate("assignment");
     });
 });

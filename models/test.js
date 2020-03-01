@@ -8,10 +8,7 @@ let TestSchema = new mongoose.Schema({
     outputs: [String],
     error: [String],
     cmd: String,
-    code: {
-        type: Number,
-        default: 0
-    }
+    code: Number
 });
 
 // Load plugin to automatically populate nested queries

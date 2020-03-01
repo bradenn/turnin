@@ -4,7 +4,7 @@ let Class = require('../models/course');
 let Test = require('../models/test');
 let Assignment = require('../models/assignment');
 let Result = require('../models/result');
-let config = require('../config.json');
+let config = require('../env/config.json');
 let Output = require('../models/output');
 let File = require('../models/file');
 
@@ -50,6 +50,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                     }
                 });
                 process.on("uncaughtException", (err) => {
+                    console.log(err);
                     res.render("submit", {user: user, assignment: assignment, error: "largefile"});
                 });
                 re.on('error', function (err) {
@@ -63,7 +64,6 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                     response.on('end', function () {
                         let compile = JSON.parse(body).compile;
                         let debug = JSON.parse(body).debug;
-                        console.log(debug);
                         Result.create({
                             student: user._id,
                             assignment: assignment._id,
@@ -82,15 +82,15 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                             if (results) results.forEach(result => {
                                 testResults.push({
                                     test: result._id,
-                                    output: result.stdout.lines,
+                                    output: result.stdout,
                                     exit: result.code,
-                                    stdout: [""],
-                                    stderr: result.stderr.lines,
+                                    stdout: result.stdout,
+                                    stderr: result.stderr,
                                     signal: result.signal
                                 });
                             });
                             Output.create(testResults, (err, tst) => {
-
+                                if(err) console.log(err);
                                 tst.forEach((ts) => {
                                     resp.outputs.push(ts);
                                 });
