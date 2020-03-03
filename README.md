@@ -24,6 +24,6 @@ Cluster 005 at Beauharnois, Quebec managed by BN Media
 | Server     | Manager  | Location            | Cluster | Instances |
 |------------|----------|---------------------|---------|-----------|
 | bn-bhs-005 | BN Media | Beauharnois, Quebec | 005     | 2         |
-| bh-shs-001 | BN Media | Vancouver, BC       | 001     | 2         |
-| bh-shs-002 | BN Media | Vancouver, BC       | 002     | 0         |
+| bn-shs-001 | BN Media | Vancouver, BC       | 001     | 2         |
+| bn-shs-002 | BN Media | Vancouver, BC       | 002     | 0         |
 
