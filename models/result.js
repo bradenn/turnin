@@ -31,10 +31,7 @@ let ResultSchema = new mongoose.Schema({
     debug_server: String,
     debug_node: String,
     debug_instance: String,
-    passed: {
-        type: Boolean,
-        default: true
-    },
+    passed: Boolean,
     date: String
 });
 

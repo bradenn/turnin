@@ -11,20 +11,13 @@ let rest = require('../services/rest');
 
 router.get('/grade/:response', async (req, res, next) => {
     let result = await Result.findById(req.params.response).exec();
+    let passed = true;
     result.outputs.forEach((outputSchema) => {
         Output.findById(outputSchema._id, (err, out) => {
             let diff = [];
             let errorDiff = [];
-            for (let i = 0; i < out.test.error.length; i++) {
-                let test = (typeof out.test.error[i] != 'undefined') ? out.test.error[i] : "";
-                let input = (typeof out.stderr[i] != 'undefined') ? out.stderr[i] : "";
-                errorDiff.push(diffJs.diffChars(input, test));
-            }
-            for (let i = 0; i < out.test.outputs.length; i++) {
-                let test = (typeof out.test.outputs[i] != 'undefined') ? out.test.outputs[i] : "";
-                let input = (typeof out.output[i] != 'undefined') ? out.output[i] : "";
-                diff.push(diffJs.diffChars(input, test));
-            }
+            errorDiff.push(diffJs.diffArrays(out.stderr, out.test.error));
+            diff.push(diffJs.diffArrays(out.output, out.test.outputs));
 
             let outMatch = (out.test.outputs.toString() === out.output.toString());
             let errMatch = (out.test.error.toString() === out.stderr.toString());
@@ -37,21 +30,31 @@ router.get('/grade/:response', async (req, res, next) => {
 
             if (out.signal === "SIGTERM") out.error_type.push('loop');
 
-            out.passed = outMatch && errMatch && exitMatch;
-            out.diff = JSON.stringify(diff);
-            out.error_diff = JSON.stringify(errorDiff);
+            out.passed = (out.error_type.length < 1);
+            if(!out.passed){
+                passed = false;
+            }
+            out.diff = diff;
+            out.error_diff = errorDiff;
 
             out.save((err, o) => {
 
             });
         });
     });
+    Result.findById(req.params.response,(err, resul) => {
+        resul.passed = passed;
+        resul.save((err, o) => {
+
+        });
+    });
+    let results = await Result.findById(req.params.response).exec();
+    console.log(results.passed);
     res.redirect('/response/' + req.params.response);
 });
 
 utils.getRouteWithUser('/:response', router, (req, res, user) => {
     Result.findById(req.params.response, (err, result) => {
-        if (result.outputs.filter((output) => (!output.passed)).length >= 1) result.passed = false;
         result.save((err, resu) => {
             res.render("response", {user: user, result: resu, back: req.back});
         });

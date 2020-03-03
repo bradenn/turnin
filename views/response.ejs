@@ -14,15 +14,25 @@
             <div class="d-flex justify-content-between">
                 <h4 class="">Tests</h4>
             </div>
-            <% result.outputs.forEach(function(test){ %>
-                <a href="/response/output/<%= test._id %>" class="no-bs">
-                    <div class="card p-2 pl-3 m-1 border-<%= (test.passed) ? "success" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (test.passed) ? "success" : "danger" %>">
+            <% result.outputs.forEach(function(test){ let pass = test.error_type.length < 1; %>
+            <a href="/response/output/<%= test._id %>" class="no-bs">
+                <div class="card p-2 pl-3 m-1 border-<%= (pass) ? "success" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (pass) ? "success" : "danger" %>">
                         <span class=""><strong><%= test.test.name %></strong>
-                        &nbsp;<%= (test.passed) ? "Program passed test" : (test.signal === "SIGTERM") ? "Infinite loop produced; program terminated" : "Unexpected output" %>
+                            <% if(!pass){ %>
+                            <%= test.error_type.map(err => {
+                                return (err.includes("loop"))
+                                        ? "Infinite Loop; Program Terminated" : (err.includes("stdout"))
+                                                ? "Incorrect Output" : (err.includes("stderr"))
+                                                        ? "Incorrect Error" : (err.includes("exit"))
+                                                                ? "Incorrect Exit Code" : "Like idk";
+                            }).join(", "); %>
+                            <% }else{ %>
+                                           Test Passed
+                            <% } %>
                         </span>
-                        <span class="">Click to view results</span>
-                    </div>
-                </a>
+                    <span class="">Click to view results</span>
+                </div>
+            </a>
             <% }); %>
         </div>
         <div class="col-md-4">
