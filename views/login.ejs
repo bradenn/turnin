@@ -1,41 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include("partials/header") %>
+<%- include("partials/nav.ejs") %>
+<style>
+    body{
 
-<body><br>
-  <div class="container">
-    <div class="row">
-      <div class="col-6">
-        <h2>CSCI Turn in</h2>
-      </div>
+    }
+</style>
+<body>
+<div class="container">
+    <div class="col-12">
+        <h1 class="mb-0">Login</h1>
     </div>
-    <hr>
-    <div class="row">
-      <div class="col-6">
-        <h5 class="">Login</h5>
+    <div class="col-6"><br>
         <div class="card  mw-75" style="">
-          <div class="card-body">
-            <form method="post" action="/login">
-              <div class="form-group">
-                <label for="user">Username</label>
-                <input type="user" class="form-control" id="logUser" name="logUser" placeholder="Username">
-                <small class="text-muted">Your Chico State username</small>
-              </div>
-              <div class="form-group">
-                <label for="pass">Password</label>
-                <input type="password" class="form-control" id="logPassword" name="logPassword" placeholder="Password">
-              </div>
-              <button type="submit" class="btn btn-primary">Login</button>
-              <small class="text-danger"><% if(typeof error != 'undefined'){ if(error.type == "login"){ %> <%= error.message %> <% } } %></small>
-              <a href="/register" class="float-right" style="vertical-align:middle;">Create account</a>
-            </form>
-          </div>
+            <div class="card-body p-4">
+                <form method="post" action="/login">
+                    <div class="form-group">
+                        <label for="user">Username</label>
+                        <input type="user" class="form-control" id="logUser" name="logUser" placeholder="Username">
+                        <small class="text-muted">Your Chico State username</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="logPassword" name="logPassword"
+                               placeholder="Password">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="/register">Create account</a>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <small class="text-danger">
+                                <% if(typeof error != 'undefined'){ if(error.type == "login"){ %> <%= error.message %>
+                                <% } } %>
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
-      </div>
-
     </div>
-  </div>
+
+</div>
+</div>
 </body>
 <%- include("partials/footer.ejs") %>
 </html>

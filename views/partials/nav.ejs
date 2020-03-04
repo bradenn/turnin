@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:32px;">
     <div class="container">
-        <a class="navbar-brand" href="/"><i class="fas fa-code"></i>&nbsp;Turnin <span class="beta"><%= platform.version %></span></a>
+        <a class="navbar-brand" href="/"><i class="fas fa-code"></i>&nbsp;Turnin <span
+                    class="beta"><%= platform.version %></span></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -10,34 +11,38 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                 </li>
-                <% if(user.type > 0){ %>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/courses">Courses</a>
-                    </li>
+                <% if(user != null){ %>
+                    <% if(user.type > 0){ %>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/courses">Courses</a>
+                        </li>
+                    <% } %>
                 <% } %>
             </ul>
 
             <ul class="navbar-nav mr-0">
-                <% if(user.type > 1){ %>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/manage"><i class="fas fa-shield-alt"></i> &nbsp;Manage</a>
-                </li>
+                <% if(user != null){ %>
+                    <% if(user.type > 1){ %>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/manage"><i class="fas fa-shield-alt"></i> &nbsp;Manage</a>
+                        </li>
+                    <% } %>
+                    <% if(user.type > 0){ %>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/assignments/new"><i class="fas fa-plus"></i> &nbsp;New Assignment</a>
+                        </li>
+                    <% } %>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <%= user.username %>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </li>
                 <% } %>
-                <% if(user.type > 0){ %>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/assignments/new"><i class="fas fa-plus"></i> &nbsp;New Assignment</a>
-                </li>
-                <% } %>
-                <li class="nav-item active dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                       data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        <%= user.username %>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/logout">Logout</a>
-                    </div>
-                </li>
             </ul>
         </div>
     </div>
