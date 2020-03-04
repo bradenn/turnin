@@ -179,6 +179,7 @@ utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, re
                     code: code
                 });
             });
+            //"./uploads/" + req.files[0].filename
             Test.create(formattedData, (err, tests) => {
                 tests.forEach(test => assignment.tests.push(test._id));
                 assignment.save((err, save) => {
@@ -186,6 +187,7 @@ utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, re
                 });
             });
         });
+
     });
 });
 
