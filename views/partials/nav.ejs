@@ -18,12 +18,16 @@
             </ul>
 
             <ul class="navbar-nav mr-0">
+                <% if(user.type > 1){ %>
                 <li class="nav-item active">
                     <a class="nav-link" href="/manage"><i class="fas fa-shield-alt"></i> &nbsp;Manage</a>
                 </li>
+                <% } %>
+                <% if(user.type > 0){ %>
                 <li class="nav-item active">
                     <a class="nav-link" href="/assignments/new"><i class="fas fa-plus"></i> &nbsp;New Assignment</a>
                 </li>
+                <% } %>
                 <li class="nav-item active dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-toggle="dropdown"
@@ -31,8 +35,6 @@
                         <%= user.username %>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Edit Profile</a>
-                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/logout">Logout</a>
                     </div>
                 </li>
