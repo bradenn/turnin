@@ -22,7 +22,7 @@ let request = require('request');
 
 utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) => {
     Assignment.findById(req.params.assignment, (err, assignment) => {
-        if(req.files.length === assignment.files.length) {
+        if (req.files.length === assignment.files.length) {
             let files = [];
             let dbFiles = [];
             for (let i = 0; i < assignment.files.length; i++) {
@@ -38,7 +38,13 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
             File.create(dbFiles, (err, filesM) => {
                 let tests = [];
                 assignment.tests.forEach((test) => {
-                    tests.push({name: test.name, _id: test._id, input: test.inputs, output: test.outputs});
+                    tests.push({
+                        name: test.name,
+                        _id: test._id,
+                        input: test.inputs,
+                        arguments: test.arguments,
+                        output: test.outputs
+                    });
                 });
                 let re = request({
                     url: config.worker,
@@ -49,6 +55,11 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                         tests
                     }
                 });
+                console.log(JSON.stringify({
+                    make: assignment.command,
+                    files,
+                    tests
+                }));
                 process.on("uncaughtException", (err) => {
                     console.log(err);
                     res.render("submit", {user: user, assignment: assignment, error: "largefile"});
@@ -90,7 +101,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                                 });
                             });
                             Output.create(testResults, (err, tst) => {
-                                if(err) console.log(err);
+                                if (err) console.log(err);
                                 tst.forEach((ts) => {
                                     resp.outputs.push(ts);
                                 });
@@ -108,7 +119,7 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                 });
 
             });
-        }else{
+        } else {
             return res.render("submit", {user: user, assignment: assignment, error: "nofile"});
         }
     }).populate("shared_files");

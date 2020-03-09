@@ -29,11 +29,16 @@
                 <div class="card-body">
                     <form method="post" action="/submit/<%= assignment._id %>" enctype="multipart/form-data">
                         <% assignment.files.forEach(file => { %>
-                            <div class="input-group mb-3">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="image" id="inputGroupFile01">
-                                    <label class="custom-file-label"
-                                           for="inputGroupFile01"><%= file %></label>
+                            <div class="d-flex justify-content-between">
+                                <span class="w-25">
+                                    <label for="exampleInputEmail1"><strong><%= file %></strong></label>
+                                </span>&nbsp;
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" name="image" id="inputGroupFile01">
+                                        <label class="custom-file-label"
+                                               for="inputGroupFile01" id="inputGroupFile01Label">No File Selected..</label>
+                                    </div>
                                 </div>
                             </div>
                         <% }); %>
@@ -56,4 +61,9 @@
 </div>
 </body>
 <%- include("partials/footer.ejs") %>
+<script>
+    $('input[type="file"]').change((e) => {
+        $(e.target).siblings("#inputGroupFile01Label").text(e.target.files[0].name);
+    });
+</script>
 </html>

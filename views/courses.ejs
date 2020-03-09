@@ -6,7 +6,8 @@
 <body>
 <div class="container">
     <%
-    let buttons = [` <a class="" data-toggle="modal" href="#newClass"><i class="fas fa-plus"></i>&nbsp;New Course</a>`]
+    let buttons = [` <a class="" data-toggle="modal" href="#newClass"><i class="fas fa-folder-plus"></i>&nbsp;New Course</a>&nbsp;`,
+        ` <a href="/assignments/new"><i class="fas fa-plus"></i>&nbsp;New Assignment</a>`]
     %>
     <%- include("partials/title.ejs", {title: "Courses", subtitle: `Instructor ${ user.firstname } ${ user.lastname }`,
     buttons: buttons, backName: "Home", backLink: "/"}) %>
@@ -17,16 +18,17 @@
             <% courses.forEach((course) => { %>
                 <h3><%= course.name %>.<%= course.section %></h3>
                 <div class="d-flex justify-content-between">
-                    <span><strong>Join Code:</strong> <span
-                                class="text-uppercase text-monospace"><%= course.code %></span>,
-                        <strong>Enrolled Students:</strong> 12</span>
                     <span>
-                    <a class="" href="/courses/<%= course._id %>/manage"><i
-                                class="fas fa-users"></i> Manage Students</a>&nbsp;&nbsp;
-                    <a class="text-danger" href="/courses/<%= course._id %>/delete"><i
-                                class="fas fa-trash-alt"></i> Delete Course</a>
-
+                        <strong>Join Code:</strong> <span
+                                class="text-uppercase text-monospace"><%= course.code %></span>,
+                        <strong>Enrolled Students:</strong> <%= course.students.length %>
                     </span>
+                    <div class="">
+                        <a class="" href="/courses/<%= course._id %>/manage"><i
+                                    class="fas fa-users"></i> Manage Students</a>&nbsp;&nbsp;
+                        <a class="text-danger" data-toggle="modal" href="#confirmDeleteCourse"><i
+                                    class="fas fa-trash-alt"></i> Delete Course</a>
+                    </div>
                 </div>
                 <div class="card pt-1 pb-1 p-3">
                     <h4>Assignments</h4>
@@ -94,6 +96,28 @@
                         </table>
                     </div>
                 </div><br>
+                <div id="confirmDeleteCourse" class="modal fade">
+                    <div class="modal-dialog modal-login">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Delete Course</h4>
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">&times;
+                                </button>
+                            </div>
+                            <div class="modal-body d-flex justify-content-between align-items-center">
+                                <span>
+                                    Delete course <strong><%= course.name %>.<%= course.section %></strong>?
+                                </span>
+                                <span>
+                                <a class="btn btn-primary text-white" data-dismiss="modal">Cancel</a>
+                                <a class="btn btn-danger" href="/courses/<%= course._id %>/delete"><i
+                                            class="fas fa-trash-alt"></i> Delete Course</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             <% }); %>
         </div>
     </div>
@@ -124,5 +148,6 @@
         </div>
     </div>
 </div>
+
 <%- include("partials/footer.ejs") %>
 </html>

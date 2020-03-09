@@ -7,7 +7,13 @@ let TestSchema = new mongoose.Schema({
     inputs: [String],
     outputs: [String],
     error: [String],
+    arguments: String,
     cmd: String,
+    hidden: Boolean,
+    provided: [{
+        type: String,
+        enum: ['out', 'err', 'cmd', 'exit']
+    }],
     code: Number
 });
 

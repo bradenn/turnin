@@ -17,9 +17,10 @@ let OutputSchema = new mongoose.Schema({
     error_diff: String,
     error_type: [{
         type: String,
-        enum: ['stdout', 'stderr', 'exit', 'loop', 'none'],
+        enum: ['stdout', 'stderr', 'exit', 'loop', 'exec', 'none'],
         default: 'none'
     }],
+    hidden: Boolean,
     output: [String]
 });
 

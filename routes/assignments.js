@@ -79,6 +79,28 @@ router.get('/edit/:assignment/file/remove/:file', async (req, res, next) => {
     });
 });
 
+router.get('/edit/:assignment/files/:file/remove/', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    Assignment.findOneAndUpdate({_id: req.params.assignment}, {$pullAll: {files: [req.params.file]}}, (err, assignment) => {
+        res.redirect("back");
+    });
+});
+
+router.get('/edit/:assignment/test/:test/remove/', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+    Assignment.findOneAndUpdate({_id: req.params.assignment}, {$pullAll: {tests: [req.params.test]}}, (err, assignment) => {
+        res.redirect("back");
+    });
+});
+
+router.post('/edit/:assignment/files/add', async (req, res, next) => {
+    if (utils.authenticateUser(req.user)) return res.redirect("/");
+        console.log(req.body.name);
+    Assignment.findOneAndUpdate({_id: req.params.assignment}, {$push: {files: req.body.name}}, (err, assignment) => {
+        res.redirect("back");
+    });
+});
+
 utils.postRouteWithUserAndFiles('/edit/:assignment/file/add', router, (req, res, user) => {
     if (utils.authenticateUser(req.user)) return res.redirect("/");
     Assignment.findById(req.params.assignment, function (err, assignment) {
@@ -146,25 +168,35 @@ utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, re
                 let inputs = [];
                 let outputs = [];
                 let errors = [];
-                let cmd = "";
+                let cmd = [];
                 let code = 0;
+                let provided = [];
+                let hidden = false;
                 test.files.forEach(file => {
                     const ln = utils.readFile(`${req.files[0].originalname.replace(".tar", "")}/tests/${file}`);
                     switch (file.split(".")[1]) {
                         case "in":
                             inputs = ln.lines;
                             break;
+                        case "hide":
+                            inputs = ln.lines;
+                            hidden = true;
+                            break;
                         case "out":
                             outputs = ln.lines;
+                            provided.push('out');
                             break;
                         case "err":
                             errors = ln.lines;
+                            provided.push('err');
                             break;
                         case "cmd":
                             cmd = ln.lines[0];
+                            provided.push('cmd');
                             break;
-                        case "code":
+                        case "exit":
                             code = ln.lines[0];
+                            provided.push('exit');
                             break;
                         default:
                             break;
@@ -175,8 +207,10 @@ utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, re
                     outputs: outputs,
                     inputs: inputs,
                     error: errors,
-                    cmd: cmd,
-                    code: code
+                    arguments: cmd,
+                    code: code,
+                    provided: provided,
+                    hidden: hidden
                 });
             });
             //"./uploads/" + req.files[0].filename

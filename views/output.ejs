@@ -15,7 +15,7 @@
     <%- include("partials/title.ejs", {title: `${response.assignment.name} - ${output.test.name}`,
     subtitle: `<strong>Exit Code:</strong> ${output.exit} <strong>Signal:</strong> ${output.signal} <strong>Submit:</strong> ${new Date(response.date).toLocaleString()} <strong>Errors:</strong> ${(output.error_type.length >= 1)?output.error_type:"None"}`,
     buttons: buttons, backName: "Back", backLink: back}) %>
-    <% if(!output.error_type.includes("stderr") && !output.error_type.includes("stderr") && !output.error_type.includes("exit") && !output.error_type.includes("loop")){ %>
+    <% if(!output.error_type.includes("stdout") && !output.error_type.includes("stderr") && !output.error_type.includes("exit") && !output.error_type.includes("loop") && !output.error_type.includes("exec")){ %>
         <span class="text-success">Program passed all tests and had no issues.</span>
     <% } %>
     <% if(output.error_type.includes("exit")){ %>
@@ -23,7 +23,8 @@
             <div class="col-12">
                 <h5>Exit Code</h5>
                 <div class="card pl-3 p-2">
-                    <p>Your program outputted the exit code <strong><%= output.exit %></strong>, this test requires the exit code <strong><%= output.test.code %></strong></p>
+                    <p>Your program outputted the exit code <strong><%= output.exit %></strong>, this test requires the
+                        exit code <strong><%= output.test.code %></strong></p>
                 </div>
             </div>
         </div>
@@ -47,15 +48,11 @@
                             </th>
                             <th class="w-50">
                                 <% JSON.parse(output.diff).forEach((ln) => { %>
-                                    <% ln.forEach((pt) => { %>
-                                        <% if(pt.removed){ %>
-                                            <code class="diff-remove"><%= pt.value %></code><br>
-                                        <% } else if(pt.added){ %>
-                                            <code class="diff-add"><%= pt.value %></code><br>
-                                        <% }else{ %>
-                                            <code class=""><%= pt.value %></code><br>
-                                        <% } %>
-                                    <% }); %>
+                                    <% if(!ln.removed){ %>
+                                        <% ln.value.forEach((pt) => { %>
+                                            <code class="text-<%= (ln.added)?"danger":"warning" %>"><%= pt %></code><br>
+                                        <% }); %>
+                                    <% } %>
                                 <% }); %>
                             </th>
                         </tr>
@@ -63,8 +60,8 @@
                 </div>
             </div>
         </div>
-    <% } %>
     <br>
+    <% } %>
     <% if(output.error_type.includes("stderr")){ %>
         <div class="row">
             <div class="col-12">
@@ -83,15 +80,11 @@
                             </th>
                             <th class="w-50">
                                 <% JSON.parse(output.error_diff).forEach((ln) => { %>
-                                    <% ln.forEach((pt) => { %>
-                                        <% if(pt.removed){ %>
-                                            <code class="diff-remove"><%= pt.value %></code><br>
-                                        <% } else if(pt.added){ %>
-                                            <code class="diff-add"><%= pt.value %></code><br>
-                                        <% }else{ %>
-                                            <code class=""><%= pt.value %></code><br>
-                                        <% } %>
-                                    <% }); %>
+                                    <% if(ln.removed){ %>
+                                        <% ln.value.forEach((pt) => { %>
+                                            <code class="text-<%= (ln.added)?"danger":"info" %>"><%= pt %></code><br>
+                                        <% }); %>
+                                    <% } %>
                                 <% }); %>
                             </th>
                         </tr>

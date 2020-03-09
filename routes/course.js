@@ -3,6 +3,7 @@ let router = express.Router();
 let utils = require('../services/utils');
 let User = require('../models/user');
 let Course = require('../models/course');
+let database = require('../services/database');
 
 router.get('/', async (req, res, next) => {
     if (utils.authenticateUser(req.user)) return res.redirect("/");
@@ -19,7 +20,7 @@ router.post('/', async (req, res, next) => {
         instructor: user._id,
         code: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
     }, (err, course) => {
-        return res.redirect(`/courses/${course._id}`);
+        return res.redirect(`/courses`);
     });
 });
 
@@ -31,10 +32,10 @@ router.get('/:course', async (req, res, next) => {
 
 router.get('/:course/delete', async (req, res, next) => {
     if (utils.authenticateUser(req.user)) return res.redirect("/");
-    let course = await Course.deleteOne({_id: req.params.course}).then();
-    let courses = await Course.find({instructor: req.session.userId}).exec();
-    res.render("courses", {user: req.user, courses: courses, status: "removed class"});
+    database.deleteCourse(req.params.course);
+    res.redirect("/courses");
 });
+
 
 router.delete('/:course', async (req, res, next) => {
 

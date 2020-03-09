@@ -60,6 +60,10 @@ app.use((req, res, next) => {
     next(err);
 });
 
+process.on("uncaughtException", function (err) {
+    
+});
+
 app.use((err, req, res, next) => {
     res.render("error", {error: err});
     next();

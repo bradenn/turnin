@@ -12,6 +12,41 @@
     buttons: buttons, backName: "Assignments", backLink: "/assignments"}) %>
     <div class="row">
         <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <h4 class="">Required Files</h4>
+                <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Filename">&nbsp;
+                        <button type="submit" class="btn btn-primary btn-sm" value="Add File">Add File</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="">
+                    <tr>
+                        <th scope="col">Filename</th>
+                        <th scope="col" style="width: 1em;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% assignment.files.forEach(file => {
+                    %>
+                        <tr>
+                            <td><%= file %></td>
+                            <td><a href="/assignments/edit/<%= assignment._id %>/files/<%= file %>/remove">Remove</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    <% if(assignment.files.length == 0){ %>
+                        <tr>
+                            <td>No Files</td>
+                            <td></td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
             <% if(error != null){ %>
                 <div class="alert alert-danger border-danger" role="alert">
                     <% if(error === "TAR_BAD_ARCHIVE"){ %>
@@ -25,7 +60,7 @@
                 </div>
             <% } %>
             <div class="d-flex justify-content-between">
-                <h4 class="">Files</h4>
+                <h4 class="">Shared Files</h4>
                 <form action="/assignments/edit/<%= assignment._id %>/file/add" method="post"
                       enctype="multipart/form-data">
                     <div class="input-group mb-2">
@@ -84,10 +119,13 @@
                     <thead class="">
                     <tr>
                         <th scope="col">Name</th>
+                        <th scope="col">Visibility</th>
                         <th scope="col">Inputs</th>
                         <th scope="col">Outputs</th>
                         <th scope="col">Errors</th>
+                        <th scope="col">Arguments</th>
                         <th scope="col">Exit Code</th>
+                        <th scope="col" style="width: 1em;">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -95,10 +133,13 @@
                     %>
                         <tr>
                             <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
-                            <td><%= test.inputs.length %> inputs</td>
-                            <td><%= test.outputs.length %> outputs</td>
-                            <td><%= test.error.length %> errors</td>
-                            <td><%= test.code %></td>
+                            <td><%= (test.hidden)?"Hidden":"Visible" %></td>
+                            <td><%= test.inputs.length %></td>
+                            <td><%= (test.provided.includes("out"))?test.outputs.length:"Not Provided" %></td>
+                            <td><%= (test.provided.includes("err"))?test.error.length:"Not Provided" %></td>
+                            <td><%= (test.provided.includes("cmd"))?test.arguments:"Not Provided" %></td>
+                            <td><%= (test.provided.includes("exit"))?test.code:"Not Provided" %></td>
+                            <td><a href="/assignments/edit/<%= assignment._id %>/test/<%= test._id %>/remove">Remove</a>
                         </tr>
                     <% }); %>
 
@@ -150,6 +191,6 @@
 
 <script>
     $('input[type="file"]').change((e) => {
-        $('#inputGroupFile01Label').html(e.target.files[0].name);
+        $(e.target).siblings("#inputGroupFile01Label").text(e.target.files[0].name);
     });
 </script>

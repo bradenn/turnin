@@ -10,31 +10,47 @@
     <%- include("partials/title.ejs", {title: `Submission Results`, subtitle: `Submission ${(result.passed) ? "passed" : "failed"}`,
     buttons: buttons, backName: "Back", backLink: back}) %>
     <div class="row">
-        <div class="col-8">
-            <div class="d-flex justify-content-between">
-                <h4 class="">Tests</h4>
+        <% if(!result.compiled){ %>
+            <div class="col-8">
+                <div class="card p-2 pl-3 m-1 border-danger alert alert-danger">
+                    <span><strong>Failed</strong>&nbsp;Your program did not compile. Tests could not be completed.</span>
+                </div>
+                <br>
+                <h4 class="ml-1">Compiler output</h4>
+                <div class="card p-2 pl-3 m-1">
+                    <strong>Standard Output:</strong>
+                    <code><%- (result.stdout) ? result.stdout.join("\n") : "none" %></code><br>
+                    <strong>Error Output:</strong>
+                    <code><%- (result.stderr) ? result.stderr.slice(0, (result.stderr.length >= 16)?16:result.stderr.length).join("\n") : "none" %><%= (result.stderr.length <= 16)?"":`\n+ ${result.stderr.length-16} more lines` %></code>
+                </div>
             </div>
-            <% result.outputs.forEach(function(test){ let pass = test.error_type.length < 1; %>
-            <a href="/response/output/<%= test._id %>" class="no-bs">
-                <div class="card p-2 pl-3 m-1 border-<%= (pass) ? "success" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (pass) ? "success" : "danger" %>">
+        <% }else{ %>
+            <div class="col-8">
+                <div class="d-flex justify-content-between">
+                    <h4 class="">Tests</h4>
+                </div>
+                <% result.outputs.forEach(function(test){ let pass = test.error_type.length < 1; %>
+                <a href="/response/output/<%= test._id %>" class="no-bs">
+                    <div class="card p-2 pl-3 m-1 border-<%= (pass) ? "success" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (pass) ? "success" : "danger" %>">
                         <span class=""><strong><%= test.test.name %></strong>
                             <% if(!pass){ %>
-                            <%= test.error_type.map(err => {
-                                return (err.includes("loop"))
-                                        ? "Infinite Loop; Program Terminated" : (err.includes("stdout"))
-                                                ? "Incorrect Output" : (err.includes("stderr"))
-                                                        ? "Incorrect Error" : (err.includes("exit"))
-                                                                ? "Incorrect Exit Code" : "Like idk";
-                            }).join(", "); %>
+                                <%= test.error_type.map(err => {
+                                    return (err.includes("loop"))
+                                            ? "Infinite Loop; Program Terminated" : (err.includes("stdout"))
+                                                    ? "Incorrect Output" : (err.includes("stderr"))
+                                                            ? "Incorrect Error" : (err.includes("exit"))
+                                                                    ? "Incorrect Exit Code" : "Like idk";
+                                }).join(", "); %>
                             <% }else{ %>
-                                           Test Passed
+                                Test Passed
                             <% } %>
                         </span>
-                    <span class="">Click to view results</span>
-                </div>
-            </a>
-            <% }); %>
-        </div>
+                        <span class="">Click to view results</span>
+                    </div>
+                </a>
+                <% }); %>
+            </div>
+        <% } %>
         <div class="col-md-4">
             <div class="d-flex justify-content-between">
                 <h4 class="">Files</h4>
@@ -48,8 +64,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <% result.files.forEach(file => {
-                    %>
+                    <% result.files.forEach(file => { %>
                         <tr>
                             <td><a href="/file/<%= file._id %>"><%= file.name %></a></td>
                         </tr>
@@ -59,25 +74,21 @@
                 </table>
             </div>
             <div class="d-flex justify-content-between">
-                <h4 class="">Make</h4>
+                <h4 class="">Compiler Info</h4>
             </div>
             <div class="card p-2 pl-3">
                 <strong>Command:</strong>
                 <span><%= result.assignment.command %></span>
-                <strong>Signal:</strong>
+                <strong>Arguments:</strong>
                 <span><%= (result.signal) ? result.signal : "none" %></span>
-                <strong>Code:</strong>
+                <strong>Termination Signal:</strong>
+                <span><%= (result.signal) ? result.signal : "none" %></span>
+                <strong>Exit Code:</strong>
                 <span><%= result.exit %></span>
-                <strong>Standard output:</strong>
-                <span>
-                    <% result.stdout.forEach((ln) => { %>
-                        <%- ln %><br>
-                    <% }); %>
-                </span>
-                <strong>Standard error:</strong>
-                <span><%- (result.stderr) ? result.stderr.join("\n") : "none" %></span>
-                <br>
-                <strong>API Server:</strong>
+            </div><br>
+            <h4 class="">Debug Info</h4>
+            <div class="card p-2 pl-3">
+                <strong>Test Server:</strong>
                 <span><%= result.debug_server %>:<%= result.debug_node %>:<%= result.debug_instance %></span>
             </div>
         </div>

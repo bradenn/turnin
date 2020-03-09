@@ -9,24 +9,26 @@ let diffJs = require('diff');
 let utils = require('../services/utils');
 let rest = require('../services/rest');
 
+
 router.get('/grade/:response', async (req, res, next) => {
     let result = await Result.findById(req.params.response).exec();
     let passed = true;
     result.outputs.forEach((outputSchema) => {
         Output.findById(outputSchema._id, (err, out) => {
-            let diff = [];
-            let errorDiff = [];
-            errorDiff.push(diffJs.diffArrays(out.stderr, out.test.error));
-            diff.push(diffJs.diffArrays(out.output, out.test.outputs));
 
+            out.error_diff = JSON.stringify(diffJs.diffArrays(out.stderr, out.test.error));
+            out.diff = JSON.stringify(diffJs.diffArrays(out.output, out.test.outputs));
+            
             let outMatch = (out.test.outputs.toString() === out.output.toString());
             let errMatch = (out.test.error.toString() === out.stderr.toString());
             let exitMatch = (out.exit === out.test.code);
+            let execError = (out.exit === 127);
 
             out.error_type = [];
-            if (!outMatch) out.error_type.push('stdout');
-            if (!errMatch) out.error_type.push('stderr');
-            if (!exitMatch) out.error_type.push('exit');
+            if (!outMatch && out.test.provided.includes("out")) out.error_type.push('stdout');
+            if (!errMatch && out.test.provided.includes("err")) out.error_type.push('stderr');
+            if (!exitMatch && out.test.provided.includes("exit")) out.error_type.push('exit');
+            if (execError) out.error_type.push('exec');
 
             if (out.signal === "SIGTERM") out.error_type.push('loop');
 
@@ -34,8 +36,6 @@ router.get('/grade/:response', async (req, res, next) => {
             if(!out.passed){
                 passed = false;
             }
-            out.diff = diff;
-            out.error_diff = errorDiff;
 
             out.save((err, o) => {
 
@@ -43,13 +43,13 @@ router.get('/grade/:response', async (req, res, next) => {
         });
     });
     Result.findById(req.params.response,(err, resul) => {
+        resul.compiled = (resul.exit === 0);
         resul.passed = passed;
+
         resul.save((err, o) => {
 
         });
     });
-    let results = await Result.findById(req.params.response).exec();
-    console.log(results.passed);
     res.redirect('/response/' + req.params.response);
 });
 

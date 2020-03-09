@@ -4,19 +4,18 @@
 
 <body>
 <div class="container">
+    <%
+    let buttons = [` `];
+    %>
+    <%- include("partials/title.ejs", {title: "New Assignment", subtitle: `Instructor ${ user.firstname } ${ user.lastname }`,
+    buttons: buttons, backName: "Courses", backLink: "/courses"}); %>
     <div class="row">
-        <div class="col-12">
-        <a href="/assignments"><i class="fas fa-chevron-left"></i> Assignments</a>
-
-            <h1>New Assignment</h1>
-            <hr>
-        </div>
         <div class="col-6">
             <form action="/assignments/new" method="post">
                 <div class="form-group">
                     <label>Assignment name</label>
                     <input type="text" class="form-control" name="assignmentName" placeholder="Name">
-                    <small class="text-muted">Duplicate names are allowed but not reccomended.</small>
+                    <small class="text-muted">Duplicate names are allowed but not recommended.</small>
                 </div>
                 <div class="form-group">
                     <label>Course</label>
