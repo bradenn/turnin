@@ -4,59 +4,57 @@
 <%- include("partials/nav") %>
 <body>
 <div class="container">
+    <%
+    let buttons = [``]
+    %>
+    <%- include("partials/title.ejs", {title: "Submit", subtitle: `All courses you control`,
+    buttons: buttons, backName: "Home", backLink: "/"}) %>
     <div class="row">
         <div class="col-6">
-            <h2><%= assignment.name %></h2>
-            <h6>Due <%= new Date(assignment.duedate).toDateString() %></h6>
-        </div>
-    </div>
-    <hr>
-    <div class="row">
-        <div class="col-6">
-            <h4>Submit file</h4>
-            <% if(typeof error != 'undefined') { %>
-                <% if(error == "nofile") { %>
-                    <span class="text-danger">You must submit at least one file</span>
-                <% } %>
-                <% if(error == "noserver") { %>
-                    <span class="text-danger">The grading servers are currently occupied. Please try again in a moment.</span>
-                <% } %>
-                <% if(error == "largefile") { %>
-                    <span class="text-danger">That's quite the file you've got there... Lets try another one. 5mb max</span>
-                <% } %>
-            <% } %>
-            <div class="card" style="">
-                <div class="card-body">
+            <div class="card">
+                <div class="card-title"><%= assignment.name %></div>
+                <span class="card-subtitle">There <%= (assignment.tests.length == 1) ? "is" : "are" %> <%= assignment.tests.length %> test<%= (assignment.tests.length == 1) ? "" : "s" %>.</span>
+                    <% if(typeof error != 'undefined') { %>
+                        <% if(error == "nofile") { %>
+                            <span class="text-danger">You must submit at least one file</span>
+                        <% } %>
+                        <% if(error == "noserver") { %>
+                            <span class="text-danger">The grading servers are currently occupied. Please try again in a moment.</span>
+                        <% } %>
+                        <% if(error == "largefile") { %>
+                            <span class="text-danger">That's quite the file you've got there... Lets try another one. 5mb max</span>
+                        <% } %>
+                    <% } %>
                     <form method="post" action="/submit/<%= assignment._id %>" enctype="multipart/form-data">
                         <% assignment.files.forEach(file => { %>
-                            <div class="d-flex justify-content-between">
-                                <span class="w-25">
-                                    <label for="exampleInputEmail1"><strong><%= file %></strong></label>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="w-25 mt-1 align-self-center">
+                                    <label for="exampleInputEmail1" style="word-wrap: break-word; max-width: 100%;"><%= file %></label>
                                 </span>&nbsp;
-                                <div class="input-group mb-3">
+                                <div class="input-group align-self-center">
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" name="image" id="inputGroupFile01">
+                                        <input type="file" class="custom-file-input" name="image"
+                                               id="inputGroupFile01">
                                         <label class="custom-file-label"
-                                               for="inputGroupFile01" id="inputGroupFile01Label">No File Selected..</label>
+                                               for="inputGroupFile01" id="inputGroupFile01Label">No file
+                                            selected...</label>
                                     </div>
                                 </div>
                             </div>
-                        <% }); %>
+                        <% }); %><br>
                         <button type="submit" class="btn btn-primary float-right">Submit</button>
                         <small class="text-danger">
                             <% if(typeof error != 'undefined'){ if(error.type == "login"){ %> <%= error.message %>
                             <% } } %>
                         </small>
-                        <span class=""
-                              style="vertical-align:middle;">There <%= (assignment.tests.length == 1) ? "is" : "are" %> <%= assignment.tests.length %> test<%= (assignment.tests.length == 1) ? "" : "s" %>.</span>
                     </form>
 
                 </div>
+
+
             </div>
 
-
         </div>
-
     </div>
 </div>
 </body>

@@ -1,6 +1,6 @@
 {
   "name": "turnin",
-  "version": "0.0.1",
+  "version": "1.4.3",
   "description": "Turn in your shit",
   "main": "index.js",
   "scripts": {
@@ -13,11 +13,10 @@
   "author": "Braden Nicholson Media",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bradenn/blog/issues"
+    "url": "https://github.com/bradenn/turnin/issues"
   },
-  "homepage": "https://github.com/bradenn/blog#readme",
+  "homepage": "https://github.com/bradenn/turnin#readme",
   "dependencies": {
-    "aws-sdk": "^2.610.0",
     "body-parser": "^1.19.0",
     "connect-mongo": "^3.2.0",
     "diff": "^4.0.2",

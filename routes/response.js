@@ -18,7 +18,7 @@ router.get('/grade/:response', async (req, res, next) => {
 
             out.error_diff = JSON.stringify(diffJs.diffArrays(out.stderr, out.test.error));
             out.diff = JSON.stringify(diffJs.diffArrays(out.output, out.test.outputs));
-            
+
             let outMatch = (out.test.outputs.toString() === out.output.toString());
             let errMatch = (out.test.error.toString() === out.stderr.toString());
             let exitMatch = (out.exit === out.test.code);

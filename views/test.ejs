@@ -1,7 +1,12 @@
 <html>
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
-
+<link href="/css/prism.css" rel="stylesheet"/>
+<style>
+    .card {
+        margin-bottom: 1.5em;
+    }
+</style>
 <body>
 <div class="container">
     <%
@@ -10,34 +15,34 @@
     <%- include("partials/title.ejs", {title: test.name, subtitle: `<strong>Command:</strong> ${(!test.cmd)?'Not specified':test.cmd} <strong>Exit Code:</strong> ${test.code}`,
     buttons: buttons, backName: "Back", backLink: back}) %>
     <div class="row">
-        <div class="col-4">
-            <h4><%= test.name %>.in</h4>
-            <div class="card p-2 pl-3">
-                <% test.inputs.forEach((input) => { %>
-                    <code><%= input %></code>
-                <% }); %>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-title"><%= test.name %>.in</div>
+                <div class="card-subtitle mb-0">The input given to the program</div>
+                <pre class="language-txt line-numbers"><code><%= test.inputs.join("\n") %></code></pre>
             </div>
         </div>
-        <div class="col-4">
-            <h4><%= test.name %>.out</h4>
-            <div class="card p-2 pl-3">
-
-                <% test.outputs.forEach((out) => { %>
-                    <code><%= out %></code>
-                <% }); %>
-
+        <% if(test.provided.includes("out")){ %>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-title"><%= test.name %>.out</div>
+                    <div class="card-subtitle mb-0">Program's expected output</div>
+                    <pre class="language-txt line-numbers"><code><%= test.outputs.join("\n") %></code></pre>
+                </div>
             </div>
-        </div>
-        <div class="col-4">
-            <h4><%= test.name %>.err</h4>
-            <div class="card p-2 pl-3">
-                <% test.error.forEach((err) => { %>
-                    <code><%= err %></code>
-                <% }); %>
+        <% } %>
+        <% if(test.provided.includes("err")){ %>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-title"><%= test.name %>.err</div>
+                    <div class="card-subtitle mb-0">Program's expected output</div>
+                    <pre class="language-txt line-numbers"><code><%= test.error.join("\n") %></code></pre>
+                </div>
             </div>
-        </div>
+        <% } %>
     </div>
 </div>
 </body>
+<script src="/js/prism.js"></script>
 <%- include("partials/footer.ejs") %>
 </html>

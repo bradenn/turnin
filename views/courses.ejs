@@ -6,34 +6,28 @@
 <body>
 <div class="container">
     <%
-    let buttons = [` <a class="" data-toggle="modal" href="#newClass"><i class="fas fa-folder-plus"></i>&nbsp;New Course</a>&nbsp;`,
-        ` <a href="/assignments/new"><i class="fas fa-plus"></i>&nbsp;New Assignment</a>`]
+    let buttons = [` <a class="" data-toggle="modal" href="#newClass">New Course</a>&nbsp;`,
+        ` <a href="/assignments/new">New Assignment</a>`]
     %>
-    <%- include("partials/title.ejs", {title: "Courses", subtitle: `Instructor ${ user.firstname } ${ user.lastname }`,
+    <%- include("partials/title.ejs", {title: "Courses", subtitle: `All courses you control`,
     buttons: buttons, backName: "Home", backLink: "/"}) %>
 
     <div class="row">
 
         <div class="col-12">
             <% courses.forEach((course) => { %>
-                <h3><%= course.name %>.<%= course.section %></h3>
+                <div class="card-title"><%= course.name %>.<%= course.section %></div>
                 <div class="d-flex justify-content-between">
-                    <span>
-                        <strong>Join Code:</strong> <span
-                                class="text-uppercase text-monospace"><%= course.code %></span>,
-                        <strong>Enrolled Students:</strong> <%= course.students.length %>
-                    </span>
+                <div class="card-subtitle" style="margin-bottom: 8px;">Course join code: <span class="text-monospace text-uppercase"><%= course.code %></span></div>
                     <div class="">
-                        <a class="" href="/courses/<%= course._id %>/manage"><i
-                                    class="fas fa-users"></i> Manage Students</a>&nbsp;&nbsp;
-                        <a class="text-danger" data-toggle="modal" href="#confirmDeleteCourse"><i
-                                    class="fas fa-trash-alt"></i> Delete Course</a>
+                        <a class="text-danger" data-toggle="modal" href="#confirmDeleteCourse">Delete Course</a>
                     </div>
                 </div>
-                <div class="card pt-1 pb-1 p-3">
-                    <h4>Assignments</h4>
+                <div class="card">
+                    <div class="card-title">Assignments</div>
+                    <div class="card-subtitle">Includes unassigned and assigned assignments.</div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table">
                             <thead>
                             <tr>
                                 <th scope="col">Name</th>

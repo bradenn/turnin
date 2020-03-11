@@ -1,19 +1,18 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:32px;">
     <div class="container">
-        <a class="navbar-brand" href="/"><i class="fas fa-code"></i>&nbsp;Turnin <span
-                    class="beta"><%= platform.version %></span></a>
+        <a class="navbar-brand" href="/"><i class="fas fa-code"></i>&nbsp;Turnin</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <% if(user != null){ %>
                     <% if(user.type > 0){ %>
-                        <li class="nav-item active">
+                        <li class="nav-item">
                             <a class="nav-link" href="/courses">Courses</a>
                         </li>
                     <% } %>
@@ -23,16 +22,16 @@
             <ul class="navbar-nav mr-0">
                 <% if(user != null){ %>
                     <% if(user.type > 1){ %>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/manage"><i class="fas fa-shield-alt"></i> &nbsp;Manage</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/manage">Manage</a>
                         </li>
                     <% } %>
                     <% if(user.type > 0){ %>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/assignments/new"><i class="fas fa-plus"></i> &nbsp;New Assignment</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/assignments/new">New Assignment</a>
                         </li>
                     <% } %>
-                    <li class="nav-item active dropdown">
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">

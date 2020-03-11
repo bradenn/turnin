@@ -12,9 +12,10 @@
     <%- include("partials/title.ejs", {title: "Dashboard", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
     <div class="row">
         <div class="col-12">
-            <h4>Current Assignments</h4>
+            <div class="card-title">Assignments</div>
+            <div class="card-subtitle">Includes unassigned and assigned assignments.</div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table ">
                     <thead>
                     <tr>
                         <th scope="col">Assignment</th>

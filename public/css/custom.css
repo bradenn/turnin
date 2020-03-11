@@ -1,5 +1,7 @@
 body{
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
   font-size: 14px !important;
   font-weight: 400;
 }
@@ -9,11 +11,19 @@ hr{
   margin-bottom: 0.5em;
 }
 
-.nav-link{
-  font-size: 14px;
+.navbar .nav-link{
+  font-size: 16px;
+  line-height: 2em;
+  margin:0px 4px;
+  color: #9e9e9e !important;
+  transition: color .1s cubic-bezier(.4,0,.2,1);
 }
+.navbar .nav-link:hover{
+  color: #fff !important;
+}
+
 .bg-dark{
-  background-color: #212529 !important;
+  background-color: #212121 !important;
 }
 .navbar{
   padding-top:0;
@@ -34,7 +44,6 @@ hr{
 }
 
 
-
 .no-bs{
   text-decoration: none;
   color: inherit;
@@ -48,6 +57,86 @@ hr{
   margin: 0.15em;
 }
 
+.table-responsive{
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+}
+
+.table{
+  margin-bottom: 0;
+}
+
+td{
+  font-family: Roboto, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  letter-spacing: .0178571429em;
+  text-decoration: inherit;
+  text-transform: inherit;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.table thead th{
+  border: none;
+}
+
+
+.card{
+  border-radius: 8px;
+  padding:16px;
+  border: 1px solid #dadce0;
+}
+
+.sub-header{
+  margin-top: 0;
+  font-family: Roboto, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  text-decoration: inherit;
+  text-transform: inherit;
+  opacity: .6;
+  margin-bottom: 16px;
+}
+
+.card-subtitle {
+  margin-top: 0;
+  font-family: Roboto, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  text-decoration: inherit;
+  text-transform: inherit;
+  opacity: .6;
+  margin-bottom: 16px;
+}
+
+.card-title{
+  margin-bottom: 0;
+  font-family: Roboto, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.25rem;
+  line-height: 2rem;
+  font-weight: 500;
+  letter-spacing: .0125em;
+  text-decoration: inherit;
+  text-transform: inherit;
+}
+
+:not(pre) > code[class*="language-"], pre[class*="language-"] {
+  background: #fff !important;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -58,6 +147,7 @@ body {
   margin-bottom: 120px; /* Margin bottom by footer height */
 
 }
+
 .footer {
   font-family: 'IBM Plex Sans', sans-serif;
   position: absolute;
