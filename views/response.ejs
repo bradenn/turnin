@@ -24,14 +24,14 @@
                 <br>
                 <div class="card">
                     <div class="card-title">Standard Output</div>
-                    <div class="card-subtitle">The server used to test the program</div>
+                    <div class="card-subtitle">The program's standard output</div>
                     <pre class="language-cpp line-numbers m-0 pt-0 ml-0"
                          style="padding-left: 3.2em;"><code><%- (result.stdout) ? result.stdout.join("\n") : "none" %></code></pre>
                 </div>
 
                 <div class="card">
                     <div class="card-title">Error Output</div>
-                    <div class="card-subtitle">The server used to test the program</div>
+                    <div class="card-subtitle">The program's error output</div>
                     <pre class="language-cpp line-numbers m-0 pt-0"
                          style="padding-left: 3.2em;"><code><%- (result.stderr) ? result.stderr.slice(0, (result.stderr.length >= 20) ? 20 : result.stderr.length).join("\n") : "none" %><%= (result.stderr.length <= 20)?"":`\n+ ${result.stderr.length - 16} more lines` %></code></pre>
                 </div>
@@ -107,8 +107,6 @@
                         <%= result.exit %>
                     </li>
                 </ul>
-
-
             </div>
             <br>
             <div class="card">

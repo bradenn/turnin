@@ -1,5 +1,5 @@
 /* PrismJS 1.19.0
-https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+c+cpp&plugins=line-numbers */
+https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+c+cpp+cmake+diff+ejs+makefile+markup-templating&plugins=line-highlight+line-numbers+diff-highlight */
 /**
  * prism.js default theme for JavaScript, CSS and HTML
  * Based on dabblet (http://dabblet.com)
@@ -140,6 +140,56 @@ pre[class*="language-"] {
 	cursor: help;
 }
 
+pre[data-line] {
+	position: relative;
+	padding: 1em 0 1em 3em;
+}
+
+.line-highlight {
+	position: absolute;
+	left: 0;
+	right: 0;
+	padding: inherit 0;
+	margin-top: 1em; /* Same as .prism’s padding-top */
+
+	background: hsla(24, 20%, 50%,.08);
+	background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+
+	pointer-events: none;
+
+	line-height: inherit;
+	white-space: pre;
+}
+
+	.line-highlight:before,
+	.line-highlight[data-end]:after {
+		content: attr(data-start);
+		position: absolute;
+		top: .4em;
+		left: .6em;
+		min-width: 1em;
+		padding: 0 .5em;
+		background-color: hsla(24, 20%, 50%,.4);
+		color: hsl(24, 20%, 95%);
+		font: bold 65%/1.5 sans-serif;
+		text-align: center;
+		vertical-align: .3em;
+		border-radius: 999px;
+		text-shadow: none;
+		box-shadow: 0 1px white;
+	}
+
+	.line-highlight[data-end]:after {
+		content: attr(data-end);
+		top: auto;
+		bottom: .4em;
+	}
+
+.line-numbers .line-highlight:before,
+.line-numbers .line-highlight:after {
+	content: none;
+}
+
 pre[class*="language-"].line-numbers {
 	position: relative;
 	padding-left: 3.8em;
@@ -181,4 +231,18 @@ pre[class*="language-"].line-numbers > code {
 			padding-right: 0.8em;
 			text-align: right;
 		}
+
+pre.diff-highlight > code .token.deleted:not(.prefix),
+pre > code.diff-highlight .token.deleted:not(.prefix) {
+	background-color: rgba(255, 0, 0, .1);
+	color: inherit;
+	display: block;
+}
+
+pre.diff-highlight > code .token.inserted:not(.prefix),
+pre > code.diff-highlight .token.inserted:not(.prefix) {
+	background-color: rgba(0, 255, 128, .1);
+	color: inherit;
+	display: block;
+}
 
