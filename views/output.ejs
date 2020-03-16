@@ -45,12 +45,15 @@
                         <div class="card">
                             <div class="card-title">Standard Output</div>
                             <div class="card-subtitle">The program had an incorrect standard output</div>
-                            <div class="d-flex justify-content-between">
-                                <pre class="language-cpp line-numbers w-50"
+                                Expected Output
+                                <pre class="language-diff line-numbers m-0 pt-0"
                                      style="padding-left: 3.2em;"><code><%= output.test.outputs.join("\n") %></code></pre>
-                                <pre class="language-cpp line-numbers w-50"
-                                     style="padding-left: 3.2em;"><code><%= JSON.parse(output.diff).map((ln) => ln).map((pt) => pt.value).map((pt) => pt).join("\n") %></code></pre>
-                            </div>
+                                Program Output
+                                <pre class="language-diff line-numbers m-0 pt-0"
+                                     style="padding-left: 3.2em;"><code><%= output.stdout.join("\n") %></code></pre>
+                                Difference
+                                <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
+                                     style="padding-left: 3.2em;"><code><%= JSON.parse(output.diff).map((ln) => (ln.added)?`+ ${ln.value}`:(ln.removed)?`- ${ln.value}`:ln.value).join("\n") %></code></pre>
                         </div>
                     </div>
                 </div>

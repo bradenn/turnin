@@ -15,7 +15,7 @@
             <div class="card">
                 <div class="card-title"><%= file.name %></div>
                 <div class="card-subtitle"><%= bytesToSize(file.content.reduce((a, b) => a + b).length) %></div>
-                <pre class="language-cpp line-numbers m-0 pt-0" style="padding-left: 3.2em;"><code><%= file.content.join("\n") %></code></pre>
+                <pre class="language-<%= (file.name === "Makefile")?"makefile":"cpp" %> line-numbers m-0 pt-0" style="padding-left: 3.2em;"><code><%= file.content.join("\n") %></code></pre>
             </div>
         </div>
     </div>
