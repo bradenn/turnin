@@ -235,7 +235,7 @@ router.post('/new', function (req, res, next) {
             if (user != null && user.type > 0) {
                 let e = {
                     name: req.body.assignmentName,
-                    files: req.body.assignmentFiles.split(", "),
+                    files: (req.body.assignmentFiles !== "")?req.body.assignmentFiles.split(", "):[],
                     duedate: req.body.assignmentDueDate,
                     late: req.body.assignmentLateDueDate,
                     command: req.body.makeCommand,
