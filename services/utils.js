@@ -1,4 +1,6 @@
 let User = require('../models/user');
+let tar = require('tar');
+let fs = require('fs');
 
 let getUser = (req, res, next) => {
     if (req.session.userId) {
@@ -65,8 +67,22 @@ let postRouteWithUserAndTar = (route, router, cb) => {
     });
 };
 
-let tar = require('tar');
-let fs = require('fs');
+let readFile = (test) => {
+    let inputFile = "./cache/" + test;
+    let output = [];
+    try {
+        const input = fs.readFileSync(inputFile, 'UTF-8');
+        let lines = input.split(/\r?\n/);
+        lines.forEach((ln) => {
+            output.push(ln);
+        });
+    } catch (err) {
+       // console.error(err);
+    }
+        return (output)?output:[""];
+
+};
+
 let unpackTar = (file, original, cb) => {
     tar.extract({
         file: file,
@@ -74,8 +90,7 @@ let unpackTar = (file, original, cb) => {
     }, err => {
         if (err) cb(err, null);
         fs.readdir(`${process.cwd()}/cache/${original.replace(".tar", "")}/tests`, (err, files) => {
-            let regex = new RegExp(`^((?!\.\_).)*$`);
-            let testFiles = files.filter((file) => regex.exec(file));
+            let testFiles = files.filter(file => !file.includes("._"));
             let tests = [];
             testFiles.forEach(file => {
                 let b = false;
@@ -94,27 +109,12 @@ let unpackTar = (file, original, cb) => {
     });
 };
 
-let readFile = (test) => {
-    let inputFile = "./cache/" + test;
-    let output = {lines: []};
-    try {
-        const input = fs.readFileSync(inputFile, 'UTF-8');
-        let lines = input.split(/\r?\n/);
-        lines.forEach((ln) => {
-            output.lines.push(ln);
-        });
-    } catch (err) {
-        console.error(err);
-    }
-
-    return output;
-};
-
+module.exports.unpackTar = unpackTar;
 
 module.exports.readFile = readFile;
 module.exports.getRouteWithUser = getRouteWithUser;
 module.exports.postRouteWithUser = postRouteWithUser;
-module.exports.unpackTar = unpackTar;
+
 module.exports.getUser = getUser;
 module.exports.authenticateUser = authenticateUser;
 module.exports.postRouteWithUserAndFile = postRouteWithUserAndFile;

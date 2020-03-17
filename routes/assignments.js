@@ -155,8 +155,9 @@ utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, us
 });
 
 let tar = require('tar-stream');
+let archive = require('../services/archive');
 let fs = require("fs");
-utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, res, next, user) {
+utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, async (req, res, next, user) => {
     Assignment.findById(req.params.assignment, function (err, assignment) {
         utils.unpackTar("./uploads/" + req.files[0].filename, req.files[0].originalname, (error, files) => {
             if (error) {
@@ -168,34 +169,34 @@ utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, function (req, re
                 let inputs = [];
                 let outputs = [];
                 let errors = [];
-                let cmd = [];
+                let cmd = "";
                 let code = 0;
                 let provided = [];
                 let hidden = false;
                 test.files.forEach(file => {
-                    const ln = utils.readFile(`${req.files[0].originalname.replace(".tar", "")}/tests/${file}`);
+                    let ln = utils.readFile(`${req.files[0].originalname.replace(".tar", "")}/tests/${file}`);
                     switch (file.split(".")[1]) {
                         case "in":
-                            inputs = ln.lines;
+                            inputs = ln;
                             break;
                         case "hide":
-                            inputs = ln.lines;
+                            inputs = ln;
                             hidden = true;
                             break;
                         case "out":
-                            outputs = ln.lines;
+                            outputs = ln;
                             provided.push('out');
                             break;
                         case "err":
-                            errors = ln.lines;
+                            errors = ln;
                             provided.push('err');
                             break;
                         case "cmd":
-                            cmd = ln.lines[0];
+                            cmd = ln.join(" ");
                             provided.push('cmd');
                             break;
                         case "exit":
-                            code = ln.lines[0];
+                            code = ln[0];
                             provided.push('exit');
                             break;
                         default:

@@ -18,7 +18,8 @@
             <% courses.forEach((course) => { %>
                 <div class="card-title"><%= course.name %>.<%= course.section %></div>
                 <div class="d-flex justify-content-between">
-                <div class="card-subtitle" style="margin-bottom: 8px;">Course join code: <span class="text-monospace text-uppercase"><%= course.code %></span></div>
+                    <div class="card-subtitle" style="margin-bottom: 8px;">Course join code: <span
+                                class="text-monospace text-uppercase"><%= course.code %></span></div>
                     <div class="">
                         <a class="text-danger" data-toggle="modal" href="#confirmDeleteCourse">Delete Course</a>
                     </div>
@@ -36,7 +37,7 @@
                                 <th scope="col" nowrap>Late Due Date</th>
                                 <th scope="col">Required Files</th>
                                 <th scope="col">Tests</th>
-                                <th scope="col" style="width: 1em;"><i class="fas fa-pencil-alt"></i></th>
+                                <th scope="col" style="width: 1em;">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -45,33 +46,14 @@
                                     <td nowrap><a href="/assignments/<%= assignment._id %>"><%= assignment.name %></a>
                                     </td>
                                     <td class="text-center" nowrap>
-                                        <strong><%= (assignment.assigned) ? "Assigned" : "Draft" %></strong></td>
+                                        <a href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"><%= (assignment.assigned) ? "Unassign" : "Assign" %>
+                                        </a></td>
                                     <td nowrap><%= assignment.duedate %></td>
                                     <td><%= assignment.late %></td>
                                     <td><%= assignment.files.join(", "); %></td>
                                     <td><%- assignment.tests.map(test => `<a href="/test/${test._id}">${test.name}</a>`).join(", ") %></td>
                                     <td>
-                                        <div class="dropdown text-center">
-                                            <a class="" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-                                               aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-left"
-                                                 aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item"
-                                                   href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"><i
-                                                            class="fas fa-external-link-alt"></i>&nbsp;<%= (assignment.assigned) ? "Unassign" : "Assign" %>
-                                                </a>
-                                                <a class="dropdown-item"
-                                                   href="/assignments/grades/<%= assignment._id %>"><i
-                                                            class="fas fa-user-edit"></i>&nbsp;Grades</a>
-                                                <a class="dropdown-item" href="/assignments/<%= assignment._id %>"><i
-                                                            class="fas fa-edit"></i>&nbsp;Edit Assignment</a>
-                                                <a class="dropdown-item"
-                                                   href="/assignments/<%= assignment._id %>/delete"><i
-                                                            class="fas fa-trash-alt"></i>&nbsp;Delete</a>
-                                            </div>
-                                        </div>
+                                        <a href="/assignments/<%= assignment._id %>/delete">Delete</a>
                                     </td>
                                 </tr>
                             <% }); %>

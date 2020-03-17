@@ -3,7 +3,7 @@
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
 <style>
-    .card{
+    .card {
         margin-bottom: 1.5em;
     }
 </style>
@@ -12,7 +12,7 @@
     <%
     let buttons = [`<a href="/assignments/grades/${assignment._id}">View Grades</a>`]
     %>
-    <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<strong>Due:</strong> ${ new Date(assignment.duedate).toDateString() }&nbsp; <strong>Late:</strong> ${ new Date(assignment.late).toDateString() }`,
+    <%- include("partials/title.ejs", {title: assignment.name, subtitle: `Due ${ new Date(assignment.duedate).toLocaleDateString() }; accepted until ${ new Date(assignment.late).toLocaleDateString() }`,
     buttons: buttons, backName: "Assignments", backLink: "/assignments"}) %>
     <div class="row">
         <div class="col-12">
@@ -23,9 +23,9 @@
                         <div class="card-subtitle">Files will be required for submission</div>
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post" class="">
-                        <div class="input-group mb-2" style="padding-bottom: 16px;">
+                        <div class="d-flex pb-3">
                             <input type="text" class="form-control" id="name" name="name" placeholder="Filename">&nbsp;
-                            <button type="submit" class="btn btn-primary btn-sm" value="Add File">Add File</button>
+                            <input type="submit" class="btn btn-primary btn-sm" value="Add File">
                         </div>
                     </form>
                 </div>
@@ -77,7 +77,7 @@
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/file/add" method="post"
                           enctype="multipart/form-data">
-                        <div class="input-group mb-2 " style="padding-bottom: 16px;">
+                        <div class="d-flex pb-3">
                             <div class="custom-file mr-1">
                                 <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
                                 <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
@@ -125,10 +125,10 @@
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/tar" method="post"
                           enctype="multipart/form-data">
-                        <div class="input-group mb-2" style="padding-bottom: 16px;">
+                        <div class="d-flex pb-3">
                             <div class="custom-file mr-1">
                                 <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
-                                <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
+                                <label class="custom-file-label border-right-1" for="inputGroupFile01" id="inputGroupFile01Label">Choose
                                     file... (*.tar)</label>
                             </div>
                             <input type="submit" class="btn btn-primary btn-sm" value="Add tests">
@@ -165,7 +165,18 @@
                                     <a href="/assignments/edit/<%= assignment._id %>/test/<%= test._id %>/remove">Remove</a>
                             </tr>
                         <% }); %>
-
+                        <% if(assignment.tests.length == 0){ %>
+                            <tr>
+                                <td>No Tests</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        <% } %>
                         </tbody>
                     </table>
                 </div>
