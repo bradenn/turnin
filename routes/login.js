@@ -13,7 +13,7 @@ router.post('/', async (req, res, next) => {
     if (req.body.logUser && req.body.logPassword) {
         await User.authenticate(req.body.logUser, req.body.logPassword).then((user) => {
             req.session.userId = user._id;
-            res.redirect('/');
+            return res.redirect('/');
         }).catch((error) => {
             console.log(error);
         });
