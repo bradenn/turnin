@@ -48,6 +48,7 @@ app.locals.platform = platform;
 app.use(async (req, res, next) => {
     const user = await User.findById(req.session.userId).exec();
     req.back = req.get("referer");
+    app.locals.user = user;
     req.user = user;
     next();
 });

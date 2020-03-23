@@ -32,16 +32,16 @@ UserSchema.statics.authenticate = async (username, password) => {
         User.findOne({"username": {$regex: new RegExp(username, "i")}})
             .exec(function (err, user) {
                 if (err) {
-                    resolve(err);
+                    resolve({user: user, err: err});
                 } else if (!user) {
-                    let err = new Error('User not found.');
+                    let err = new Error('This user does not exist...');
                     err.status = 401;
-                    resolve(err);
+                    resolve({user: user, err: err});
                 }
                 if (verifyHash(password, user.password)) {
-                    resolve(user);
+                    resolve({user: user, err: err});
                 } else {
-                    resolve(new Error("Invalid Login"));
+                    resolve({user: null, err: new Error("Your password is incorrect...")});
                 }
             });
     });

@@ -13,6 +13,9 @@
         <div class="card" style="">
             <div class="card-title">Login</div>
             <div class="card-subtitle">Sign in with your username and password.</div>
+            <% if(typeof err !== 'undefined'){ %>
+                <div class="card-subtitle text-danger" style="opacity: 1;"><%= err %></div>
+            <% } %>
             <form method="post" action="/login">
                 <div class="form-group">
                     <input type="user" class="form-control" id="logUser" name="logUser" placeholder="Username">
@@ -26,10 +29,6 @@
                     <a href="/register">Create account</a>
                     <div>
                         <button type="submit" class="btn btn-primary">Login</button>
-                        <small class="text-danger">
-                            <% if(typeof error != 'undefined'){ if(error.type == "login"){ %> <%= error.message %>
-                            <% } } %>
-                        </small>
                     </div>
                 </div>
             </form>
