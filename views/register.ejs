@@ -1,52 +1,55 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <%- include("partials/header") %>
-
-<body><br>
-  <div class="container">
-        <h2>CSCI Turn in</h2>
-        <hr>
-    <div class="row">
-      <div class="col-md-6">
-        <h5>Register</h5>
+<%- include("partials/nav.ejs") %>
+<body>
+<div class="container">
+    <div class="col-5"><br>
         <div class="card" style="">
-          <div class="card-body">
+            <div class="card-title">Register</div>
+            <div class="card-subtitle">Sign up with your organization issues credentials.</div>
+            <% if(typeof err !== 'undefined'){ %>
+                <div class="card-subtitle text-danger" style="opacity: 1;"><%= err %></div>
+            <% } %>
             <form method="post" action="/register">
-              <div class="form-group">
-                <label for="user">Username</label>
-                <input type="text" class="form-control" id="user" name="user" placeholder="">
-                <small class="text-muted">Use your Chico State username</small>
-              </div>
-              <div class="form-group">
-                <label for="firstname">Firstname</label>
-                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="">
-              </div>
-              <div class="form-group">
-                <label for="lastname">Lastname</label>
-                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="">
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="">
-                <small class="text-muted">Use your Chico State email</small>
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="">
-              </div>
-              <div class="form-group">
-                <label for="password">Confirm Password</label>
-                <input type="password" class="form-control" id="confPassword" name="confPassword" placeholder="">
-              </div>
-              <button type="submit" class="btn btn-primary">Signup</button>
-              <small class="text-warning"><% if(typeof error != 'undefined'){ if(error.type == "register"){ %> <%= error.message %> <% } } %></small>
-              <a href="/login" class="float-right" style="vertical-align:middle;">Login</a>
+                <div class="form-group">
+                    <label for="user">Username</label>
+                    <input type="text" class="form-control" id="user" name="user" placeholder="">
+                    <small class="text-muted">Use your <%= platform.organization %> username</small>
+                </div>
+                <div class="form-group">
+                    <label for="firstname">Firstname</label>
+                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Lastname</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="">
+                    <small class="text-muted">Use your <%= platform.organization %> email</small>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label for="password">Confirm Password</label>
+                    <input type="password" class="form-control" id="confPassword" name="confPassword"
+                           placeholder="">
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="/login">Login</a>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </div>
             </form>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 </body>
 <%- include("partials/footer.ejs") %>
 </html>

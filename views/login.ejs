@@ -2,11 +2,6 @@
 <html lang="en">
 <%- include("partials/header") %>
 <%- include("partials/nav.ejs") %>
-<style>
-    body {
-
-    }
-</style>
 <body>
 <div class="container">
     <div class="col-5"><br>
@@ -19,7 +14,7 @@
             <form method="post" action="/login">
                 <div class="form-group">
                     <input type="user" class="form-control" id="logUser" name="logUser" placeholder="Username">
-                    <small class="text-muted">Your Chico State username</small>
+                    <small class="text-muted">Your <%= platform.organization %> username</small>
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" id="logPassword" name="logPassword"

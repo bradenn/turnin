@@ -13,10 +13,9 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     if (req.body.password !== req.body.confPassword) {
-        let err = new Error('Passwords do not match.');
-        err.status = 400;
-        res.send("passwords dont match");
-        return next(err);
+        return res.render("register", {
+            err: "Passwords do not match..."
+        });
     }
 
 
@@ -35,12 +34,7 @@ router.post('/', function (req, res, next) {
             User.create(userData, function (error, user) {
                 if (error) {
                     return res.render("register", {
-                        title: "Login",
-                        user: user,
-                        error: {
-                            type: "register",
-                            message: "This username or email is taken."
-                        }
+                        err: "This username or email is already in use."
                     });
                 } else {
                     req.session.userId = user._id;
@@ -50,12 +44,7 @@ router.post('/', function (req, res, next) {
             });
         } else {
             return res.render("register", {
-                title: "Login",
-                user: null,
-                error: {
-                    type: "register",
-                    message: "You fucking bafoon! Who the fuck puts a god damn space in their fucking username!? Try again."
-                }
+               err: "Since when is it okay to put a space in your username? Try again..."
             });
         }
     } else {
@@ -65,12 +54,7 @@ router.post('/', function (req, res, next) {
                     next();
                 } else {
                     return res.render("register", {
-                        title: "Login",
-                        user: user,
-                        error: {
-                            type: "register",
-                            message: "All fields must be complete"
-                        }
+                       err: "All fields must be complete"
                     });
                 }
             });
