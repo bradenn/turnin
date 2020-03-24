@@ -22,7 +22,7 @@ router.post('/', function (req, res, next) {
     if (req.body.email && req.body.user && req.body.firstname &&
         req.body.password && req.body.lastname && req.body.confPassword) {
         let userNameString = req.body.user;
-        if (userNameString.includes(" ") == false) {
+        if (!userNameString.includes(" ")) {
             let userData = {
                 email: req.body.email,
                 username: req.body.user,

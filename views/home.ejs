@@ -11,9 +11,9 @@
     %>
     <%- include("partials/title.ejs", {title: "Dashboard", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 mb-4">
             <div class="card-title">Assignments</div>
-            <div class="card-subtitle">Includes unassigned and assigned assignments.</div>
+            <div class="card-subtitle">Assignments due in all enrolled classes</div>
             <div class="table-responsive">
                 <table class="table ">
                     <thead>
@@ -69,6 +69,63 @@
             </div>
 
         </div>
+
+        <div class="col-12">
+            <div class="card-title">Past Assignments</div>
+            <div class="card-subtitle">These assignments can no longer be submitted</div>
+            <div class="table-responsive">
+                <table class="table ">
+                    <thead>
+                    <tr>
+                        <th scope="col">Assignment</th>
+                        <th scope="col">Course</th>
+                        <th scope="col">Due Date</th>
+                        <th scope="col">Cutoff</th>
+                        <th scope="col">Attempts</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% courses.forEach(course => {
+                        let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) < 0);
+                    assignments.forEach(assignment => {
+                        let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
+                    %>
+                    <tr>
+                        <td><strong><%= assignment.name %></strong></td>
+                        <td><%= course.name %>.<%= course.section %></td>
+                        <td><%= new Date(assignment.duedate).toLocaleDateString() %>
+                            - <%= timeTill(new Date(assignment.duedate)) %>
+
+                        </td>
+                        <td><%= new Date(assignment.late).toLocaleDateString() %>
+                            - <%= timeTill(new Date(assignment.late)) %>
+                        </td>
+                        <td style="max-width: 20vw;">
+                            <div class="">
+                                <% let set = attempts.map(attempt => {
+                                    let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                                    let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
+                                    return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                });
+                                %>
+                                <%- set.join(", ") %>
+                            </div>
+                        </td>
+                        <% }); if(assignments.length === 0){ %>
+                            <td>You have no past assignments.</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        <% } %>
+                        <% }); %>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
     </div>
 </div>
 </body>

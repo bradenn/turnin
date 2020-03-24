@@ -10,7 +10,7 @@
 <body>
 <div class="container">
     <%
-    let buttons = [`<a href="/assignments/grades/${assignment._id}">View Grades</a>`]
+    let buttons = [`<a href="/assignments/${assignment._id}/grades">View Grades</a>`]
     %>
     <%- include("partials/title.ejs", {title: assignment.name, subtitle: `Due ${ new Date(assignment.duedate).toLocaleDateString() }; accepted until ${ new Date(assignment.late).toLocaleDateString() }`,
     buttons: buttons, backName: "Assignments", backLink: "/assignments"}) %>

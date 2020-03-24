@@ -54,20 +54,15 @@ router.get('/:assignment/delete', async (req, res, next) => {
     });
 });
 
-router.get('/grades/:assignment', function (req, res) {
-    User.findById(req.session.userId, function (userError, user) {
-        Assignment.findById(req.params.assignment, function (err, assignment) {
-            Course.findOne({assignments: assignment._id}, function (err, course) {
-                res.render('grades', {
-                    user: user,
-                    assignment: assignment,
-                    students: course.students,
-                    course: course,
-                    back: req.back
-                });
-            }).populate("students");
-        }).populate("responses");
-    });
+router.get('/:assignment/grades', function (req, res) {
+    Assignment.findById(req.params.assignment, function (err, assignment) {
+        Course.findOne({assignments: assignment._id}, function (err, course) {
+            res.render('grades', {
+                assignment: assignment,
+                course: course,
+            });
+        }).populate("students");
+    }).populate("responses");
 });
 
 router.get('/edit/:assignment/file/remove/:file', async (req, res, next) => {
@@ -95,7 +90,7 @@ router.get('/edit/:assignment/test/:test/remove/', async (req, res, next) => {
 
 router.post('/edit/:assignment/files/add', async (req, res, next) => {
     if (utils.authenticateUser(req.user)) return res.redirect("/");
-        console.log(req.body.name);
+    console.log(req.body.name);
     Assignment.findOneAndUpdate({_id: req.params.assignment}, {$push: {files: req.body.name}}, (err, assignment) => {
         res.redirect("back");
     });
@@ -236,7 +231,7 @@ router.post('/new', function (req, res, next) {
             if (user != null && user.type > 0) {
                 let e = {
                     name: req.body.assignmentName,
-                    files: (req.body.assignmentFiles !== "")?req.body.assignmentFiles.split(", "):[],
+                    files: (req.body.assignmentFiles !== "") ? req.body.assignmentFiles.split(", ") : [],
                     duedate: req.body.assignmentDueDate,
                     late: req.body.assignmentLateDueDate,
                     command: req.body.makeCommand,
