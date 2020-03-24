@@ -42,17 +42,25 @@ app.use(express.static(__dirname + '/public'));
 
 // include routes
 let routes = require('./routes/');
+let publicRoutes = require('./routes/public.js');
 
 app.locals.platform = platform;
 
+/* Send requests not requiring login */
+app.use('/', publicRoutes);
+
 app.use(async (req, res, next) => {
     const user = await User.findById(req.session.userId).exec();
+
+    if (user == null) return res.redirect('/login');
+
     req.back = req.get("referer");
     app.locals.user = user;
     req.user = user;
     next();
 });
 
+/* Send requests requiring login */
 app.use('/', routes);
 
 app.use((req, res, next) => {
@@ -62,7 +70,7 @@ app.use((req, res, next) => {
 });
 
 process.on("uncaughtException", function (err) {
-    
+
 });
 
 app.use((err, req, res, next) => {

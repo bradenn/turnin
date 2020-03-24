@@ -6,7 +6,6 @@ let Course = require('../models/course');
 let database = require('../services/database');
 
 router.get('/', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
     let courses = await Course.find({instructor: req.session.userId}).exec();
     res.render("courses", {user: req.user, courses: courses});
 });
