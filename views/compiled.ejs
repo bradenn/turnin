@@ -37,7 +37,7 @@
                                 <% if(result.error_type.includes("stderr")){ %>
                                     <strong>Error Output</strong>
                                     <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
-                                         style="padding-left: 3.2em;"><code><%= JSON.parse(result.error_diff).map((ln) => (ln.added) ? `+ ${ln.value}` : (ln.removed) ? `- ${ln.value}` : ln.value).join("\n") %></code></pre>
+                                         style="padding-left: 3.2em;"><code><%= JSON.parse(result.error_diff).map((ln) => (ln.added) ? `+ ${ln.value}` : (ln.removed) ? `- ${ln.value}` : ln.value.join('\n')).join("\n") %></code></pre>
                                 <% } %>
                             <% } %>
                         </div>

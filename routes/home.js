@@ -2,13 +2,15 @@ let router = require('express').Router();
 let User = require('../models/user');
 let Course = require('../models/course');
 let Assignments = require('../models/assignment');
+let Workspace = require('../models/workspace');
 
 router.get('/', async (req, res, next) => {
-    if (!req.user) return res.redirect("/login");
     let courses = await Course.find({_id: {$in: req.user.courses}});
+    let workspaces = await Workspace.find({student: req.user._id}).exec();
     return res.render("home", {
         user: req.user,
-        courses: courses
+        courses: courses,
+        workspaces: workspaces
     });
 });
 

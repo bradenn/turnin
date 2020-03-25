@@ -23,7 +23,7 @@
                         <th scope="col">Due Date</th>
                         <th scope="col">Cutoff</th>
                         <th scope="col">Attempts</th>
-                        <th scope="col" style="width: 1em;">Options</th>
+                        <th scope="col">Options</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,7 +53,12 @@
                                 <%- set.join(", ") %>
                             </div>
                         </td>
-                        <td><a href="/submit/<%= assignment._id %>" class="">Submit</a></td>
+                        <td>
+                        <% if(!workspaces.map(workspace => workspace.assignment.toString()).includes(assignment._id.toString())){ %>
+                            <a href="/workspace/create/<%= assignment._id %>">Open Workspace</a>
+                        <% }else{ %>
+                            <a href="/workspace/<%= workspaces.find(workspace => (workspace.assignment.toString() === assignment._id.toString()))._id %>">Open Workspace</a>
+                        <% } %>&nbsp;<a href="/submit/<%= assignment._id %>" class="">Upload</a></td>
                         <% }); %>
                         <% }); if(courses.length === 0){ %>
                             <td>You have no classes.</td>
