@@ -3,6 +3,8 @@ let router = express.Router();
 
 router.use('/', require('./home.js'));
 router.use('/courses', require('./course.js'));
+router.use('/editor', require('./editor.js'));
+router.use('/workspace', require('./workspace.js'));
 router.use('/assignments', require('./assignments.js'));
 router.use('/response', require('./response.js'));
 router.use('/test', require('./test.js'));

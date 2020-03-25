@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/header") %>
+<%- include("partials/nav") %>
+<link href="/css/prism.css" rel="stylesheet"/>
+<body>
+<style>
+    .str {
+        text-decoration: line-through;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Workspace Compiled: <%= workspace.assignment.name %></h3>
+            <div class="card-subtitle">Close this tab when done, or reload to recompile latest save.
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <% results.forEach(result => { %>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-title d-flex justify-content-between"><%= result.test.name %>
+                                <span><%= result.error_type.join(", ") %></span></div>
+                            <div class="card-subtitle">Your
+                                program <%= (result.error_type.length == 0) ? "passed" : "failed" %> the test.
+                            </div>
+                            <% if(!result.error_type.length == 0){ %>
+                                <% if(result.error_type.includes("stdout")){ %>
+                                    <strong>Standard Output</strong>
+                                    <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
+                                         style="padding-left: 3.2em;"><code><%= JSON.parse(result.diff).map((ln) => (ln.added) ? `+ ${ln.value}` : (ln.removed) ? `- ${ln.value}` : ln.value.join('\n')).join("\n") %></code></pre>
+                                <% } %>
+                                <% if(result.error_type.includes("stderr")){ %>
+                                    <strong>Error Output</strong>
+                                    <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
+                                         style="padding-left: 3.2em;"><code><%= JSON.parse(result.error_diff).map((ln) => (ln.added) ? `+ ${ln.value}` : (ln.removed) ? `- ${ln.value}` : ln.value).join("\n") %></code></pre>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <div class="col-4">
+            <div class="card m-0 p-0">
+                <div style="padding:16px; padding-bottom: 0;">
+                    <div class="card-title">Information</div>
+                    <div class="card-subtitle">Details about the program's test results</div>
+                </div>
+                <ul class="list-group list-group-flush mb-1">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Signal:</span>
+                        <%= (compile.signal) ? compile.signal : "none" %>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Exit Code:</span>
+                        <%= compile.code %>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/js/prism.js"></script>
+<%- include("partials/footer.ejs") %>
+</html>
