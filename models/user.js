@@ -21,6 +21,11 @@ let UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
     }],
+    darkmode: {
+        type: Boolean,
+        default: true
+    },
+    github: String,
     firstname: String,
     lastname: String,
     password: String,

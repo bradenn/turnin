@@ -7,7 +7,7 @@
         margin-bottom: 1.5em;
     }
 </style>
-<body>
+<body class="preload">
 <div class="container">
     <%
     let buttons = [`<a href="/assignments/${assignment._id}/grades">View Grades</a>`]
@@ -25,7 +25,7 @@
                     <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post" class="">
                         <div class="d-flex pb-3">
                             <input type="text" class="form-control" id="name" name="name" placeholder="Filename">&nbsp;
-                            <input type="submit" class="btn btn-primary btn-sm" value="Add File">
+                            <input type="submit" class="btn btn-primary" value="Add File">
                         </div>
                     </form>
                 </div>
@@ -83,7 +83,7 @@
                                 <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
                                     file... (*.*)</label>
                             </div>
-                            <input type="submit" class="btn btn-primary btn-sm" value="Add Files">
+                            <input type="submit" class="btn btn-primary" value="Add Files">
                         </div>
                     </form>
                 </div>
@@ -131,7 +131,7 @@
                                 <label class="custom-file-label border-right-1" for="inputGroupFile01" id="inputGroupFile01Label">Choose
                                     file... (*.tar)</label>
                             </div>
-                            <input type="submit" class="btn btn-primary btn-sm" value="Add tests">
+                            <input type="submit" class="btn btn-primary" value="Add tests">
                         </div>
                     </form>
                 </div>

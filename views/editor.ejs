@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include("partials/header") %>
-<%- include("partials/nav.ejs") %>
-<body>
+<%- include("partials/nav") %>
+<style>
+    body {
+    }
+</style>
+<body class="preload">
 <div class="container">
-
     <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between align-items-end">
-                <h3>Workspace: <%= workspace.assignment.name %></h3>
-                <span id="saveMessage" class="text-success">&nbsp;</span>
-            </div>
+        <div class="col-md-12 p-0 d-flex justify-content-between align-content-end">
+            <h4><%= workspace.assignment.name %></h4>
+            <span id="saveMessage" class="text-success">&nbsp;</span>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <ul class="nav nav-tabs justify-content-between">
+        <div class="col-md-12 p-0">
+            <ul class="nav nav-tabs justify-content-between" style="border-radius: 8px 8px 0 0">
                 <ul class="nav">
                      <span class="navbar-text text-white">
                     <i class="fas fa-code"></i>
@@ -34,24 +35,64 @@
                         <a href="#save" class="text-white" onclick="buildSave()"><i class="far fa-save"></i></a>
                     </span>
                     <span class="navbar-text text-white mx-2">
-                            <a href="/workspace/<%= workspace._id %>/compile" target="_blank" class="text-white" onclick="buildSave()"><i class="fas fa-play"></i></a>
+                            <a href="/workspace/<%= workspace._id %>/compile" target="_blank" class="text-white"
+                               onclick="buildSave()"><i class="fas fa-play"></i></a>
                     </span>
                     <span class="navbar-text text-white mx-2 mr-3">
                             <a href="#save" class="text-white" onclick="buildSave()"><i class="fas fa-upload"></i></a>
                     </span>
                 </ul>
             </ul>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
             <div id="editor"></div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <ul class="nav nav-tabs justify-content-between">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#nav-tests" role="tab"
+                           aria-controls="nav-status" aria-selected="false">Tests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#nav-output" role="tab" aria-controls="nav-status"
+                           aria-selected="false">Output</a>
+                    </li>
+                </ul>
+                <ul class="nav">
+                </ul>
+            </ul>
+            <div class="card border-top-0" style="border-radius: 0 0 8px 8px; min-height: 10em;">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade active show" id="nav-tests" role="tabpanel"
+                         aria-labelledby="nav-profile-tab">
+                        <% workspace.assignment.tests.forEach(test => { %>
+                            <div class="card pl-2 py-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <span><i class="far fa-dot-circle text-muted mr-2"></i></span>
+                                        <span><%= test.name %></span>
+                                    </div>
+                                    <div class="text-muted">
+                                        Not compiled
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                    <div class="tab-pane fade" id="nav-output" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        Outputs
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 </body>
 
 <script src="/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/codemirror/theme/one-dark.css">
 <link rel="stylesheet" href="/codemirror/lib/codemirror.css">
 <script src="/codemirror/mode/clike/clike.js"></script>
 <script>
@@ -72,7 +113,8 @@
     let editor = new CodeMirror(document.getElementById("editor"), {
         lineNumbers: true,
         matchBrackets: true,
-        mode: "text/x-c++src"
+        mode: "text/x-c++src",
+        theme: "one-dark"
     });
 
     setBuffer("<%= workspace.files[0].name %>");
@@ -83,10 +125,22 @@
         <% workspace.files.forEach(file => { %>
         saveCache.push({_id: "<%= file._id %>", content: buffers["<%= file.name %>"].getValue().split('\n')})
         <% }); %>
-        console.log(saveCache);
+
         $.post('/workspace/<%= workspace._id %>/save', {files: saveCache});
         $("#saveMessage").html(`Last saved: ${new Date().toLocaleTimeString()}`);
         saveCache = [];
+    }
+
+    compileCode();
+
+    function compileCode() {
+        fetch('/workspace/<%= workspace._id %>/compile')
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+            });
     }
 
     jQuery(document).keydown(function (event) {

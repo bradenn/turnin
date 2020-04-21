@@ -8,7 +8,7 @@
         margin-bottom: 1.5em;
     }
 </style>
-<body>
+<body class="preload">
 <div class="container">
     <%
     let buttons = [`<a href="/submit/${result.assignment._id}">Submit again</a>`]
@@ -18,10 +18,18 @@
     <div class="row">
         <% if(!result.compiled){ %>
             <div class="col-8">
-                <div class="card p-2 pl-3 mb-0 border-danger alert alert-danger">
-                    <span><strong>Failed</strong>&nbsp;Your program did not compile. Tests could not be completed.</span>
+                <div class="card pl-3 py-2">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span><i class="fas fa-times text-danger mr-2"></i></span>
+                            <span>Failed</span>
+                        </div>
+                        <div class="text-muted">
+                            Your program did not compile. Tests could not be completed.
+                        </div>
+                    </div>
                 </div>
-                <br>
+
                 <div class="card">
                     <div class="card-title">Standard Output</div>
                     <div class="card-subtitle">The program's standard output</div>
@@ -42,22 +50,29 @@
                     <div class="card-title">Tests</div>
                     <div class="card-subtitle">Results of all test outputs</div>
                     <% result.outputs.forEach(function(test){ let pass = test.error_type.length < 1; %>
+
                     <a href="/response/output/<%= test._id %>" class="no-bs">
-                        <div class="card p-2 pl-3 m-0 mb-1 border-<%= (pass) ? "success" : "danger" %> d-flex flex-row justify-content-between alert alert-<%= (pass) ? "success" : "danger" %>">
-                        <span class=""><strong><%= test.test.name %></strong>
-                            <% if(!pass){ %>
-                                <%= test.error_type.map(err => {
-                                    return (err.includes("loop"))
-                                            ? "Infinite Loop; Program Terminated" : (err.includes("stdout"))
-                                                    ? "Incorrect Output" : (err.includes("stderr"))
-                                                            ? "Incorrect Error" : (err.includes("exit"))
-                                                                    ? "Incorrect Exit Code" : "Like idk";
-                                }).join(", "); %>
-                            <% }else{ %>
-                                Test Passed
-                            <% } %>
-                        </span>
-                            <span class="">Click to view results</span>
+                        <div class="card pl-3 py-2 mb-2">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <span><i class="text-<%= (pass) ? "success" : "danger" %> far fa-dot-circle mr-2"></i></span>
+                                    <span><%= test.test.name %></span>
+
+                                </div>
+                                <div class="text-muted">
+                                    <% if(!pass){ %>
+                                        <%= test.error_type.map(err => {
+                                            return (err.includes("loop"))
+                                                    ? "Infinite Loop; Program Terminated" : (err.includes("stdout"))
+                                                            ? "Incorrect Output" : (err.includes("stderr"))
+                                                                    ? "Incorrect Error" : (err.includes("exit"))
+                                                                            ? "Incorrect Exit Code" : "Like idk";
+                                        }).join(", "); %>
+                                    <% }else{ %>
+                                        Test Passed
+                                    <% } %>
+                                </div>
+                            </div>
                         </div>
                     </a>
                     <% }); %>

@@ -2,34 +2,79 @@
 <html lang="en">
 <%- include("partials/header") %>
 <%- include("partials/nav.ejs") %>
-<body>
+<body class="preload">
 <div class="container">
     <%
     let buttons = []
     %>
     <%- include("partials/title.ejs", {title: "Profile", subtitle: ``, buttons: buttons}) %>
     <div class="row">
-        <div class="col-5"><br>
+        <div class="col-md-12"><br>
             <div class="card" style="">
-                <div class="card-title">Profile</div>
-                <div class="card-subtitle">Sign in with your username and password.</div>
-                <% if(typeof err !== 'undefined'){ %>
-                    <div class="card-subtitle text-danger" style="opacity: 1;"><%= err %></div>
-                <% } %>
-                <form method="post" action="/login">
-                    <div class="form-group">
-                        <input type="user" class="form-control" id="logUser" name="logUser" placeholder="Username">
-                        <small class="text-muted">Your <%= platform.organization %> username</small>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" id="logPassword" name="logPassword"
-                               placeholder="Password">
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="/register">Create account</a>
-                        <div>
-                            <button type="submit" class="btn btn-primary">Login</button>
+                <div class="card-title">Edit Profile</div>
+                <div class="d-flex justify-content-between">
+                    <div class="card-subtitle">Here you can change most of your profile info.</div>
+                    <% if(typeof error !== 'undefined'){ %>
+                        <div class="card-subtitle text-danger" style="opacity: 1;"><%= error %></div>
+                    <% } %>
+                    <% if(typeof success !== 'undefined'){ %>
+                        <div class="card-subtitle text-success" style="opacity: 1;">Changes saved</div>
+                    <% } %>
+                </div>
+
+                <form method="post" action="/user/<%= user._id %>/edit">
+                    <div class="form-row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Firstname</label>
+                                <input type="text" class="form-control" name="firstname"
+                                       value="<%= user.firstname %>">
+                                <small class="text-muted">Legal first name</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Lastname</label>
+                                <input type="text" class="form-control" name="lastname"
+                                       value="<%= user.lastname %>">
+                                <small class="text-muted">Legal last name</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" name="password">
+                                <small class="text-muted">Choose a secure password</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" class="form-control" name="passwordConf">
+                                <small class="text-muted">Confirm previous password</small>
+                            </div>
                         </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" class="form-control" name="" disabled
+                                       placeholder="<%= user.username %>">
+                                <small class="text-muted">Username cannot be changed</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" name="email" placeholder="example@example.com"
+                                       value="<%= user.email %>">
+                                <small class="text-muted">Your organization email address</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Github</label>
+                                <input type="text" class="form-control" name="github" value="<%= user.github %>"
+                                       placeholder="github.com/username">
+                                <small class="text-muted">Not required</small>
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label><br>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>

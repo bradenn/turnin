@@ -4,6 +4,7 @@ let Course = require('../models/course');
 let Workspace = require('../models/workspace');
 let Assignment = require('../models/assignment');
 let rest = require('../services/rest');
+let submission = require('../services/submission');
 
 router.get('/', async (req, res, next) => {
     let courses = await Course.find({_id: {$in: req.user.courses}}).exec();
@@ -18,23 +19,33 @@ router.get('/', async (req, res, next) => {
 router.get('/:workspace/compile', async (req, res, next) => {
     let workspace = await Workspace.findOne({_id: req.params.workspace}).populate('assignment', ['tests', 'name']).exec();
     let results = [];
-    let compiledOutput = await rest.compileProgram(workspace._id);
-    let testOutputs = compiledOutput.data.tests;
-    testOutputs.forEach(test => {
-        results.push(rest.getDifferenceForAssignment(test, workspace.assignment.tests.find(check => (check._id.toString() === test._id.toString()))));
+    await submission.evaluateFromWorkspace(workspace._id, (result, err) => {
+        if (err) {
+            res.render('compiled', {
+                results: null,
+                workspace: workspace,
+                debug: result.debug,
+                compile: result.compile,
+                error: err
+            });
+        } else {
+            let testOutputs = result.tests;
+            testOutputs.forEach(test => {
+                results.push(rest.getDifferenceForAssignment(test, workspace.assignment.tests.find(check => (check._id.toString() === test._id.toString()))));
+            });
+            res.render('compiled', {
+                results: results,
+                workspace: workspace,
+                debg: result.debug,
+                compile: result.compile
+            });
+        }
     });
-    res.render('compiled', {
-        results: results,
-        workspace: workspace,
-        debug: compiledOutput.data.debug,
-        compile: compiledOutput.data.compile
-    });
-
 });
 
 router.get('/:id', async (req, res, next) => {
     let workspace = await Workspace.findOne({_id: req.params.id}).populate('files').populate('assignment').exec();
-    return res.render("editor", {
+    res.render("editor", {
         workspace: workspace
     });
 });

@@ -33,7 +33,6 @@ let compileProgram = (workspaceId) => {
             }
         });
         postRequest.on('error', (err) => {
-            console.log("Err");
             resolve({err: err, data: null});
         });
         postRequest.on('response', (response) => {

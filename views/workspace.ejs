@@ -3,7 +3,7 @@
 <%- include("partials/header.ejs") %>
 <%- include("partials/nav.ejs") %>
 
-<body>
+<body class="preload">
 <div class="container">
     <%
     let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
@@ -12,6 +12,7 @@
     <%- include("partials/title.ejs", {title: "My Workspaces", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
     <div class="row">
         <div class="col-12 mb-4">
+            <div class="card">
             <div class="card-title">Current Assignments</div>
             <div class="card-subtitle">Assignments you can use Workspaces with</div>
             <div class="table-responsive">
@@ -61,7 +62,7 @@
                     </tbody>
                 </table>
             </div>
-
+            </div>
         </div>
     </div>
 </div>

@@ -26,13 +26,18 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
             let files = [];
             let dbFiles = [];
             for (let i = 0; i < assignment.files.length; i++) {
+                let targetFile = req.files.find(file => file.originalname === assignment.files[i]);
+                if(typeof targetFile === 'undefined'){
+                    res.render("submit", {assignment: assignment, error: "Incorrect file upload; try again."});
+                    return;
+                }
                 dbFiles.push({
                     name: assignment.files[i],
                     date: new Date(),
                     student: user._id,
-                    content: String(req.files[i].buffer).split("\n")
+                    content: String(targetFile.buffer).split("\n")
                 });
-                files.push({name: assignment.files[i], contents: String(req.files[i].buffer).split("\n")});
+                files.push({name: assignment.files[i], contents: String(targetFile.buffer).split("\n")});
             }
             assignment.shared_files.forEach(file => files.push({name: file.name, contents: file.content}));
             File.create(dbFiles, (err, filesM) => {
@@ -55,17 +60,11 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                         tests
                     }
                 });
-                console.log(JSON.stringify({
-                    make: assignment.command,
-                    files,
-                    tests
-                }));
                 process.on("uncaughtException", (err) => {
-                    console.log(err);
-                    res.render("submit", {user: user, assignment: assignment, error: "largefile"});
+                    res.render("submit", {assignment: assignment, error: "largefile"});
                 });
                 re.on('error', function (err) {
-                    res.render("submit", {user: user, assignment: assignment, error: "noserver"});
+                    res.render("submit", {assignment: assignment, error: "noserver"});
                 });
                 re.on('response', function (response) {
                     let body = '';
@@ -97,7 +96,8 @@ utils.postRouteWithUserAndFiles('/:assignment', router, (req, res, user, next) =
                                     exit: result.code,
                                     stdout: result.stdout,
                                     stderr: result.stderr,
-                                    signal: result.signal
+                                    signal: result.signal,
+                                    time: result.time
                                 });
                             });
                             Output.create(testResults, (err, tst) => {

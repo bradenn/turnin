@@ -14,6 +14,7 @@ let OutputSchema = new mongoose.Schema({
     message: String,
     passed: Boolean,
     diff: String,
+    time: Number,
     error_diff: String,
     error_type: [{
         type: String,

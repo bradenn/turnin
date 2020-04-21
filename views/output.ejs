@@ -3,7 +3,7 @@
 <%- include("partials/header") %>
 <%- include("partials/nav") %>
 <link href="/css/prism.css" rel="stylesheet"/>
-<body>
+<body class="preload">
 <style>
     .str {
         text-decoration: line-through;
@@ -53,7 +53,7 @@
                                      style="padding-left: 3.2em;"><code><%= output.stdout.join("\n") %></code></pre>
                                 Difference
                                 <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
-                                     style="padding-left: 3.2em;"><code><%= JSON.parse(output.diff).map((ln) => (ln.added)?`+ ${ln.value}`:(ln.removed)?`- ${ln.value}`:ln.value).join("\n") %></code></pre>
+                                     style="padding-left: 3.2em;"><code><%= JSON.parse(output.diff).map((ln) => (ln.added)?`+ ${ln.value.join("\n")}`:(ln.removed)?`- ${ln.value.join("\n")}`:ln.value.join("\n")).join("\n") %></code></pre>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                                  style="padding-left: 3.2em;"><code><%= output.stderr.join("\n") %></code></pre>
                             Difference
                             <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
-                                 style="padding-left: 3.2em;"><code><%= JSON.parse(output.error_diff).map((ln) => (ln.added)?`+ ${ln.value}`:(ln.removed)?`- ${ln.value}`:ln.value).join("\n") %></code></pre>
+                                 style="padding-left: 3.2em;"><code><%= JSON.parse(output.error_diff).map((ln) => (ln.added)?`+ ${ln.value.join("\n")}`:(ln.removed)?`- ${ln.value.join("\n")}`:ln.value.join("\n")).join("\n") %></code></pre>
                         </div>
                     </div>
                 </div>
