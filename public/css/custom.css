@@ -382,3 +382,12 @@ code {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.jumbotron {
+    background-color: var(--bg);
+}
+
+code{
+    color: var(--primary);
+    font-size: 15px;
+}
