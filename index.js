@@ -14,7 +14,7 @@ app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 //connect to MongoDB
 mongoose.connect(config.mongourl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
-var db = mongoose.connection;
+let db = mongoose.connection;
 mongoose.set('useCreateIndex', true);
 //handle mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
