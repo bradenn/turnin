@@ -1,4 +1,4 @@
-const config = require("./env/config.json");
+const config = require("./env/env.js");
 let express = require('express');
 let app = express();
 let bodyParser = require('body-parser');
@@ -13,7 +13,7 @@ let User = require('./models/user');
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 //connect to MongoDB
-mongoose.connect(config.mongourl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
+mongoose.connect(config.MONGO, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 let db = mongoose.connection;
 mongoose.set('useCreateIndex', true);
 //handle mongo error
@@ -80,6 +80,10 @@ app.use((err, req, res, next) => {
 
 
 // listen on port {port} <- config
-app.listen(config.port, function () {
-    console.log('Express server started. Listing on port ' + config.port + '.');
+app.listen(config.PORT, function () {
+    console.log(`Turnin-gateway started. Listing on port ${config.PORT}.`);
+    if (process.env.NODE_ENV === "production") {
+        console.log(`Running in cluster mode. Instance: ${process.env.INSTANCE_ID}`);
+    }
+
 });

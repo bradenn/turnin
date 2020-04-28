@@ -33,20 +33,20 @@ let UserSchema = new mongoose.Schema({
 });
 
 UserSchema.statics.authenticate = async (username, password) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         User.findOne({"username": {$regex: new RegExp(username, "i")}})
             .exec(function (err, user) {
-                if (err) {
-                    resolve({user: user, err: err});
-                } else if (!user) {
+                if (err) reject(err);
+                if (!user) {
                     let err = new Error('This user does not exist...');
                     err.status = 401;
-                    resolve({user: user, err: err});
+                    reject(err);
                 }
                 if (verifyHash(password, user.password)) {
-                    resolve({user: user, err: err});
+                    resolve(user);
                 } else {
-                    resolve({user: null, err: new Error("Your password is incorrect...")});
+                    let err = new Error("Your password is incorrect...");
+                    reject(err);
                 }
             });
     });

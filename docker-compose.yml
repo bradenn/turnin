@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  turnin-gateway:
+    image: turnin-gateway:1.0.2
+    env_file:
+      - .env
+    ports:
+      - 3055:3000
