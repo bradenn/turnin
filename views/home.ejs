@@ -36,14 +36,9 @@
                         %>
                         <tr>
                             <td><i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong></td>
-                            <td><%= course.name %>.<%= course.section %></td>
-                            <td><%= new Date(assignment.duedate).toLocaleDateString() %>
-                                - <%= timeTill(new Date(assignment.duedate)) %>
-
-                            </td>
-                            <td><%= new Date(assignment.late).toLocaleDateString() %>
-                                - <%= timeTill(new Date(assignment.late)) %>
-                            </td>
+                            <td><span tabindex="0" data-toggle="tooltip" title="Section <%= course.section %>"><%= course.name %></span></td>
+                            <td><span tabindex="0" data-toggle="tooltip" title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span></td>
+                            <td><span tabindex="0" data-toggle="tooltip" title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span></td>
                             <td style="max-width: 20vw;">
                                 <div class="">
                                     <% let set = attempts.map(attempt => {
@@ -58,7 +53,11 @@
                                         All Attempts
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <% if(set.length){ %>
                                         <%- set.join(""); %>
+                                        <% }else{ %>
+                                            <span class="text-muted">No Attempts</span>
+                                        <% } %>
                                     </div>
                                 </div>
                             </td>
