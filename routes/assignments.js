@@ -149,73 +149,91 @@ utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, us
 
 let tar = require('tar-stream');
 let archive = require('../services/archive');
+let tests = require('../services/tests');
 let fs = require("fs");
-utils.postRouteWithUserAndTar('/edit/:assignment/tar', router, async (req, res, next, user) => {
-    Assignment.findById(req.params.assignment, function (err, assignment) {
-        utils.unpackTar("./uploads/" + req.files[0].filename, req.files[0].originalname, (error, files) => {
-            if (error) {
-                res.redirect(req.get('referer') + "?error=" + error.code);
-            }
-            let formattedData = [];
-            // {name: 't00', files: [{name: "t01.in", lines: [""]}]}
-            files.forEach(test => {
-                let inputs = [];
-                let outputs = [];
-                let errors = [];
-                let cmd = "";
-                let code = 0;
-                let provided = [];
-                let hidden = false;
-                test.files.forEach(file => {
-                    let ln = utils.readFile(`${req.files[0].originalname.replace(".tar", "")}/tests/${file}`);
-                    switch (file.split(".")[1]) {
-                        case "in":
-                            inputs = ln;
-                            break;
-                        case "hide":
-                            inputs = ln;
-                            hidden = true;
-                            break;
-                        case "out":
-                            outputs = ln;
-                            provided.push('out');
-                            break;
-                        case "err":
-                            errors = ln;
-                            provided.push('err');
-                            break;
-                        case "cmd":
-                            cmd = ln.join(" ");
-                            provided.push('cmd');
-                            break;
-                        case "exit":
-                            code = ln[0];
-                            provided.push('exit');
-                            break;
-                        default:
-                            break;
-                    }
-                });
-                formattedData.push({
-                    name: test.name,
-                    outputs: outputs,
-                    inputs: inputs,
-                    error: errors,
-                    arguments: cmd,
-                    code: code,
-                    provided: provided,
-                    hidden: hidden
-                });
-            });
-            //"./uploads/" + req.files[0].filename
-            Test.create(formattedData, (err, tests) => {
-                tests.forEach(test => assignment.tests.push(test._id));
-                assignment.save((err, save) => {
-                    res.redirect(req.get('referer'));
-                });
-            });
-        });
 
+let multer = require('multer');
+const upload = multer({storage: multer.memoryStorage()});
+
+router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
+    Assignment.findById(req.params.assignment, (error, assignment) => {
+        tests.untar(req.files[0].buffer).then(files => {
+            let tests = [];
+            files.forEach(file => {
+                let b = false;
+                for (let i = 0; i < tests.length; i++) {
+                    if (file.name.includes(tests[i].name)) {
+                        tests[i].files.push(file);
+                        b = true;
+                    }
+                }
+                if (!b) {
+                    tests.push({name: file.name.split(".")[0], files: [file]});
+                }
+                });
+                let formattedData = [];
+                // {name: 't00', files: [{name: "t01.in", lines: [""]}]}
+                tests.forEach(test => {
+                    let inputs = [];
+                    let outputs = [];
+                    let errors = [];
+                    let cmd = "";
+                    let code = 0;
+                    let provided = [];
+                    let hidden = false;
+                    test.files.forEach(file => {
+                        let ln = file.content;
+                        switch (file.name.split(".")[1]) {
+                            case "in":
+                                inputs = ln;
+                                break;
+                            case "hide":
+                                inputs = ln;
+                                hidden = true;
+                                break;
+                            case "out":
+                                outputs = ln;
+                                provided.push('out');
+                                break;
+                            case "err":
+                                errors = ln;
+                                provided.push('err');
+                                break;
+                            case "cmd":
+                                cmd = ln.join(" ");
+                                provided.push('cmd');
+                                break;
+                            case "exit":
+                                code = ln[0];
+                                provided.push('exit');
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                    formattedData.push({
+                        name: test.name,
+                        outputs: outputs,
+                        inputs: inputs,
+                        error: errors,
+                        arguments: cmd,
+                        code: code,
+                        provided: provided,
+                        hidden: hidden
+                    });
+                });
+                Test.create(formattedData, (err, tests) => {
+                    console.log(err);
+                    tests.forEach(test => assignment.tests.push(test._id));
+                    assignment.save((err, save) => {
+                        console.log(err);
+                        res.redirect(req.get('referer'));
+                    });
+                });
+        }).catch(error => {
+            let err = new Error(error);
+            next(err);
+        });
     });
 });
 
