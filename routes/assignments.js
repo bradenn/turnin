@@ -54,15 +54,13 @@ router.get('/:assignment/delete', async (req, res, next) => {
     });
 });
 
-router.get('/:assignment/grades', function (req, res) {
-    Assignment.findById(req.params.assignment, function (err, assignment) {
-        Course.findOne({assignments: assignment._id}, function (err, course) {
-            res.render('grades', {
-                assignment: assignment,
-                course: course,
-            });
-        }).populate("students");
-    }).populate("responses");
+router.get('/:assignment/grades', async (req, res) => {
+    const assignment = await Assignment.findById(req.params.assignment).populate("responses").exec();
+    const course = await Course.findOne({assignments: assignment._id}).exec();
+    res.render('grades', {
+        assignment: assignment,
+        course: course
+    });
 });
 
 router.get('/edit/:assignment/file/remove/:file', async (req, res, next) => {

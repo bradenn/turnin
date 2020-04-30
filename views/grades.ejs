@@ -8,58 +8,50 @@
     <%
     let buttons = []
     %>
-    <%- include("partials/title.ejs", {title: `Grades: ${assignment.name}`, subtitle: `Course: ${course.name}.${course.section}`,
+    <%- include("partials/title.ejs", {title: `Grades`, subtitle: ``,
     buttons: buttons, backName: "Back"}) %>
     <div class="row">
-        <div class="col-md-6">
-            <div class="card m-0 p-0 mb-3">
-                <div style="padding:16px; padding-bottom: 0;">
-                    <div class="card-title">Course Info</div>
-                </div>
-                <ul class="list-group list-group-flush mb-1">
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Total Students:</span>
-                        <%= course.students.length %>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Total Submissions:</span>
-                        <%= assignment.responses.length %>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Exit Code:</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
         <div class="col-md-12">
-            <div class="table-responsive">
-                <table class="table ">
-                    <thead class="">
-                    <tr>
-                        <th scope="col">Student</th>
-                        <th scope="col">Attempts</th>
-                        <th scope="col">Final</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% course.students.forEach(student => {
-                        let attempts = assignment.responses.filter(resp => resp.student._id.toString() === student._id.toString());
-                        let set = attempts.map(attempt => {
-                            let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                            let name = `Attempt ${(index <= 9) ? "0" : ""}${index}${(!attempt.compiled) ? " (Compile Failed)" : (!attempt.passed) ? "(Compile Successful)" : ""}`;
-                            return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
-                        });
-                    %>
-                    <tr>
-                        <td><%= student.firstname %> <%= student.lastname %> (<%= student.username %>)</td>
-                        <td><%- set.join(", ") %></td>
-                        <td><%= (attempts.filter(attempt => (attempt.passed)).length >= 1)?"Passed":"Failed" %>
-                            , <%= attempts.length %> attempts
-                        </td>
-                    </tr>
-                    <% }); %>
-                    </tbody>
-                </table>
+            <div class="card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="card-title"><%= assignment.name %></div>
+                        <div class="card-subtitle">Course: <%= course.name %></div>
+                    </div>
+                    <div>
+                        <span>Total Students: <%= course.students.length %></span>
+                        <span>Total Submissions: <%= assignment.responses.length %></span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table ">
+                        <thead class="">
+                        <tr>
+                            <th scope="col">Student</th>
+                            <th scope="col">Attempts</th>
+                            <th scope="col">Final</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% course.students.forEach(student => {
+                            let attempts = assignment.responses.filter(resp => resp.student._id.toString() === student._id.toString());
+                            let set = attempts.map(attempt => {
+                                let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                                let name = `Attempt ${(index <= 9) ? "0" : ""}${index}${(!attempt.compiled) ? " (Compile Failed)" : (!attempt.passed) ? "(Compile Successful)" : ""}`;
+                                return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                            });
+                        %>
+                        <tr>
+                            <td><%= student.firstname %> <%= student.lastname %> (<%= student.username %>)</td>
+                            <td><%- set.join(", ") %></td>
+                            <td><%= (attempts.filter(attempt => (attempt.passed)).length >= 1)?"Passed":"Failed" %>
+                                , <%= attempts.length %> attempts
+                            </td>
+                        </tr>
+                        <% }); %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
