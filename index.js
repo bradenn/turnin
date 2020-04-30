@@ -45,6 +45,9 @@ let routes = require('./routes/');
 let publicRoutes = require('./routes/public.js');
 
 app.locals.platform = platform;
+app.locals.platform.version = require("./package.json").version;
+app.locals.platform.hostname = require('os').hostname();
+app.locals.platform.instance = (process.env.NODE_ENV === "production")?process.env.INSTANCE_ID:"fork";
 
 /* Send requests not requiring login */
 app.use('/', publicRoutes);
@@ -52,7 +55,10 @@ app.use('/', publicRoutes);
 app.use(async (req, res, next) => {
     const user = await User.findById(req.session.userId).exec();
 
-    if (user == null) return res.redirect('/login');
+    if (user == null){
+        req.user = null;
+        return res.redirect('/login');
+    }
 
     req.back = req.get("referer");
     app.locals.user = user;

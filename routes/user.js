@@ -12,7 +12,6 @@ router.post('/:user/edit', async (req, res, next) => {
                 return res.render("profile", {error: "Passwords do not match"});
             }
         }
-        console.log(req.body);
         target.firstname = (req.body.firstname !== target.firstname) ? req.body.firstname : target.firstname;
         target.lastname = (req.body.lastname !== target.lastname) ? req.body.lastname : target.lastname;
         target.email = (req.body.email !== target.email) ? req.body.email : target.email;
