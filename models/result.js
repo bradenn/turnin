@@ -17,8 +17,7 @@ let ResultSchema = new mongoose.Schema({
     },
     outputs: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Output',
-        autopopulate: 1
+        ref: 'Output'
     }],
     files: [{
         type: mongoose.Schema.Types.ObjectId,

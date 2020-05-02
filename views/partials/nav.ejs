@@ -23,27 +23,13 @@
                     <% if(user.type > 0){ %>
                         <li class="nav-item">
                             <a class="nav-link" href="/courses">
-                                 <span class="fa-stack nav-stack" style="vertical-align: top;">
-                                  <i class="fas fa-circle fa-stack-2x"></i>
-                                  <i class="fas fa-users fa-stack-1x fa-inverse"></i>
-                                </span>
+                                 Courses
                             </a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link" href="#" id="navbarDropdown" role="button"
-                               data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                                <span class="fa-stack nav-stack" style="vertical-align: top;">
-                                  <i class="fas fa-circle fa-stack-2x"></i>
-                                  <i class="fas fa-plus fa-stack-1x fa-inverse"></i>
-                                </span>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/assignments">
+                                Assignments
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/assignments/new">New Assignment</a>
-                                <a class="dropdown-item" href="/courses/new">New Course</a>
-                                <a class="dropdown-item" href="/new/assignment">Import Assignment</a>
-                                <a class="dropdown-item" href="/new/course">Import Course</a>
-                            </div>
                         </li>
                     <% } %>
 

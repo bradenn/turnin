@@ -23,10 +23,9 @@ router.post('/', async (req, res, next) => {
     });
 });
 
-router.get('/:course', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
-    let course = await Course.findById(req.params.course).exec();
-    res.render("course", {user: req.user, course: course});
+router.get('/:course', async (req, res) => {
+    let course = await Course.findById(req.params.course).populate("students").exec();
+    res.render("course", {course: course});
 });
 
 router.get('/:course/delete', async (req, res, next) => {
@@ -39,7 +38,6 @@ router.get('/:course/delete', async (req, res, next) => {
 router.delete('/:course', async (req, res, next) => {
 
 });
-
 
 
 module.exports = router;

@@ -9,11 +9,29 @@
 </style>
 <body class="preload">
 <div class="container">
+
     <%
-    let buttons = [`<a href="/assignments/${assignment._id}/grades">View Grades</a>`]
+    const dropdown = `
+    <div class="dropdown ml-2">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+           data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+           aria-expanded="false">
+            Options
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a href="/assignments/edit/${assignment._id}/assign/${(assignment.assigned) ? 'false' : 'true'}"
+               class="dropdown-item ">${(assignment.assigned) ? 'Unassign' :
+            'Assign'} ${assignment.name}</a>
+            <a href="/assignments/${assignment._id}/delete" class="dropdown-item ">Delete</a>
+        </div>
+    </div>
+        `;
+    let buttons = [
+        `<a href="/assignments/${assignment._id}/grades" class="mx-1">Grades</a>`,
+        dropdown];
     %>
-    <%- include("partials/title.ejs", {title: assignment.name, subtitle: `Due ${ new Date(assignment.duedate).toLocaleDateString() }; accepted until ${ new Date(assignment.late).toLocaleDateString() }`,
-    buttons: buttons, backName: "Assignments", backLink: "/assignments"}) %>
+    <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / ${assignment.name}`,
+    buttons: buttons, backName: "Home", backLink: "/"}) %>
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -23,10 +41,11 @@
                         <div class="card-subtitle">Files will be required for submission</div>
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post" class="">
-                        <div class="d-flex pb-3">
+                        <div class="d-flex">
                             <input type="text" class="form-control" id="name" name="name" placeholder="Filename">&nbsp;
                             <input type="submit" class="btn btn-primary" value="Add File">
                         </div>
+                        <small class="text-muted">Enter multiple with comma delimitation.</small>
                     </form>
                 </div>
                 <div class="table-responsive">
@@ -128,7 +147,8 @@
                         <div class="d-flex pb-3">
                             <div class="custom-file mr-1">
                                 <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
-                                <label class="custom-file-label border-right-1" for="inputGroupFile01" id="inputGroupFile01Label">Choose
+                                <label class="custom-file-label border-right-1" for="inputGroupFile01"
+                                       id="inputGroupFile01Label">Choose
                                     file... (*.tar)</label>
                             </div>
                             <input type="submit" class="btn btn-primary" value="Add tests">

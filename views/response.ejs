@@ -11,9 +11,10 @@
 <body class="preload">
 <div class="container">
     <%
-    let buttons = [`<a href="/submit/${result.assignment._id}">Submit again</a>`]
+    let buttons = [`<a href="/submit/${result.assignment._id}">Submit again</a>`];
+    let attempts = result.assignment.responses.filter(response => response.student.toString() === user._id.toString()).length
     %>
-    <%- include("partials/title.ejs", {title: `Submission Results`, subtitle: `Submission ${(result.passed) ? "passed" : "failed"}`,
+    <%- include("partials/title.ejs", {title: `Submission Results`, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / <a href="/submit/${result.assignment._id}">${result.assignment.name}</a> / Attempt ${attempts} - ${(result.passed)?"Passed":"Failed"}`,
     buttons: buttons, backName: "Back", backLink: back}) %>
     <div class="row">
         <% if(!result.compiled){ %>

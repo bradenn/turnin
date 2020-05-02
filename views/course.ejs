@@ -6,71 +6,59 @@
 <body class="preload">
 <div class="container">
     <%
-    let buttons = [` <a href="/assignments/new" class=""><i class="fas fa-plus"></i>&nbsp;New Assignment</a>`]
+    let buttons = [`<a href="#" class="text-danger">Delete Course</a>`]
     %>
-    <%- include("partials/title.ejs", {title: "Courses", subtitle: `Instructor ${ user.firstname } %{ user.lastname }`,
+    <%- include("partials/title.ejs", {title: `${course.name}.${course.section}`, subtitle: `<a href="/">Home</a> / <a href="/courses">Courses</a> / ${course.name}`,
     buttons: buttons, backName: "Home", backLink: "/"}) %>
     <div class="row">
-        <a href="/"><i class="fas fa-chevron-left"></i> Home</a>
-        <div class="col-12">
-            <h1>Courses</h1>
-            <div class="d-flex flex-row justify-content-between">
-                <span class="sub-header"></span>
-                <a class="btn btn-primary btn-sm" data-toggle="modal" href="#newClass">New Course</a>
-            </div>
-            <hr>
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Students</th>
-                    <th scope="col">Assignments</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% courses.forEach(function(course){ %>
-                <tr>
-                    <td><%= course.name %></td>
-                    <td><%= course.code %></td>
-                    <td><%= course.students.length %> Students</td>
-                    <td>
-                        <% course.assignments.forEach(assignment => { %>
-                            <a href="/assignments/grades/<%= assignment._id %>"><span
-                                        class="badge badge-dark"><%= assignment.name %></span></a>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-title">Students</div>
+                <div class="card-subtitle">All students enrolled in this course</div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Github</th>
+                            <th scope="col" style="width: 1em;">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% course.students.forEach(student => { %>
+                            <tr>
+                                <td><%= student.firstname %> <%= student.lastname %></td>
+                                <td><%= student.username %></td>
+                                <td><%= student.github %></td>
+                                <td><div class="dropdown">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" data-boundary="viewport"  aria-haspopup="true" aria-expanded="false">
+                                            Actions
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#"><i class="fas fa-user-times pr-2"></i>Remove from class</a>
+                                        </div>
+                                    </div></td>
+                            </tr>
                         <% }); %>
-                    </td>
-                    <% }); %>
-                </tbody>
-            </table>
+                        <% if(course.students.length === 0) { %>
+                            <tr>
+                                <td>No Students</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 </body>
-<div id="newClass" class="modal fade">
-    <div class="modal-dialog modal-login">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">New Course</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <form action="/courses" method="post">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" class="form-control" name="name" id="name" placeholder="Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Section</label>
-                        <input type="number" class="form-control" name="section" id="section" placeholder="0">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary pull-right" value="Create Course">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <%- include("partials/footer.ejs") %>
 </html>

@@ -1,8 +1,7 @@
-FROM keymetrics/pm2:latest-alpine
+FROM node:10
 
 COPY . .
 
-ENV NPM_CONFIG_LOGLEVEL warn
-RUN npm install --production
+RUN npm install
 
-CMD [ "pm2-runtime", "start", "pm2.json" ]
+CMD ["node", "index.js"]

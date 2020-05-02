@@ -11,7 +11,8 @@
     %>
     <%- include("partials/title.ejs", {title: "Dashboard", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
     <div class="row">
-        <div class="col-12 mb-4">
+
+        <div class="col-md-12 mb-3 pr-3">
             <div class="card">
                 <div class="card-title">Assignments</div>
                 <div class="card-subtitle">Assignments due in all enrolled classes</div>
@@ -25,20 +26,26 @@
                             <th scope="col">Cutoff</th>
                             <th scope="col">Attempts</th>
                             <th scope="col">Complete</th>
-                            <th scope="col" style="width: 1rem;">Options</th>
                         </tr>
                         </thead>
                         <tbody>
                         <% courses.forEach(course => {
                             let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) > 0);
                         assignments.forEach(assignment => {
-                            let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
+                        let attempts = assignment.responses.filter(response => response.student.toString() === user._id.toString())
                         %>
                         <tr>
-                            <td><i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong></td>
-                            <td><span tabindex="0" data-toggle="tooltip" title="Section <%= course.section %>"><%= course.name %></span></td>
-                            <td><span tabindex="0" data-toggle="tooltip" title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span></td>
-                            <td><span tabindex="0" data-toggle="tooltip" title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span></td>
+                            <td>
+                                <i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong>
+                            </td>
+                            <td><span tabindex="0" data-toggle="tooltip"
+                                      title="Section <%= course.section %>"><%= course.name %></span></td>
+                            <td><span tabindex="0" data-toggle="tooltip"
+                                      title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span>
+                            </td>
+                            <td><span tabindex="0" data-toggle="tooltip"
+                                      title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span>
+                            </td>
                             <td style="max-width: 20vw;">
                                 <div class="">
                                     <% let set = attempts.map(attempt => {
@@ -49,12 +56,14 @@
                                     %>
                                 </div>
                                 <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" data-boundary="viewport"  aria-haspopup="true" aria-expanded="false">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                       data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                       aria-expanded="false">
                                         All Attempts
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                         <% if(set.length){ %>
-                                        <%- set.join(""); %>
+                                            <%- set.join(""); %>
                                         <% }else{ %>
                                             <span class="text-muted">No Attempts</span>
                                         <% } %>
@@ -68,17 +77,10 @@
                                     <a href="/workspace/<%= workspaces.find(workspace => (workspace.assignment.toString() === assignment._id.toString()))._id %>">Workspace</a>
                                 <% } %>
                                 &nbsp;<a href="/submit/<%= assignment._id %>" class="">Upload</a></td>
-                            <td> <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" data-boundary="viewport"  aria-haspopup="true" aria-expanded="false">
-                                        Help
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <a class="dropdown-item" href="#"><i class="fas fa-bong pr-2"></i>Request extension</a>
-                                    </div>
-                                </div></td>
+
                             <% }); %>
-                            <% }); if(courses.length === 0){ %>
-                                <td>You have no classes.</td>
+                            <% }); if(courses.length === 0 || courses.filter(course => course.assignments.filter(asnmt => asnmt.assigned).length > 0).length === 0){ %>
+                                <td>You have no <%= (courses.length === 0) ? "courses" : "assignments" %>.</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -112,10 +114,12 @@
                         <% courses.forEach(course => {
                             let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) < 0);
                         assignments.forEach(assignment => {
-                            let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
+                        let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
                         %>
                         <tr>
-                            <td><i class="text-<%= (attempts.filter(attempt => attempt.passed).lenght >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong></td>
+                            <td>
+                                <i class="text-<%= (attempts.filter(attempt => attempt.passed).lenght >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong>
+                            </td>
                             <td><%= course.name %>.<%= course.section %></td>
                             <td><%= new Date(assignment.duedate).toLocaleDateString() %>
                                 - <%= timeSince(new Date(assignment.duedate)) %> ago
@@ -134,7 +138,9 @@
                                     %>
                                 </div>
                                 <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" data-boundary="viewport"  aria-haspopup="true" aria-expanded="false">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                       data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                       aria-expanded="false">
                                         All Attempts
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">

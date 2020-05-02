@@ -6,95 +6,59 @@
 <body class="preload">
 <div class="container">
     <%
-    let buttons = [` <a class="" data-toggle="modal" href="#newClass">New Course</a>&nbsp;`,
-        ` <a href="/assignments/new">New Assignment</a>`]
+    let buttons = [` <a class="" data-toggle="modal" href="#newClass">New Course</a>`]
     %>
-    <%- include("partials/title.ejs", {title: "Courses", subtitle: `All courses you control`,
+    <%- include("partials/title.ejs", {title: "Courses", subtitle: `<a href="/">Dashboard</a> / Courses`,
     buttons: buttons, backName: "Home", backLink: "/"}) %>
 
     <div class="row">
 
         <div class="col-12">
             <% courses.forEach((course) => { %>
-                <div class="card-title"><%= course.name %>.<%= course.section %></div>
-                <div class="d-flex justify-content-between">
-                    <div class="card-subtitle" style="margin-bottom: 8px;">Course join code: <span
-                                class="text-monospace text-uppercase"><%= course.code %></span></div>
-                    <div class="">
-                        <a class="text-danger" data-toggle="modal" href="#confirmDeleteCourse">Delete Course</a>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Assignments</div>
-                    <div class="card-subtitle">Includes unassigned and assigned assignments.</div>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col" class="text-center" style="width: 1em;">Status</th>
-                                <th scope="col">Due Date</th>
-                                <th scope="col" nowrap>Late Due Date</th>
-                                <th scope="col">Required Files</th>
-                                <th scope="col">Tests</th>
-                                <th scope="col" style="width: 1em;">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% course.assignments.forEach(function(assignment){ %>
-                                <tr>
-                                    <td nowrap><a href="/assignments/<%= assignment._id %>"><%= assignment.name %></a>
-                                    </td>
-                                    <td class="text-center" nowrap>
-                                        <a href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"><%= (assignment.assigned) ? "Unassign" : "Assign" %>
-                                        </a></td>
-                                    <td nowrap><%= assignment.duedate %></td>
-                                    <td><%= assignment.late %></td>
-                                    <td><%= assignment.files.join(", "); %></td>
-                                    <td><%- assignment.tests.map(test => `<a href="/test/${test._id}">${test.name}</a>`).join(", ") %></td>
-                                    <td>
-                                        <a href="/assignments/<%= assignment._id %>/delete">Delete</a>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                            <% if(course.assignments.length === 0) { %>
-                                <tr>
-                                    <td>No Assignments</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div><br>
-                <div id="confirmDeleteCourse" class="modal fade">
-                    <div class="modal-dialog modal-login">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Delete Course</h4>
-                                <button type="button" class="close" data-dismiss="modal"
-                                        aria-hidden="true">&times;
-                                </button>
+                <div class="card mb-3">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div>
+                            <div class="card-title"><%= course.name %>.<%= course.section %></div>
+                            <div class="d-flex justify-content-between">
+                                <div class="card-subtitle" style="margin-bottom: 8px;">Course join code: <span
+                                            class="text-monospace text-uppercase"><%= course.code %></span></div>
                             </div>
-                            <div class="modal-body d-flex justify-content-between align-items-center">
+                        </div>
+
+                        <div>
+                            <a href="/courses/<%= course._id %>" class="mr-2">Manage Course</a>
+                        </div>
+                    </div>
+
+                    <div id="confirmDeleteCourse" class="modal fade">
+                        <div class="modal-dialog modal-login">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Delete Course</h4>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;
+                                    </button>
+                                </div>
+                                <div class="modal-body d-flex justify-content-between align-items-center">
                                 <span>
                                     Delete course <strong><%= course.name %>.<%= course.section %></strong>?
                                 </span>
-                                <span>
+                                    <span>
                                 <a class="btn btn-primary text-white" data-dismiss="modal">Cancel</a>
-                                <a class="btn btn-danger" href="/courses/<%= course._id %>/delete"><i
+                                <a class="" href="/courses/<%= course._id %>/delete"><i
                                             class="fas fa-trash-alt"></i> Delete Course</a>
                                 </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             <% }); %>
+            <% if(courses.length === 0){ %>
+                <div class="card d-flex">
+                    <div><strong>You have no courses, let's fix that.</strong>&nbsp;<a class="" data-toggle="modal" href="#newClass">Create Course</a></div>
+                </div>
+            <% } %>
         </div>
     </div>
 </div>
