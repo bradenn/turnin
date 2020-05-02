@@ -9,7 +9,7 @@
     let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
                     in a course</a>`]
     %>
-    <%- include("partials/title.ejs", {title: "My Workspaces", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
+    <%- include("partials/title.ejs", {title: "Workspaces", subtitle: `<a href="/">Dashboard</a> / Workspaces`, buttons: buttons}) %>
     <div class="row">
         <div class="col-12 mb-4">
             <div class="card">

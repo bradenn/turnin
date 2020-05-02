@@ -6,66 +6,90 @@
 <body class="preload">
 <div class="container">
     <%
-    let buttons = [` <a href="/assignments/new" class=""><i class="fas fa-plus"></i>&nbsp;New Assignment</a>`]
+    let buttons = [`   <a href="/assignments/new" class="">Create Assignment</a>`]
     %>
-    <%- include("partials/title.ejs", {title: "Assignments", subtitle: courses.map(course => course.assignments.length).reduce((a, b) => a + b) + ` assignments in ${courses.length} classes`,
+    <%- include("partials/title.ejs", {title: "Assignments", subtitle: `<a href="/">Dashboard</a> / Assignments`,
     buttons: buttons, backName: "Home", backLink: "/"}) %>
 
     <div class="row">
-
         <div class="col-12">
             <% courses.forEach((course) => { %>
-                <h3><%= course.name %>.<%= course.section %></h3>
-                <div class="table-responsive">
-                    <table class="table ">
-                        <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col" class="text-center" style="width: 1em;">Status</th>
-                            <th scope="col">Due Date</th>
-                            <th scope="col" nowrap>Late Due Date</th>
-                            <th scope="col">Submissions</th>
-                            <th scope="col">Required Files</th>
-                            <th scope="col">Tests</th>
-                            <th scope="col" style="width: 1em;"><i class="fas fa-pencil-alt"></i></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <% course.assignments.forEach(function(assignment){ %>
+                <div class="card mb-3">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <div>
+                            <div class="card-title"><%= course.name %>.<%= course.section %></div>
+                            <div class="card-subtitle">All assignments in this course</div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                             <tr>
-                                <td nowrap><a href="/assignments/<%= assignment._id %>"><%= assignment.name %></a></td>
-                                <td class="text-center" nowrap>
-                                    <strong><%= (assignment.assigned) ? "Assigned" : "Draft" %></strong></td>
-                                <td nowrap><%= assignment.duedate %></td>
-                                <td><%= assignment.late %></td>
-                                <td><%= assignment.responses.length %></td>
-                                <td><%= assignment.files.join(", "); %></td>
-                                <td><%- assignment.tests.map(test => `<a href="/test/${test._id}">${test.name}</a>`).join(", ") %></td>
-                                <td>
-                                    <div class="dropdown text-center">
-                                        <a class="" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-                                           aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-left"
-                                             aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item"
-                                               href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? "false" : "true" %>"><i
-                                                        class="fas fa-external-link-alt"></i>&nbsp;<%= (assignment.assigned) ? "Unassign" : "Assign" %>
-                                            </a>
-                                            <a class="dropdown-item" href="/assignments/grades/<%= assignment._id %>"><i
-                                                        class="fas fa-user-edit"></i>&nbsp;Grades</a>
-                                            <a class="dropdown-item" href="/assignments/<%= assignment._id %>"><i
-                                                        class="fas fa-edit"></i>&nbsp;Edit Assignment</a>
-                                            <a class="dropdown-item" href="/assignments/<%= assignment._id %>/delete"><i
-                                                        class="fas fa-trash-alt"></i>&nbsp;Delete</a>
-                                        </div>
-                                    </div>
-                                </td>
+                                <th scope="col">Name</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Late</th>
+                                <th scope="col">Submissions</th>
+                                <th scope="col" style="width: 2em;">Actions</th>
                             </tr>
-                        <% }); %>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            <% course.assignments.forEach(function(assignment){ %>
+                                <tr>
+                                    <td><%= assignment.name %></td>
+                                    <td>
+                                        <%= (assignment.assigned) ? "Assigned" : "Unassigned" %>
+                                    </td>
+                                    <td><span tabindex="0" data-toggle="tooltip"
+                                              title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span>
+                                    </td>
+                                    <td><span tabindex="0" data-toggle="tooltip"
+                                              title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span>
+                                    </td>
+                                    <td><%= assignment.responses.length %></td>
+                                    <td class="d-flex">
+                                        <a href="/assignments/<%= assignment._id %>/grades" class="mx-2">Grades</a>
+                                        <a href="/assignments/<%= assignment._id %>" class="">Edit</a></span>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            <% if(course.assignments.length === 0) { %>
+                                <tr>
+                                    <td>No Assignments</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="confirmDeleteCourse" class="modal fade">
+                        <div class="modal-dialog modal-login">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Delete Course</h4>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;
+                                    </button>
+                                </div>
+                                <div class="modal-body d-flex justify-content-between align-items-center">
+                                <span>
+                                    Delete course <strong><%= course.name %>.<%= course.section %></strong>?
+                                </span>
+                                    <span>
+                                <a class="btn btn-primary text-white" data-dismiss="modal">Cancel</a>
+                                <a class="btn btn-danger" href="/courses/<%= course._id %>/delete"><i
+                                            class="fas fa-trash-alt"></i> Delete Course</a>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             <% }); %>
         </div>
@@ -74,3 +98,60 @@
 </body>
 <%- include("partials/footer.ejs") %>
 </html>
+<%
+function timeTill(date) {
+
+    var seconds = Math.floor((date - new Date()) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+%>

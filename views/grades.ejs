@@ -8,19 +8,42 @@
     <%
     let buttons = []
     %>
-    <%- include("partials/title.ejs", {title: `Grades`, subtitle: ``,
+    <%- include("partials/title.ejs", {title: `Grades`, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / <a href="/assignments/${assignment._id}">${assignment.name}</a> / Grades`,
     buttons: buttons, backName: "Back"}) %>
     <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="d-flex justify-content-between w-100">
+                <div class="card w-100">
+                    <span class="card-title">Total Submissions</span>
+                    <div class="card-subtitle mb-0"><%= assignment.responses.length %> submissions</div>
+                </div>
+                <div class="card w-100 mx-3">
+                    <span class="card-title">Participants</span>
+                    <% let uniqueNames = [];
+                    let uniqueSubmissions = assignment.responses.filter(resp => {
+                        if (!uniqueNames.includes(resp.student._id.toString())) {
+                            uniqueNames.push(resp.student._id.toString());
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                    %>
+                    <div class="card-subtitle mb-0" data-toggle="tooltip" data-placement="bottom" title="Participants: [<%= uniqueNames.map(id => course.students.find(student => (student._id.toString() === id)).username).join(", ") %>]"><%= uniqueSubmissions.length %>/<%= course.students.length %>
+                        students</div>
+                </div>
+                <div class="card w-100">
+                    <span class="card-title">Average Submissions</span>
+                    <div class="card-subtitle mb-0"><%=Math.round((assignment.responses.length / course.students.length) * 100) / 100  %> submissions</div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-12">
             <div class="card">
                 <div class="d-flex justify-content-between">
                     <div>
                         <div class="card-title"><%= assignment.name %></div>
                         <div class="card-subtitle">Course: <%= course.name %></div>
-                    </div>
-                    <div>
-                        <span>Total Students: <%= course.students.length %></span>
-                        <span>Total Submissions: <%= assignment.responses.length %></span>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -37,15 +60,26 @@
                             let attempts = assignment.responses.filter(resp => resp.student._id.toString() === student._id.toString());
                             let set = attempts.map(attempt => {
                                 let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                                let name = `Attempt ${(index <= 9) ? "0" : ""}${index}${(!attempt.compiled) ? " (Compile Failed)" : (!attempt.passed) ? "(Compile Successful)" : ""}`;
-                                return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                let name = `Attempt ${(index <= 9) ? "0" : ""}${index}${(!attempt.compiled) ? " (Compile Failed)" : (!attempt.passed) ? " (Compile Successful)" : ""}`;
+                                return `<a href="/response/${attempt._id}" class="dropdown-item text-${(attempt.passed) ? 'success' : (attempt.error_ === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
                             });
                         %>
                         <tr>
-                            <td><%= student.firstname %> <%= student.lastname %> (<%= student.username %>)</td>
-                            <td><%- set.join(", ") %></td>
-                            <td><%= (attempts.filter(attempt => (attempt.passed)).length >= 1)?"Passed":"Failed" %>
-                                , <%= attempts.length %> attempts
+
+                            <td><i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : (attempts.length < 1)? "muted":"danger" %> far fa-dot-circle mr-2"></i><%= student.firstname %> <%= student.lastname %> (<%= student.username %>)</td>
+                            <td> <div class="dropdown">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" data-boundary="viewport"  aria-haspopup="true" aria-expanded="false">
+                                        All Attempts
+                                    </a>
+                                    <div class="dropdown-menu" style="width:300px;" aria-labelledby="dropdownMenuLink">
+                                        <% if(set.length){ %>
+                                            <%- set.join(""); %>
+                                        <% }else{ %>
+                                            <span class="text-muted">No Attempts</span>
+                                        <% } %>
+                                    </div>
+                                </div></td>
+                            <td><%= (attempts.filter(attempt => (attempt.passed)).length >= 1)?"Passed":"Failed" %>: <%= attempts.length %> attempts
                             </td>
                         </tr>
                         <% }); %>

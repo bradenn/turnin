@@ -6,8 +6,7 @@ let AssignmentSchema = new mongoose.Schema({
   name: String,
   tests: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Test',
-    autopopulate: 1
+    ref: 'Test'
   }],
   shared_files: [{
     type: mongoose.Schema.Types.ObjectId,

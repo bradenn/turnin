@@ -8,14 +8,12 @@ let Result = require('../models/result');
 let utils = require('../services/utils');
 let File = require('../models/file');
 
-router.get('/', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
-    let courses = await Course.find({instructor: req.user._id}).exec();
-    res.render("assignments", {user: req.user, courses: courses});
+router.get('/', async (req, res) => {
+    let courses = await Course.find({instructor: req.user._id}).populate("assignments", "tests").exec();
+    res.render("assignments", {courses: courses});
 });
 
-router.get('/new', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
+router.get('/new', async (req, res) => {
     let courses = await Course.find({instructor: req.user._id}).exec();
     res.render("newassignment", {user: req.user, courses: courses});
 });
@@ -56,7 +54,7 @@ router.get('/:assignment/delete', async (req, res, next) => {
 
 router.get('/:assignment/grades', async (req, res) => {
     const assignment = await Assignment.findById(req.params.assignment).populate("responses").exec();
-    const course = await Course.findOne({assignments: assignment._id}).exec();
+    const course = await Course.findOne({assignments: assignment._id}).populate("students").exec();
     res.render('grades', {
         assignment: assignment,
         course: course
@@ -87,9 +85,8 @@ router.get('/edit/:assignment/test/:test/remove/', async (req, res, next) => {
 });
 
 router.post('/edit/:assignment/files/add', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
-    console.log(req.body.name);
-    Assignment.findOneAndUpdate({_id: req.params.assignment}, {$push: {files: req.body.name}}, (err, assignment) => {
+    let input = req.body.name.replace(' ', "").split(",");
+    Assignment.findOneAndUpdate({_id: req.params.assignment}, {$push: {files: input}}, (err, assignment) => {
         res.redirect("back");
     });
 });
@@ -147,10 +144,7 @@ utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, us
     });
 });
 
-let tar = require('tar-stream');
-let archive = require('../services/archive');
 let tests = require('../services/tests');
-let fs = require("fs");
 
 let multer = require('multer');
 const upload = multer({storage: multer.memoryStorage()});
@@ -170,66 +164,66 @@ router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
                 if (!b) {
                     tests.push({name: file.name.split(".")[0], files: [file]});
                 }
+            });
+            let formattedData = [];
+            // {name: 't00', files: [{name: "t01.in", lines: [""]}]}
+            tests.forEach(test => {
+                let inputs = [];
+                let outputs = [];
+                let errors = [];
+                let cmd = "";
+                let code = 0;
+                let provided = [];
+                let hidden = false;
+                test.files.forEach(file => {
+                    let ln = file.content;
+                    switch (file.name.split(".")[1]) {
+                        case "in":
+                            inputs = ln;
+                            break;
+                        case "hide":
+                            inputs = ln;
+                            hidden = true;
+                            break;
+                        case "out":
+                            outputs = ln;
+                            provided.push('out');
+                            break;
+                        case "err":
+                            errors = ln;
+                            provided.push('err');
+                            break;
+                        case "cmd":
+                            cmd = ln.join(" ");
+                            provided.push('cmd');
+                            break;
+                        case "exit":
+                            code = ln[0];
+                            provided.push('exit');
+                            break;
+                        default:
+                            break;
+                    }
                 });
-                let formattedData = [];
-                // {name: 't00', files: [{name: "t01.in", lines: [""]}]}
-                tests.forEach(test => {
-                    let inputs = [];
-                    let outputs = [];
-                    let errors = [];
-                    let cmd = "";
-                    let code = 0;
-                    let provided = [];
-                    let hidden = false;
-                    test.files.forEach(file => {
-                        let ln = file.content;
-                        switch (file.name.split(".")[1]) {
-                            case "in":
-                                inputs = ln;
-                                break;
-                            case "hide":
-                                inputs = ln;
-                                hidden = true;
-                                break;
-                            case "out":
-                                outputs = ln;
-                                provided.push('out');
-                                break;
-                            case "err":
-                                errors = ln;
-                                provided.push('err');
-                                break;
-                            case "cmd":
-                                cmd = ln.join(" ");
-                                provided.push('cmd');
-                                break;
-                            case "exit":
-                                code = ln[0];
-                                provided.push('exit');
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                    formattedData.push({
-                        name: test.name,
-                        outputs: outputs,
-                        inputs: inputs,
-                        error: errors,
-                        arguments: cmd,
-                        code: code,
-                        provided: provided,
-                        hidden: hidden
-                    });
+                formattedData.push({
+                    name: test.name,
+                    outputs: outputs,
+                    inputs: inputs,
+                    error: errors,
+                    arguments: cmd,
+                    code: code,
+                    provided: provided,
+                    hidden: hidden
                 });
-                Test.create(formattedData, (err, tests) => {
+            });
+            Test.create(formattedData, (err, tests) => {
+                console.log(err);
+                tests.forEach(test => assignment.tests.push(test._id));
+                assignment.save((err, save) => {
                     console.log(err);
-                    tests.forEach(test => assignment.tests.push(test._id));
-                    assignment.save((err, save) => {
-                        console.log(err);
-                        res.redirect(req.get('referer'));
-                    });
+                    res.redirect(req.get('referer'));
                 });
+            });
         }).catch(error => {
             let err = new Error(error);
             next(err);

@@ -58,7 +58,7 @@ utils.getRouteWithUser('/:response', router, (req, res, user) => {
         result.save((err, resu) => {
             res.render("response", {user: user, result: resu, back: req.back});
         });
-    }).populate(["assignment", "files"]);
+    }).populate(["assignment", "files", "outputs"]);
 });
 
 utils.getRouteWithUser('/output/:output', router, (req, res, user) => {

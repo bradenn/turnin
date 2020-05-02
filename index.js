@@ -1,6 +1,7 @@
 const config = require("./env/env.js");
 let express = require('express');
 let app = express();
+let methodOverride = require('method-override')
 let bodyParser = require('body-parser');
 let mongoose = require('mongoose');
 let session = require('express-session');
@@ -31,6 +32,8 @@ app.use(session({
         mongooseConnection: db
     })
 }));
+
+app.use(methodOverride('X-HTTP-Method-Override'));
 
 // parse incoming requests
 app.use(bodyParser.json({limit: '5mb'}));
@@ -76,7 +79,7 @@ app.use((req, res, next) => {
 });
 
 process.on("uncaughtException", function (err) {
-
+    console.log(err);
 });
 
 app.use((err, req, res, next) => {
@@ -88,8 +91,4 @@ app.use((err, req, res, next) => {
 // listen on port {port} <- config
 app.listen(config.PORT, function () {
     console.log(`Turnin-gateway started. Listing on port ${config.PORT}.`);
-    if (process.env.NODE_ENV === "production") {
-        console.log(`Running in cluster mode. Instance: ${process.env.INSTANCE_ID}`);
-    }
-
 });
