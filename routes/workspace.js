@@ -18,29 +18,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:workspace/compile', async (req, res, next) => {
     let workspace = await Workspace.findOne({_id: req.params.workspace}).populate('assignment', ['tests', 'name']).exec();
-    let results = [];
-    await submission.evaluateFromWorkspace(workspace._id, (result, err) => {
-        if (err) {
-            res.render('compiled', {
-                results: null,
-                workspace: workspace,
-                debug: result.debug,
-                compile: result.compile,
-                error: err
-            });
-        } else {
-            let testOutputs = result.tests;
-            testOutputs.forEach(test => {
-                results.push(rest.getDifferenceForAssignment(test, workspace.assignment.tests.find(check => (check._id.toString() === test._id.toString()))));
-            });
-            res.render('compiled', {
-                results: results,
-                workspace: workspace,
-                debg: result.debug,
-                compile: result.compile
-            });
-        }
-    });
+    const results = await submission.evaluateFromWorkspace(workspace._id);
+    res.json({notes: "have fun", results});
 });
 
 router.get('/:id', async (req, res, next) => {

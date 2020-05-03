@@ -1,4 +1,4 @@
-var router = require('express').Router();
+let router = require('express').Router();
 let User = require('../models/user');
 let Class = require('../models/course');
 let Result = require('../models/result');

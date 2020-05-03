@@ -50,7 +50,7 @@ let compileProgram = (workspaceId) => {
 let diffJs = require('diff');
 
 function getDifferenceForAssignment(input, test) {
-
+    console.log(input + test);
     let error_diff = JSON.stringify(diffJs.diffArrays(input.stderr, test.error));
     let diff = JSON.stringify(diffJs.diffArrays(input.stdout, test.outputs));
 

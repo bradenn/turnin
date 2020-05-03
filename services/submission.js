@@ -1,48 +1,179 @@
-let config = require("../env/config.json");
-let request = require('request');
 let Assignment = require('../models/assignment');
 let Workspace = require('../models/workspace');
+let Result = require('../models/result');
+let Output = require('../models/output');
+let File = require('../models/file');
+let Test = require('../models/test');
+const config = require("../env/env.js");
+let diffJs = require('diff');
+const https = require('https')
 
-let evaluateFromWorkspace = async (workspaceId, cb) => {
-    let workspace = await Workspace.findById(workspaceId).populate('files').exec();
-    let assignment = await Assignment.findById(workspace.assignment._id).populate('shared_files').exec();
-    let files = [];
-    let tests = [];
-    workspace.files.forEach(file => files.push({name: file.name, contents: file.content}));
-    assignment.shared_files.forEach(file => files.push({name: file.name, contents: file.content}));
-    assignment.tests.forEach((test) => {
-        tests.push({
+class Submission {
+    constructor() {
+        this.make = "";
+        this.files = [];
+        this.tests = [];
+    }
+
+    setMake(make) {
+        this.make = make;
+    }
+
+    addFile(name, contents) {
+        this.files.push({name: name, contents: contents});
+    }
+
+    addTest(test) {
+        this.tests.push({
             name: test.name,
             _id: test._id,
             input: test.inputs,
             arguments: test.arguments,
             output: test.outputs
         });
-    });
-    evaluateAndGetJson(assignment.command, files, tests, cb);
-};
+    }
 
-let evaluateAndGetJson = (make, files, tests, cb) => {
-    request({
-        url: config.worker,
-        method: "POST",
-        json: {
-            make: make,
-            files: files,
-            tests: tests
+    async formatSubmission() {
+        let results = await fetchResponse(this);
+        let response = {tests: [], compile: results.compile, debug: results.debug};
+        for (const test of results.tests) {
+            response.tests.push(getDifference(test, await Test.findById(test._id).exec()));
         }
-    }).on('error', (err) => {
-        cb(null, err);s
-    }).on('response', (response) => {
-        let body = '';
-        response.on('data', function (chunk) {
-            body += chunk;
+        return response;
+    }
+
+    async testSubmission(user, assignment) {
+        // Store all uploaded files to the database for later review
+        const files = await Promise.all(this.files.map(file =>
+            File.create({
+                name: file.name,
+                student: user,
+                date: new Date(),
+                content: file.contents
+            })));
+        // Send the objects to be tested by turnin-worker
+        const results = await this.formatSubmission();
+        // Load the individual responses to each test
+        const outputs = await Promise.all(results.tests.map(test => Output.create({
+            test: test.test,
+            output: test.stdout,
+            diff: test.diff,
+            error_diff: test.error_diff,
+            error_type: test.error_type,
+            passed: test.passed,
+            exit: test.exit,
+            stdout: test.stdout,
+            stderr: test.stderr,
+            signal: test.signal,
+            time: test.time
+        })));
+        // Here the result container is made, holding info for about the compile, debug, files, and tests
+        const result = await Result.create({
+            student: user,
+            assignment: assignment,
+            outputs: outputs.map(output => output._id),
+            stderr: results.compile.stderr,
+            stdout: results.compile.stdout,
+            signal: results.compile.signal,
+            passed: outputs.reduce((acc, next) => acc && next.passed, true),
+            exit: results.compile.code,
+            compiled: (results.compile.code === 0),
+            debug_server: results.debug.server,
+            debug_node: results.debug.node,
+            debug_instance: results.debug.instance,
+            files: files.map(file => file._id),
+            date: new Date()
         });
-        response.on('end', () => {
-            cb(JSON.parse(body), null);
-        });
-    });
+        await Assignment.findOneAndUpdate({_id: assignment}, {$push: {responses: result._id}}).exec();
+        return result._id;
+    }
+}
+
+exports.Submission = Submission;
+
+// Compare a formatted test result with a Test Schema
+
+function getDifference(input, test) {
+
+    let passed = false;
+    let error_diff = JSON.stringify(diffJs.diffArrays(input.stderr, test.error));
+    let diff = JSON.stringify(diffJs.diffArrays(input.stdout, test.outputs));
+
+    let outMatch = (test.outputs.toString() === input.stdout.toString());
+    let errMatch = (test.error.toString() === input.stderr.toString());
+    let exitMatch = (input.exit === test.code);
+    let execError = (input.exit === 127);
+
+    let error_type = [];
+    if (!outMatch && test.provided.includes("out")) error_type.push('stdout');
+    if (!errMatch && test.provided.includes("err")) error_type.push('stderr');
+    if (!exitMatch && test.provided.includes("exit")) error_type.push('exit');
+    if (execError) error_type.push('exec');
+
+    if (input.signal === "SIGTERM") error_type.push('loop');
+
+    passed = (error_type.length < 1);
+
+    return {
+        error_diff: error_diff,
+        passed: passed,
+        diff: diff,
+        error_type: error_type,
+        stderr: input.stderr,
+        signal: input.signal,
+        exit: input.exit,
+        time: input.time,
+        output: input.stdout,
+        stdout: input.stdout,
+        test: test._id
+    };
+
+}
+
+exports.evaluateFromWorkspace = async (workspaceId) => {
+    const submission = new Submission();
+    let workspace = await Workspace.findById(workspaceId).populate('files').exec();
+    let assignment = await Assignment.findById(workspace.assignment._id).populate('shared_files').exec();
+    submission.setMake(assignment.command);
+    workspace.files.forEach(file => submission.addFile(file.name, file.contents));
+    assignment.shared_files.forEach(file => submission.addFile(file.name, file.contents));
+    assignment.tests.forEach((test) => submission.addTest(test));
+    return submission.formatSubmission();
 };
 
-module.exports.evaluateFromWorkspace = evaluateFromWorkspace;
-module.exports.evaluateAndGetJson = evaluateAndGetJson;
+
+const fetchResponse = (submission) => new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+        make: submission.make,
+        files: submission.files,
+        tests: submission.tests
+    });
+
+    const options = {
+        hostname: config.WORKER,
+        port: 443,
+        path: '/api/test',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
+        }
+    }
+
+    const req = https.request(options, res => {
+        let chunk = '';
+        res.on('data', d => {
+            chunk += d;
+        });
+        res.on('end', d => {
+            resolve(JSON.parse(String(chunk)));
+        });
+    })
+
+    req.on('error', error => {
+        reject(new Error(error));
+    });
+
+    req.write(data)
+    req.end()
+});
