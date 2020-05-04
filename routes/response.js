@@ -33,7 +33,7 @@ router.get('/grade/:response', async (req, res, next) => {
             if (out.signal === "SIGTERM") out.error_type.push('loop');
 
             out.passed = (out.error_type.length < 1);
-            if(!out.passed){
+            if (!out.passed) {
                 passed = false;
             }
 
@@ -42,7 +42,7 @@ router.get('/grade/:response', async (req, res, next) => {
             });
         });
     });
-    Result.findById(req.params.response,(err, resul) => {
+    Result.findById(req.params.response, (err, resul) => {
         resul.compiled = (resul.exit === 0);
         resul.passed = passed;
 
@@ -53,11 +53,9 @@ router.get('/grade/:response', async (req, res, next) => {
     res.redirect('/response/' + req.params.response);
 });
 
-utils.getRouteWithUser('/:response', router, (req, res, user) => {
+router.get('/:response', (req, res) => {
     Result.findById(req.params.response, (err, result) => {
-        result.save((err, resu) => {
-            res.render("response", {user: user, result: resu, back: req.back});
-        });
+        res.render("response", {result: result});
     }).populate(["assignment", "files", "outputs"]);
 });
 

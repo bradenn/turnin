@@ -1,5 +1,6 @@
 let router = require('express').Router();
 let File = require('../models/file');
+let Test = require('../models/test');
 let Course = require('../models/course');
 let Workspace = require('../models/workspace');
 let Assignment = require('../models/assignment');
@@ -19,11 +20,19 @@ router.get('/', async (req, res, next) => {
 router.get('/:workspace/compile', async (req, res, next) => {
     let workspace = await Workspace.findOne({_id: req.params.workspace}).populate('assignment', ['tests', 'name']).exec();
     const results = await submission.evaluateFromWorkspace(workspace._id);
-    res.json({notes: "have fun", results});
+    res.json(results);
+});
+
+router.get('/:workspace/submit', async (req, res, next) => {
+    let workspace = await Workspace.findOne({_id: req.params.workspace}).populate('assignment', ['tests', 'name']).exec();
+    const results = await submission.submitWorkspace(workspace._id);
+    res.json(results);
 });
 
 router.get('/:id', async (req, res, next) => {
     let workspace = await Workspace.findOne({_id: req.params.id}).populate('files').populate('assignment').exec();
+    let tests = await Test.find({_id: {$in: workspace.assignment.tests}}).select(["name"]).exec();
+    workspace.assignment.tests = tests;
     res.render("editor", {
         workspace: workspace
     });

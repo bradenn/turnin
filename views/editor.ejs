@@ -8,72 +8,75 @@
 </style>
 <body class="preload">
 <div class="container">
-    <div class="row">
-        <div class="col-md-12 p-0 d-flex justify-content-between align-content-end">
-            <h4><%= workspace.assignment.name %></h4>
-            <span id="saveMessage" class="text-success">&nbsp;</span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12 p-0">
-            <ul class="nav nav-tabs justify-content-between" style="border-radius: 8px 8px 0 0">
-                <ul class="nav">
+    <%
+    let buttons = [`<span id="saveMessage" class="text-success">&nbsp;</span>`]
+    %>
+    <%- include("partials/title.ejs", {title: `${workspace.assignment.name}`, subtitle: `<a href="/">Home</a> / <a href="/workspace">Workspaces</a> / ${workspace.assignment.name}`,
+    buttons: buttons, backName: "Home", backLink: "/"}) %>
+    <div class="row no-gutters">
+        <div class="col-md-9 pr-2">
+            <div class="editor-container">
+                <ul class="nav nav-tabs justify-content-between">
+                    <ul class="nav">
                      <span class="navbar-text text-white">
                     <i class="fas fa-code"></i>
                     </span>
 
-                    <% workspace.files.forEach(file => { %>
-                        <li class="nav-item">
-                            <a class="nav-link <%= (workspace.files.indexOf(file) == 0) ? "active" : "" %>"
-                               onclick="setBuffer('<%= file.name %>')" data-toggle="tab"
-                               href="#<%= file._id %>"><%= file.name %></a>
-                        </li>
-                    <% }); %>
-                </ul>
-                <ul class="nav">
+                        <% workspace.files.forEach(file => { %>
+                            <li class="nav-item">
+                                <a class="nav-link <%= (workspace.files.indexOf(file) == 0) ? "active" : "" %>"
+                                   onclick="setBuffer('<%= file.name %>')" data-toggle="tab"
+                                   href="#<%= file._id %>"><%= file.name %></a>
+                            </li>
+                        <% }); %>
+                    </ul>
+                    <ul class="nav">
                     <span class="navbar-text text-white mx-2">
                         <a href="#save" class="text-white" onclick="buildSave()"><i class="far fa-save"></i></a>
                     </span>
-                    <span class="navbar-text text-white mx-2">
-                            <a href="/workspace/<%= workspace._id %>/compile" target="_blank" class="text-white"
-                               onclick="buildSave()"><i class="fas fa-play"></i></a>
+                        <span class="navbar-text text-white mx-2">
+                            <a href="#" class="text-white"
+                               onclick="compileCode()" id="compile"><i class="fas fa-play"></i></a>
                     </span>
-                    <span class="navbar-text text-white mx-2 mr-3">
-                            <a href="#save" class="text-white" onclick="buildSave()"><i class="fas fa-upload"></i></a>
+                        <span class="navbar-text text-white mx-2 mr-3">
+                            <a href="#" class="text-white" onclick="submitCode()" id="submit"><i
+                                        class="fas fa-upload"></i></a>
                     </span>
+                    </ul>
                 </ul>
-            </ul>
-            <div id="editor"></div>
+                <div id="editor"></div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12 p-0">
-            <ul class="nav nav-tabs justify-content-between">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#nav-tests" role="tab"
-                           aria-controls="nav-status" aria-selected="false">Tests</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#nav-output" role="tab" aria-controls="nav-status"
-                           aria-selected="false">Output</a>
-                    </li>
+
+        <div class="col-md-3">
+            <div class="card p-0">
+                <ul class="nav nav-tabs justify-content-between mb-1">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#nav-tests" role="tab"
+                               aria-controls="nav-status" aria-selected="false">Tests</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#nav-output" role="tab"
+                               aria-controls="nav-status"
+                               aria-selected="false">Output</a>
+                        </li>
+                    </ul>
+                    <ul class="nav">
+                    </ul>
                 </ul>
-                <ul class="nav">
-                </ul>
-            </ul>
-            <div class="card border-top-0" style="border-radius: 0 0 8px 8px; min-height: 10em;">
+
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade active show" id="nav-tests" role="tabpanel"
+                    <div class="tab-pane fade active show scroll-box p-2" id="nav-tests" role="tabpanel"
                          aria-labelledby="nav-profile-tab">
                         <% workspace.assignment.tests.forEach(test => { %>
-                            <div class="card pl-2 py-2">
-                                <div class="d-flex justify-content-between">
+                            <div class="card pl-2 py-2 mb-2 ">
+                                <div class="d-flex justify-content-between" id="<%= test._id %>">
                                     <div>
-                                        <span><i class="far fa-dot-circle text-muted mr-2"></i></span>
+                                        <span><i class="far fa-dot-circle text-muted mr-2" id="status"></i></span>
                                         <span><%= test.name %></span>
                                     </div>
-                                    <div class="text-muted">
+                                    <div class="text-muted" id="info">
                                         Not compiled
                                     </div>
                                 </div>
@@ -131,16 +134,41 @@
         saveCache = [];
     }
 
-    compileCode();
+    function submitCode() {
+        buildSave();
+        $('#submit').html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Grading...`);
+        fetch('/workspace/<%= workspace._id %>/submit')
+            .then((response) => {
+                response.json().then(data => {
+                    $('#submit').html(`<i class="fas fa-upload"></i>`);
+                    window.location.href = `/response/${data}`;
+                });
+            });
+    }
+
 
     function compileCode() {
+        buildSave();
+        $('#compile').html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Testing...`);
         fetch('/workspace/<%= workspace._id %>/compile')
             .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                console.log(data);
+                response.json().then(data => {
+                    updateTests(data.tests);
+                });
             });
+    }
+
+
+    function updateTests(testArray) {
+        testArray.forEach(test => {
+            let root = $(`#${test.test}`);
+            let targetDot = root.children(`div`).children('span').children('#status');
+            targetDot.removeClass("text-danger text-success text-muted");
+            targetDot.addClass(`text-${test.passed ? "success" : "danger"}`);
+            let targetInfo = root.children('#info');
+            targetInfo.html(`${test.passed ? "Test Passed" : test.error_type}`);
+        });
+        $('#compile').html(`<i class="fas fa-play"></i>`);
     }
 
     jQuery(document).keydown(function (event) {

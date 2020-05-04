@@ -33,6 +33,14 @@ class Submission {
         });
     }
 
+    getElements() {
+        return {
+            make: this.make,
+            files: this.files,
+            tests: this.tests
+        };
+    }
+
     async formatSubmission() {
         let results = await fetchResponse(this);
         let response = {tests: [], compile: results.compile, debug: results.debug};
@@ -101,8 +109,8 @@ function getDifference(input, test) {
 
     let outMatch = (test.outputs.toString() === input.stdout.toString());
     let errMatch = (test.error.toString() === input.stderr.toString());
-    let exitMatch = (input.exit === test.code);
-    let execError = (input.exit === 127);
+    let exitMatch = (input.code === test.code);
+    let execError = (input.code === 127);
 
     let error_type = [];
     if (!outMatch && test.provided.includes("out")) error_type.push('stdout');
@@ -121,7 +129,7 @@ function getDifference(input, test) {
         error_type: error_type,
         stderr: input.stderr,
         signal: input.signal,
-        exit: input.exit,
+        exit: input.code,
         time: input.time,
         output: input.stdout,
         stdout: input.stdout,
@@ -130,16 +138,27 @@ function getDifference(input, test) {
 
 }
 
-exports.evaluateFromWorkspace = async (workspaceId) => {
+let parseWorkspace = async (workspaceId) => {
     const submission = new Submission();
     let workspace = await Workspace.findById(workspaceId).populate('files').exec();
-    let assignment = await Assignment.findById(workspace.assignment._id).populate('shared_files').exec();
+    let assignment = await Assignment.findById(workspace.assignment._id).populate(['shared_files', 'tests']).exec();
     submission.setMake(assignment.command);
-    workspace.files.forEach(file => submission.addFile(file.name, file.contents));
+    workspace.files.forEach(file => submission.addFile(file.name, file.content));
     assignment.shared_files.forEach(file => submission.addFile(file.name, file.contents));
     assignment.tests.forEach((test) => submission.addTest(test));
-    return submission.formatSubmission();
+    return submission;
 };
+
+exports.evaluateFromWorkspace = async (workspaceId) => {
+    const workspace = await parseWorkspace(workspaceId);
+    return workspace.formatSubmission();
+};
+
+exports.submitWorkspace = async (workspaceId) => {
+    const workspace = await Workspace.findById(workspaceId).exec();
+    const preparedWorkspace = await parseWorkspace(workspaceId);
+    return preparedWorkspace.testSubmission(workspace.student, workspace.assignment);
+}
 
 
 const fetchResponse = (submission) => new Promise((resolve, reject) => {

@@ -64,6 +64,7 @@ app.use(async (req, res, next) => {
     }
 
     req.back = req.get("referer");
+    app.locals.back = req.back;
     app.locals.user = user;
     req.user = user;
     next();

@@ -17,7 +17,7 @@ router.get('/:assignment', async (req, res) => {
 });
 
 router.post('/:assignment', upload.any(), async (req, res, next) => {
-    const assignment = await Assignment.findById(req.params.assignment).populate("shared_files", "tests").exec();
+    const assignment = await Assignment.findById(req.params.assignment).populate(["shared_files", "tests"]).exec();
     const submission = new Submission();
     const files = req.files;
     // If the wrong number of files is uploaded, throw the error to the next router

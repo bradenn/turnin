@@ -1,2 +1,8 @@
-node_modules
 npm-debug.log
+/node_modules
+env/config.json
+.DS_Store
+/.idea
+uploads
+cache
+/.env

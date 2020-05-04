@@ -13,8 +13,8 @@
     <%
     let buttons = [];
     %>
-    <%- include("partials/title.ejs", {title: `${response.assignment.name} - ${output.test.name}`,
-    subtitle: `${new Date(response.date).toLocaleString()}`,
+    <%- include("partials/title.ejs", {title: `${output.test.name}`,
+    subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / <a href="/submit/${response.assignment._id}">${response.assignment.name}</a> / <a href="${back}">Attempt</a> / ${output.test.name}`,
     buttons: buttons, backName: "Back", backLink: back}) %>
     <div class="row">
         <div class="col-md-8">
