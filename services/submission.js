@@ -20,7 +20,11 @@ class Submission {
     }
 
     addFile(name, contents) {
-        this.files.push({name: name, contents: contents});
+        this.files.push({name: name, contents: contents, shared: false});
+    }
+
+    addSharedFile(name, contents) {
+        this.files.push({name: name, contents: contents, shared: true});
     }
 
     addTest(test) {
@@ -28,6 +32,8 @@ class Submission {
             name: test.name,
             _id: test._id,
             input: test.inputs,
+            max_stdout: test.outputs.toString().length,
+            max_stderr: test.error.toString().length,
             arguments: test.arguments,
             output: test.outputs
         });
@@ -52,7 +58,7 @@ class Submission {
 
     async testSubmission(user, assignment) {
         // Store all uploaded files to the database for later review
-        const files = await Promise.all(this.files.map(file =>
+        const files = await Promise.all(this.files.filter(file => !file.shared).map(file =>
             File.create({
                 name: file.name,
                 student: user,
@@ -85,6 +91,7 @@ class Submission {
             signal: results.compile.signal,
             passed: outputs.reduce((acc, next) => acc && next.passed, true),
             exit: results.compile.code,
+            compile_time: results.compile.time,
             compiled: (results.compile.code === 0),
             debug_server: results.debug.server,
             debug_node: results.debug.node,
@@ -103,14 +110,14 @@ exports.Submission = Submission;
 
 function getDifference(input, test) {
 
-    let passed = false;
+    let passed;
     let error_diff = JSON.stringify(diffJs.diffArrays(input.stderr, test.error));
     let diff = JSON.stringify(diffJs.diffArrays(input.stdout, test.outputs));
 
     let outMatch = (test.outputs.toString() === input.stdout.toString());
     let errMatch = (test.error.toString() === input.stderr.toString());
-    let exitMatch = (input.code === test.code);
-    let execError = (input.code === 127);
+    let exitMatch = (input.exit === test.code);
+    let execError = (input.exit === 127);
 
     let error_type = [];
     if (!outMatch && test.provided.includes("out")) error_type.push('stdout');
@@ -129,7 +136,7 @@ function getDifference(input, test) {
         error_type: error_type,
         stderr: input.stderr,
         signal: input.signal,
-        exit: input.code,
+        exit: input.exit,
         time: input.time,
         output: input.stdout,
         stdout: input.stdout,
@@ -144,7 +151,7 @@ let parseWorkspace = async (workspaceId) => {
     let assignment = await Assignment.findById(workspace.assignment._id).populate(['shared_files', 'tests']).exec();
     submission.setMake(assignment.command);
     workspace.files.forEach(file => submission.addFile(file.name, file.content));
-    assignment.shared_files.forEach(file => submission.addFile(file.name, file.contents));
+    assignment.shared_files.forEach(file => submission.addSharedFile(file.name, file.contents));
     assignment.tests.forEach((test) => submission.addTest(test));
     return submission;
 };

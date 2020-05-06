@@ -4,6 +4,7 @@
 <%- include("partials/nav.ejs") %>
 
 <body class="preload">
+
 <div class="container">
     <%
     let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
@@ -11,7 +12,6 @@
     %>
     <%- include("partials/title.ejs", {title: "Dashboard", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
     <div class="row">
-
         <div class="col-md-12 mb-3 pr-3">
             <div class="card">
                 <div class="card-title">Assignments</div>
@@ -61,7 +61,8 @@
                                        aria-expanded="false">
                                         All Attempts
                                     </a>
-                                    <div class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="dropdownMenuLink">
+                                    <div class="dropdown-menu scrollable-menu" role="menu"
+                                         aria-labelledby="dropdownMenuLink">
                                         <% if(set.length){ %>
                                             <%- set.join(""); %>
                                         <% }else{ %>
@@ -80,7 +81,8 @@
 
                             <% }); %>
                             <% }); if(courses.length === 0 || courses.filter(course => course.assignments.filter(asnmt => asnmt.assigned).length > 0).length === 0){ %>
-                                <td>You have no <%= (courses.length === 0) ? "courses" : "assignments" %>.</td>
+                                <td>You have no <%= (courses.length === 0) ? "courses" : "assignments" %>.
+                                </td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

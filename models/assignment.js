@@ -17,6 +17,23 @@ let AssignmentSchema = new mongoose.Schema({
     ref: 'Result',
     autopopulate: 1
   }],
+  type: {
+    type: String,
+    enum: ['assignment', 'test'],
+    default: 'assignment'
+  },
+  workspaces: {
+    type: Boolean,
+    default: true
+  },
+  quick_edits: {
+    type: Boolean,
+    default: true
+  },
+  timeout: {
+    type: Number,
+    default: 5000
+  },
   command: String,
   files: [String],
   duedate: String,

@@ -123,6 +123,10 @@
                         <%= result.assignment.command %>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
+                        <span>Compile Time:</span>
+                        <%= result.compile_time %>ms
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
                         <span>Signal:</span>
                         <%= (result.signal) ? result.signal : "none" %>
                     </li>
@@ -138,7 +142,7 @@
                     <div class="card-title">Server</div>
                     <div class="card-subtitle">The server used to test the program</div>
                 </div>
-                <span class="m-1"><%= result.debug_server %>:<%= result.debug_node %>:<%= result.debug_instance %></span>
+                <span class="m-1"><%= result.debug_server %>:<%= result.debug_node %></span>
             </div>
         </div>
 

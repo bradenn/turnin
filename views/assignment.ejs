@@ -20,9 +20,12 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
             <a href="/assignments/edit/${assignment._id}/assign/${(assignment.assigned) ? 'false' : 'true'}"
-               class="dropdown-item ">${(assignment.assigned) ? 'Unassign' :
+               class="dropdown-item "><i class="fas fa-paper-plane mr-2"></i>${(assignment.assigned) ? 'Unassign' :
             'Assign'} ${assignment.name}</a>
-            <a href="/assignments/${assignment._id}/delete" class="dropdown-item ">Delete</a>
+            <a href="#settings" data-toggle="modal" data-target="#settings" class="dropdown-item"><i class="fas fa-cog mr-2"></i>Settings</a>
+            <a href="" class="dropdown-item"><i class="fas fa-file-archive mr-2"></i>Save as Template</a>
+           <hr>
+            <a href="/assignments/${assignment._id}/delete" class="dropdown-item text-danger"><i class="fas fa-trash-alt mr-2"></i>Delete</a>
         </div>
     </div>
         `;
@@ -35,6 +38,58 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="card-title">Assignment Statistics</div>
+                        <div class="card-subtitle mb-0">Useful information about this assignment</div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="d-flex mx-4">
+                            <div class="text-right">
+                                <b class="mr-2">Workspaces</b><br>
+                                <b class="mr-2">Test</b>
+                            </div>
+                            <div>
+                                <%= (assignment.workspaces) ? "Enabled" : "Disabled" %><br>
+                                <%= (assignment.type === "test") ? "yes" : "no" %>
+                            </div>
+                        </div>
+                        <div class="d-flex mx-4">
+                            <div class="text-right">
+                                <b class="mr-2">Due</b><br>
+                                <b class="mr-2">Late</b>
+                            </div>
+                            <div>
+                                <%= timeTill(new Date(assignment.duedate)) %><br>
+                                <%= timeTill(new Date(assignment.late)) %>
+                            </div>
+                        </div>
+                        <div class="d-flex mx-4">
+                            <div class="text-right">
+                                <b class="mr-2">Assigned</b><br>
+                                <b class="mr-2">Template</b>
+                            </div>
+                            <div>
+                                <%= assignment.assigned ? "yes" : "no" %><br>
+                                no
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="text-right">
+                                <b class="mr-2">Compile Timeout</b><br>
+                                <b class="mr-2">Avg. Compile Time</b>
+                            </div>
+                            <div>
+                                <%= assignment.timeout %>ms<br>
+                                <%= assignment.responses.length >= 1 ? (assignment.responses.map(resp => parseFloat(resp.compile_time) || 0.0).reduce((acc, next) => acc + next) / assignment.responses.length).toFixed(2) + "ms" : "No data" %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
                 <div class="d-flex justify-content-between align-items-end">
                     <div>
                         <div class="card-title">Required Files</div>
@@ -42,8 +97,8 @@
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post" class="">
                         <div class="d-flex">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Filename">&nbsp;
-                            <input type="submit" class="btn btn-primary" value="Add File">
+                            <input type="text" class="form-control mr-3" id="name" name="name" placeholder="Filename">&nbsp;
+                            <input type="submit" class="btn btn-primary bnt-sm" value="Add File">
                         </div>
                         <small class="text-muted">Enter multiple with comma delimitation.</small>
                     </form>
@@ -96,8 +151,8 @@
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/file/add" method="post"
                           enctype="multipart/form-data">
-                        <div class="d-flex pb-3">
-                            <div class="custom-file mr-1">
+                        <div class="d-flex pb-3 align-items-center">
+                            <div class="custom-file mr-3">
                                 <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
                                 <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
                                     file... (*.*)</label>
@@ -144,8 +199,8 @@
                     </div>
                     <form action="/assignments/edit/<%= assignment._id %>/tar" method="post"
                           enctype="multipart/form-data">
-                        <div class="d-flex pb-3">
-                            <div class="custom-file mr-1">
+                        <div class="d-flex pb-3 align-items-center">
+                            <div class="custom-file mr-3">
                                 <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
                                 <label class="custom-file-label border-right-1" for="inputGroupFile01"
                                        id="inputGroupFile01Label">Choose
@@ -207,7 +262,64 @@
     </div>
 </div>
 </body>
-
+<!-- Modal -->
+<div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="settingModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-cog mr-2"></i>Settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox" <%= assignment.workspaces ? 'checked' : '' %> id="workspaces">
+                            <label class="form-check-label" for="workspaces">
+                                Allow Workspaces
+                            </label>
+                        </div>
+                        <small id="emailHelp" class="form-text text-warning">WARNING: This is an acceptability
+                            feature</small>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox" <%= assignment.quick_edits ? 'checked' : '' %> id="quickedits">
+                            <label class="form-check-label" for="quickedits">
+                                Allow Quick Edits
+                            </label>
+                        </div>
+                        <small id="emailHelp" class="form-text text-muted">Allow students to edit their uploaded code in
+                            workspace, then resubmit</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="number">Compile Time Timeout (in milliseconds)</label>
+                        <input type="number" class="form-control w-50" min="1000" max="60000" step="500" unit="ms" id="timeout" aria-describedby="timeout" value="<%= assignment.timeout %>">
+                        <small id="emailHelp" class="form-text text-muted">This is how long the compiler waits before considering a compile as an error</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Due date</label>
+                        <input type="date" class="form-control" name="assignmentDueDate" value="<%= new Date(assignment.date).toLocaleDateString() %>" placeholder="Date">
+                        <small class="text-muted">Late assignments will be accepted but flagged as late</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Late due date</label>
+                        <input type="date" class="form-control" name="assignmentLateDueDate" placeholder="Date">
+                        <small class="text-muted">Absolute cutoff for assignments</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="newtest" class="modal fade">
     <div class="modal-dialog modal-login">
         <div class="modal-content">
@@ -249,3 +361,61 @@
         $(e.target).siblings("#inputGroupFile01Label").text(e.target.files[0].name);
     });
 </script>
+
+<%
+function timeTill(date) {
+
+    var seconds = Math.floor((date - new Date()) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+%>

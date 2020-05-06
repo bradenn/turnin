@@ -21,6 +21,7 @@ html[data-theme='dark'] {
     --speed: 500ms;
     --primary: #ff9f10;
     --primary-dim: rgba(255, 159, 16, 0.25);
+    --box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 }
 
 html[data-theme='light'] {
@@ -36,6 +37,7 @@ html[data-theme='light'] {
     --speed: 500ms;
     --primary: #007aff;
     --primary-dim: rgba(0, 122, 255, 0.50);
+    --box-shadow: 0 2px 3px rgba(0,0,0,0.04), 0 2px 3px rgba(0,0,0,0.04);
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; background-color: var(--bg);}
@@ -43,6 +45,13 @@ html[data-theme='light'] {
 ::-webkit-scrollbar-thumb { height: 25px; width: 6px; background-color: var(--bg-accent); border-radius: 8px; border: var(--border); margin: 4px;}
 ::-webkit-scrollbar-corner { background-color: var(--bg);}
 ::-webkit-resizer { background-color: var(--bg); }
+
+.dropdown-header{
+    margin: 0;
+    padding: 8px 8px;
+    margin-bottom: 4px;
+    border-bottom: var(--border);
+}
 
 .cm-s-one-dark .CodeMirror-gutter, .cm-s-one-dark .CodeMirror-gutters {
     background-color: var(--bg) !important;
@@ -102,7 +111,7 @@ a {
 }
 .dropdown-menu{
     background-color: var(--bg);
-    width: 200px;
+    width: 220px;
     border: var(--border);
     padding: 8px;
     overflow: hidden;
@@ -111,7 +120,7 @@ a {
 .dropdown-menu .dropdown-item:hover{
     background-color: var(--bg);
     border: var(--border);
-    /*box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5);*/
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 a:hover {
@@ -320,7 +329,7 @@ a.text-success:hover{
 .table-responsive {
     border: var(--border);
     border-radius: 8px;
-    box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
 }
 
 .table {
@@ -355,7 +364,7 @@ td {
     padding: 16px;
     background-color: var(--bg);
     border: var(--border);
-    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
 }
 
 .sub-header {

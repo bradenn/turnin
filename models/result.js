@@ -26,6 +26,7 @@ let ResultSchema = new mongoose.Schema({
     stderr: [String],
     stdout: [String],
     signal: String,
+    compile_time: String,
     exit: Number,
     debug_server: String,
     debug_node: String,
