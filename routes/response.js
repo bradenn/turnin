@@ -59,10 +59,10 @@ router.get('/:response', (req, res) => {
     }).populate(["assignment", "files", "outputs"]);
 });
 
-utils.getRouteWithUser('/output/:output', router, (req, res, user) => {
+router.get('/output/:output', (req, res) => {
     Output.findById(req.params.output, (err, output) => {
         Result.findOne({outputs: {$in: [output._id]}}, (err, resp) => {
-            res.render("output", {user: user, output: output, response: resp, back: req.back});
+            res.render("output", {output: output, response: resp, back: req.back});
         }).populate("assignment");
     });
 });

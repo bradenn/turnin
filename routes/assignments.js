@@ -18,19 +18,10 @@ router.get('/new', async (req, res) => {
     res.render("newassignment", {user: req.user, courses: courses});
 });
 
-router.get('/:assignment', function (req, res, next) {
-    User.findById(req.session.userId, function (userError, user) {
-        Assignment.findById(req.params.assignment, function (err, assignment) {
-            Output.find({test: {$in: assignment.tests.map((test) => test._id)}}, function (err, outputs) {
-                res.render('assignment', {
-                    user: user,
-                    assignment: assignment,
-                    outputs: outputs,
-                    back: req.back,
-                    error: req.query.error
-                });
-            });
-        }).populate("tests").populate("shared_files", "name");
+router.get('/:assignment', async (req, res) => {
+    const assignment = await Assignment.findById(req.params.assignment,).populate("tests").populate("shared_files", "name").exec();
+    return res.render('assignment', {
+        assignment: assignment
     });
 });
 
@@ -52,6 +43,20 @@ router.get('/:assignment/delete', async (req, res, next) => {
     });
 });
 
+router.post('/:assignment/update', async (req, res, next) => {
+    if (!req.user.type > 0) return next(new Error("Authentication Error."));
+    const validKeys = ["workspaces", "quick_edits", "timeout", "duedate", "late"];
+    let body = req.body;
+    if (Object.keys(body).every(a => validKeys.includes(a))) return next(new Error("Insufficient keys provided."));
+    body.workspaces = (body.workspaces === "on");
+    body.quick_edits = (body.quick_edits === "on");
+    Assignment.findOneAndUpdate({_id: req.params.assignment}, body, (error, doc) => {
+        if (error) return next(new Error(`Fatal Error: ${error}`));
+        req.session.info = `Successfully updated assignment.`;
+        return res.redirect("back");
+    });
+});
+
 router.get('/:assignment/grades', async (req, res) => {
     const assignment = await Assignment.findById(req.params.assignment).populate("responses").exec();
     const course = await Course.findOne({assignments: assignment._id}).populate("students").exec();
@@ -62,24 +67,24 @@ router.get('/:assignment/grades', async (req, res) => {
 });
 
 router.get('/edit/:assignment/file/remove/:file', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
     Assignment.findOneAndUpdate({_id: req.params.assignment}, {$pullAll: {shared_files: [req.params.file]}}, (err, assignment) => {
         File.findOneAndDelete({_id: req.params.file}, (err, file) => {
+            req.session.info = `Successfully removed shared file.`;
             res.redirect("back");
         });
     });
 });
 
 router.get('/edit/:assignment/files/:file/remove/', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
     Assignment.findOneAndUpdate({_id: req.params.assignment}, {$pullAll: {files: [req.params.file]}}, (err, assignment) => {
+        req.session.info = "Successfully removed file.";
         res.redirect("back");
     });
 });
 
 router.get('/edit/:assignment/test/:test/remove/', async (req, res, next) => {
-    if (utils.authenticateUser(req.user)) return res.redirect("/");
     Assignment.findOneAndUpdate({_id: req.params.assignment}, {$pullAll: {tests: [req.params.test]}}, (err, assignment) => {
+        req.session.info = `Successfully removed test.`;
         res.redirect("back");
     });
 });
@@ -87,6 +92,7 @@ router.get('/edit/:assignment/test/:test/remove/', async (req, res, next) => {
 router.post('/edit/:assignment/files/add', async (req, res, next) => {
     let input = req.body.name.replace(' ', "").split(",");
     Assignment.findOneAndUpdate({_id: req.params.assignment}, {$push: {files: input}}, (err, assignment) => {
+        req.session.info = `Successfully added file${(input.length > 1)?"s":""} '${input.join(", ")}'.`;
         res.redirect("back");
     });
 });
@@ -138,6 +144,7 @@ utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, us
         if (user.type >= 1) {
             assignment.assigned = req.params.assign;
             assignment.save((err, assignment) => {
+                req.session.info = `Successfully ${(assignment.assigned)?"assigned":"unassigned"} ${assignment.name}.`;
                 res.redirect(req.get('referer'));
             });
         }
@@ -150,8 +157,13 @@ let multer = require('multer');
 const upload = multer({storage: multer.memoryStorage()});
 
 router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
+    let tarFile = req.files[0];
+    if(!tarFile.originalname.endsWith(".tar.gz")){
+        req.session.error = `Only .tar.gz files are accepted; unable to process '${tarFile.originalname}'`;
+        res.redirect('back');
+    }
     Assignment.findById(req.params.assignment, (error, assignment) => {
-        tests.untar(req.files[0].buffer).then(files => {
+        tests.untar(tarFile.buffer).then(files => {
             let tests = [];
             files.forEach(file => {
                 let b = false;
@@ -173,6 +185,7 @@ router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
                 let errors = [];
                 let cmd = "";
                 let code = 0;
+                let timeout = 2500;
                 let provided = [];
                 let hidden = false;
                 test.files.forEach(file => {
@@ -193,6 +206,10 @@ router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
                             errors = ln;
                             provided.push('err');
                             break;
+                        case "timeout":
+                            timeout = ln[0];
+                            provided.push('timeout');
+                            break;
                         case "cmd":
                             cmd = ln.join(" ");
                             provided.push('cmd');
@@ -210,6 +227,7 @@ router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
                     outputs: outputs,
                     inputs: inputs,
                     error: errors,
+                    timeout: timeout,
                     arguments: cmd,
                     code: code,
                     provided: provided,
@@ -217,16 +235,15 @@ router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
                 });
             });
             Test.create(formattedData, (err, tests) => {
-                console.log(err);
                 tests.forEach(test => assignment.tests.push(test._id));
                 assignment.save((err, save) => {
-                    console.log(err);
+                    req.session.info = `Successfully added ${tests.length} test${(tests.length > 1)?"s":""}.`;
                     res.redirect(req.get('referer'));
                 });
             });
         }).catch(error => {
             let err = new Error(error);
-            next(err);
+            req.session.error = err;
         });
     });
 });

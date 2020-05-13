@@ -12,7 +12,7 @@ let TestSchema = new mongoose.Schema({
     hidden: Boolean,
     provided: [{
         type: String,
-        enum: ['out', 'err', 'cmd', 'exit']
+        enum: ['out', 'err', 'cmd', 'timeout', 'exit']
     }],
     code: Number
 });

@@ -1,0 +1,155 @@
+<%
+let isActive = (givenUrl) => (givenUrl === url) ? "active" : "";
+%>
+
+<div class="menu ">
+
+    <a href="/profile" onclick="" class="no-bs">
+        <div class="d-flex align-items-center">
+            <div class="mr-2 pl-0">
+                        <span class="fa-stack nav-stack fa-1x" style="font-size: 1.3em;">
+                                  <i class="fas fa-circle fa-stack-2x"></i>
+                                  <i class="fas fa-user fa-stack-1x fa-inverse"></i>
+                                </span>
+            </div>
+            <div>
+                <div class="mb-0 pb-0 align-items-center">
+                    <strong>
+                        <%= user.firstname %> <%= user.lastname %>
+                    </strong>
+                </div>
+                <div class="text-muted mt-0 pt-0"><%= (user.type === 0) ? "Student" : (user.type === 1) ? "Instructor" : "Administrator" %></div>
+            </div>
+        </div>
+    </a>
+    <hr>
+    <ul class="list-group menu-list">
+        <%- include("menu-item.ejs", {name: "Dashboard", target: "/", icon: "fas fa-home"}) %>
+        <%- include("menu-item.ejs", {name: "Workspace", target: "/workspace", icon: "fas fa-tools"}) %>
+        <% if(user.type >= 2){ %>
+            <%- include("menu-item.ejs", {name: "Manage", target: "/manage", icon: "fas fa-shield-alt"}) %>
+        <% } %>
+    </ul>
+    <hr>
+    <ul class="list-group menu-list">
+        <%- include("menu-item.ejs", {name: "Assignments", target: "/assignments", icon: "fas fa-file-invoice"}) %>
+        <%- include("menu-item.ejs", {name: "Courses", target: "/courses", icon: "fas fa-users-cog"}) %>
+    </ul>
+    <hr>
+    <ul class="list-group menu-list">
+        <% if(user.type >= 1){ %>
+            <% if(user.instructing.length > 0){ %>
+                <% user.instructing.forEach(course => { %>
+                    <%- include("menu-item.ejs", {name: course.name, target: `/courses/${course._id}`, icon: "fas fa-users"}) %>
+                    <ul class="list-group menu-list pl-3">
+                        <% if(course.assignments.length > 0){ %>
+                            <% course.assignments.forEach(assignment => { %>
+                                <%- include("menu-item.ejs", {name: assignment.name, target: `/assignments/${assignment._id}`, icon: "fas fa-file"}) %>
+                            <% }); %>
+                        <% }else{ %>
+                            <li class="list-group-item menu-list-item">No Assignments</li>
+                        <% } %>
+                    </ul>
+                <% }); %>
+            <% }else{ %>
+                No Courses
+            <% } %>
+        <% } %>
+    </ul>
+    <hr>
+    <% if(info != null || error != null){ %>
+        <div class="d-flex flex-column align-items-end">
+            <div class="w-100" style="max-width: 100%;">
+                <% if(info != null){ %>
+                    <div class="toast border-success" id="info-toast" role="alert" data-delay="3000"
+                         data-autohide="true">
+                        <div class="toast-header">
+                            <strong class="mr-auto">Success</strong>
+                            <small class="text-muted">now</small>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="toast-body">
+                            <%= info %>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" id="toast-info-time"
+                                 style="width: 100%"
+                                 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                <% } %>
+                <% if(error != null){ %>
+                    <div class="toast border-danger" id="error-toast" role="alert" data-delay="5000"
+                         data-autohide="true">
+                        <div class="toast-header">
+                            <strong class="mr-auto">Error</strong>
+                            <small class="text-muted">now</small>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="toast-body">
+                            <%= error %>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" id="toast-error-time"
+                                 style="width: 100%"
+                                 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+    <div class="menu-bottom">
+        <div class="d-flex justify-content-between">
+            <div>
+                <div class="align-items-center">
+                    <span data-toggle="tooltip" data-placement="top" title="Container: <%= platform.hostname %>"><i
+                                class="fas fa-code"></i>&nbsp;Turnin v<%= platform.version %></span><br>
+                    <span class="text-muted">Copyright &copy; <a href="https://www.bradenn.com"
+                                                                 class="no-bs">BN Media</a> <%= new Date().getFullYear() %></span>
+                </div>
+            </div>
+            <div class="">
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        <% if(error != null){ %>
+        $('#error-toast').toast('show');
+        $(function () {
+            var current_progress = 100;
+            var interval = setInterval(function () {
+                current_progress -= 2;
+                $("#toast-error-time")
+                    .css("width", current_progress + "%")
+                if (current_progress <= 0)
+                    clearInterval(interval);
+            }, 100);
+        });
+        <% } %>
+        <% if(info != null){ %>
+        $('#info-toast').toast('show');
+        $(function () {
+            var current_progress = 100;
+            var interval = setInterval(function () {
+                current_progress -= 3.5;
+                $("#toast-info-time")
+                    .css("width", current_progress + "%")
+                if (current_progress <= 0)
+                    clearInterval(interval);
+            }, 100);
+        });
+        <% } %>
+    })
+</script>

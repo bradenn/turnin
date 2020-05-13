@@ -1,17 +1,19 @@
 const config = require("./env/env.js");
 let express = require('express');
 let app = express();
-let methodOverride = require('method-override')
 let bodyParser = require('body-parser');
 let mongoose = require('mongoose');
+let compression = require('compression');
 let session = require('express-session');
 let MongoStore = require('connect-mongo')(session);
 let favicon = require('serve-favicon');
 let platform = require("./env/platform.json");
 let User = require('./models/user');
+let Course = require('./models/course');
 
-
+app.use(compression());
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
+
 
 //connect to MongoDB
 mongoose.connect(config.MONGO, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
@@ -33,8 +35,6 @@ app.use(session({
     })
 }));
 
-app.use(methodOverride('X-HTTP-Method-Override'));
-
 // parse incoming requests
 app.use(bodyParser.json({limit: '5mb'}));
 app.use(bodyParser.urlencoded({extended: true, limit: '5mb'}));
@@ -50,23 +50,31 @@ let publicRoutes = require('./routes/public.js');
 app.locals.platform = platform;
 app.locals.platform.version = require("./package.json").version;
 app.locals.platform.hostname = require('os').hostname();
-app.locals.platform.instance = (process.env.NODE_ENV === "production")?process.env.INSTANCE_ID:"fork";
+app.locals.platform.instance = (process.env.NODE_ENV === "production") ? process.env.INSTANCE_ID : "fork";
 
 /* Send requests not requiring login */
 app.use('/', publicRoutes);
 
 app.use(async (req, res, next) => {
     const user = await User.findById(req.session.userId).exec();
-
-    if (user == null){
+    let courses = await Course.find({instructor: req.session.userId}).exec();
+    if (user == null) {
         req.user = null;
         return res.redirect('/login');
     }
 
+    app.locals.info = req.session.info;
+    app.locals.error = req.session.error;
+    req.session.info = null;
+    req.session.error = null;
+    app.locals.url = req.url;
+    app.locals.user = user;
+    app.locals.user.instructing = courses;
+    req.user = user;
+
+
     req.back = req.get("referer");
     app.locals.back = req.back;
-    app.locals.user = user;
-    req.user = user;
     next();
 });
 
@@ -79,15 +87,10 @@ app.use((req, res, next) => {
     next(err);
 });
 
-process.on("uncaughtException", function (err) {
-    console.log(err);
-});
-
 app.use((err, req, res, next) => {
     res.render("error", {error: err});
     next();
 });
-
 
 // listen on port {port} <- config
 app.listen(config.PORT, function () {

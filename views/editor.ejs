@@ -7,7 +7,13 @@
     }
 </style>
 <body class="preload">
-<div class="container">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+<div class="container-fluid">
     <%
     let buttons = [`<span id="saveMessage" class="text-success">&nbsp;</span>`]
     %>
@@ -91,7 +97,9 @@
         </div>
     </div>
 </div>
-
+        </div>
+    </div>
+</div>
 </body>
 
 <script src="/codemirror/lib/codemirror.js"></script>
@@ -184,5 +192,4 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"
         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
-<%- include("partials/footer.ejs") %>
 </html>

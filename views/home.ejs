@@ -4,165 +4,178 @@
 <%- include("partials/nav.ejs") %>
 
 <body class="preload">
-
-<div class="container">
-    <%
-    let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
-                    in a course</a>`]
-    %>
-    <%- include("partials/title.ejs", {title: "Dashboard", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
-    <div class="row">
-        <div class="col-md-12 mb-3 pr-3">
-            <div class="card">
-                <div class="card-title">Assignments</div>
-                <div class="card-subtitle">Assignments due in all enrolled classes</div>
-                <div class="table-responsive">
-                    <table class="table ">
-                        <thead>
-                        <tr>
-                            <th scope="col">Assignment</th>
-                            <th scope="col">Course</th>
-                            <th scope="col">Due Date</th>
-                            <th scope="col">Cutoff</th>
-                            <th scope="col">Attempts</th>
-                            <th scope="col">Complete</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <% courses.forEach(course => {
-                            let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) > 0);
-                        assignments.forEach(assignment => {
-                        let attempts = assignment.responses.filter(response => response.student.toString() === user._id.toString())
-                        %>
-                        <tr>
-                            <td>
-                                <i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong>
-                            </td>
-                            <td><span tabindex="0" data-toggle="tooltip"
-                                      title="Section <%= course.section %>"><%= course.name %></span></td>
-                            <td><span tabindex="0" data-toggle="tooltip"
-                                      title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span>
-                            </td>
-                            <td><span tabindex="0" data-toggle="tooltip"
-                                      title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span>
-                            </td>
-                            <td style="max-width: 20vw;">
-                                <div class="">
-                                    <% let set = attempts.map(attempt => {
-                                        let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                                        let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
-                                        return `<a href="/response/${attempt._id}" class="dropdown-item text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
-                                    });
-                                    %>
-                                </div>
-                                <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                       data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
-                                       aria-expanded="false">
-                                        All Attempts
-                                    </a>
-                                    <div class="dropdown-menu scrollable-menu" role="menu"
-                                         aria-labelledby="dropdownMenuLink">
-                                        <% if(set.length){ %>
-                                            <%- set.join(""); %>
-                                        <% }else{ %>
-                                            <span class="text-muted">No Attempts</span>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <% if(!workspaces.map(workspace => workspace.assignment.toString()).includes(assignment._id.toString())){ %>
-                                    <a href="/workspace/create/<%= assignment._id %>">Workspace</a>
-                                <% }else{ %>
-                                    <a href="/workspace/<%= workspaces.find(workspace => (workspace.assignment.toString() === assignment._id.toString()))._id %>">Workspace</a>
-                                <% } %>
-                                &nbsp;<a href="/submit/<%= assignment._id %>" class="">Upload</a></td>
-
-                            <% }); %>
-                            <% }); if(courses.length === 0 || courses.filter(course => course.assignments.filter(asnmt => asnmt.assigned).length > 0).length === 0){ %>
-                                <td>You have no <%= (courses.length === 0) ? "courses" : "assignments" %>.
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            <% } %>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
         </div>
-
-        <div class="col-12">
-            <div class="card">
-                <div class="card-title">Past Assignments</div>
-                <div class="card-subtitle">These assignments can no longer be submitted</div>
-                <div class="table-responsive">
-                    <table class="table ">
-                        <thead>
-                        <tr>
-                            <th scope="col">Assignment</th>
-                            <th scope="col">Course</th>
-                            <th scope="col">Due Date</th>
-                            <th scope="col">Cutoff</th>
-                            <th scope="col">Attempts</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <% courses.forEach(course => {
-                            let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) < 0);
-                        assignments.forEach(assignment => {
-                        let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
-                        %>
-                        <tr>
-                            <td>
-                                <i class="text-<%= (attempts.filter(attempt => attempt.passed).lenght >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong>
-                            </td>
-                            <td><%= course.name %>.<%= course.section %></td>
-                            <td><%= new Date(assignment.duedate).toLocaleDateString() %>
-                                - <%= timeSince(new Date(assignment.duedate)) %> ago
-
-                            </td>
-                            <td><%= new Date(assignment.late).toLocaleDateString() %>
-                                - <%= timeSince(new Date(assignment.late)) %> ago
-                            </td>
-                            <td style="max-width: 20vw;">
-                                <div class="">
-                                    <% let set = attempts.map(attempt => {
-                                        let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
-                                        let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
-                                        return `<a href="/response/${attempt._id}" class="dropdown-item text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
-                                    });
+        <div class="col-md-10">
+            <div class="container-fluid">
+                <%
+                let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
+                    in a course</a>`]
+                %>
+                <%- include("partials/title.ejs", {title: "Dashboard", subtitle: (courses.length === 0) ? "You are not enrolled in any classes." : `You are enrolled in ${courses.length} class${(courses.length === 1) ? "" : "es"}.`, buttons: buttons}) %>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="card">
+                            <div class="card-title">Assignments</div>
+                            <div class="card-subtitle">Assignments due in all enrolled classes</div>
+                            <div class="table-responsive">
+                                <table class="table ">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Assignment</th>
+                                        <th scope="col">Course</th>
+                                        <th scope="col">Due Date</th>
+                                        <th scope="col">Cutoff</th>
+                                        <th scope="col">Attempts</th>
+                                        <th scope="col">Complete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% courses.forEach(course => {
+                                        let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) > 0);
+                                    assignments.forEach(assignment => {
+                                    let attempts = assignment.responses.filter(response => response.student.toString() === user._id.toString())
                                     %>
-                                </div>
-                                <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                       data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
-                                       aria-expanded="false">
-                                        All Attempts
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <%- set.join(""); %>
-                                    </div>
-                                </div>
-                            </td>
-                            <% }); if(assignments.length === 0){ %>
-                                <td>You have no past assignments.</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            <% } %>
-                            <% }); %>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    <tr>
+                                        <td>
+                                            <i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong>
+                                        </td>
+                                        <td><span tabindex="0" data-toggle="tooltip"
+                                                  title="Section <%= course.section %>"><%= course.name %></span></td>
+                                        <td><span tabindex="0" data-toggle="tooltip"
+                                                  title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span>
+                                        </td>
+                                        <td><span tabindex="0" data-toggle="tooltip"
+                                                  title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span>
+                                        </td>
+                                        <td class="d-flex">
+                                            <% let set = attempts.map(attempt => {
+                                                let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                                                let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
+                                                return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                            });
+                                            %>
+                                            <div class="pr-3">
+                                                <%- set[set.length - 1] %>
+                                            </div>
+                                            <div class="dropdown">
+                                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                   data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                                   aria-expanded="false">
+                                                    more
+                                                </a>
+                                                <div class="dropdown-menu scrollable-menu" role="menu"
+                                                     aria-labelledby="dropdownMenuLink">
+                                                    <% if(set.length){ %>
+                                                        <% set.forEach(item => { %>
+                                                            <div class="dropdown-item">
+                                                                <%- item %>
+                                                            </div>
+                                                        <% }); %>
+                                                    <% }else{ %>
+                                                        <span class="text-muted">No Attempts</span>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if(!workspaces.map(workspace => workspace.assignment.toString()).includes(assignment._id.toString())){ %>
+                                                <a href="/workspace/create/<%= assignment._id %>">Workspace</a>
+                                            <% }else{ %>
+                                                <a href="/workspace/<%= workspaces.find(workspace => (workspace.assignment.toString() === assignment._id.toString()))._id %>">Workspace</a>
+                                            <% } %>
+                                            &nbsp;<a href="/submit/<%= assignment._id %>" class="">Upload</a></td>
 
+                                        <% }); %>
+                                        <% }); if(courses.length === 0 || courses.filter(course => course.assignments.filter(asnmt => asnmt.assigned).length > 0).length === 0){ %>
+                                            <td>You have no <%= (courses.length === 0) ? "courses" : "assignments" %>.
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        <% } %>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-title">Past Assignments</div>
+                            <div class="card-subtitle">These assignments can no longer be submitted</div>
+                            <div class="table-responsive">
+                                <table class="table ">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Assignment</th>
+                                        <th scope="col">Course</th>
+                                        <th scope="col">Due Date</th>
+                                        <th scope="col">Cutoff</th>
+                                        <th scope="col">Attempts</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% courses.forEach(course => {
+                                        let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) < 0);
+                                    assignments.forEach(assignment => {
+                                    let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
+                                    %>
+                                    <tr>
+                                        <td>
+                                            <i class="text-<%= (attempts.filter(attempt => attempt.passed).lenght >= 1) ? "success" : "danger" %> far fa-dot-circle mr-2"></i><strong><%= assignment.name %></strong>
+                                        </td>
+                                        <td><%= course.name %>.<%= course.section %></td>
+                                        <td><%= new Date(assignment.duedate).toLocaleDateString() %>
+                                            - <%= timeSince(new Date(assignment.duedate)) %> ago
+
+                                        </td>
+                                        <td><%= new Date(assignment.late).toLocaleDateString() %>
+                                            - <%= timeSince(new Date(assignment.late)) %> ago
+                                        </td>
+                                        <td style="max-width: 20vw;">
+                                            <div class="">
+                                                <% let set = attempts.map(attempt => {
+                                                    let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
+                                                    let name = `Attempt ${(index <= 9) ? "0" : ""}${index}`;
+                                                    return `<a href="/response/${attempt._id}" class="dropdown-item text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                                });
+                                                %>
+                                            </div>
+                                            <div class="dropdown">
+                                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                   data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                                   aria-expanded="false">
+                                                    All Attempts
+                                                </a>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <%- set.join(""); %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <% }); if(assignments.length === 0){ %>
+                                            <td>You have no past assignments.</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        <% } %>
+                                        <% }); %>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -189,7 +202,6 @@
         </div>
     </div>
 </div>
-<%- include("partials/footer.ejs") %>
 </html>
 
 <%

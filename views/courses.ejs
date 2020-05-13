@@ -4,7 +4,13 @@
 <%- include("partials/nav.ejs") %>
 
 <body class="preload">
-<div class="container">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+<div class="container-fluid">
     <%
     let buttons = [` <a class="" data-toggle="modal" href="#newClass">New Course</a>`]
     %>
@@ -62,6 +68,9 @@
         </div>
     </div>
 </div>
+        </div>
+    </div>
+</div>
 </body>
 <div id="newClass" class="modal fade">
     <div class="modal-dialog modal-login">
@@ -89,5 +98,4 @@
     </div>
 </div>
 
-<%- include("partials/footer.ejs") %>
 </html>

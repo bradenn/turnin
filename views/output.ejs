@@ -9,108 +9,128 @@
         text-decoration: line-through;
     }
 </style>
-<div class="container">
-    <%
-    let buttons = [];
-    %>
-    <%- include("partials/title.ejs", {title: `${output.test.name}`,
-    subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / <a href="/submit/${response.assignment._id}">${response.assignment.name}</a> / <a href="${back}">Attempt</a> / ${output.test.name}`,
-    buttons: buttons, backName: "Back", backLink: back}) %>
-    <div class="row">
-        <div class="col-md-8">
-            <% if(!output.error_type.includes("stdout") && !output.error_type.includes("stderr") && !output.error_type.includes("exit") && !output.error_type.includes("loop") && !output.error_type.includes("exec")){ %>
-                <div class="card">
-                    <div class="card-title">Results</div>
-                    <div class="card-subtitle">The program's test results for test <%= output.test.name %></div>
-                    <span class="text-success">Program passed all tests and had no issues.</span>
-                </div>
-            <% } %>
-            <% if(output.error_type.includes("exit")){ %>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-title">Exit Code</div>
-                            <div class="card-subtitle">The program had the incorrect exit code</div>
-                            <p>Your program outputted the exit code <strong><%= output.exit %></strong>, this test
-                                requires the
-                                exit code <strong><%= output.test.code %></strong></p>
-                        </div>
-                    </div>
-                </div>
-                <br>
-            <% } %>
-            <% if(output.error_type.includes("stdout")){ %>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-title">Standard Output</div>
-                            <div class="card-subtitle">The program had an incorrect standard output</div>
-                                Expected Output
-                                <pre class="language-diff line-numbers m-0 pt-0"
-                                     style="padding-left: 3.2em;"><code><%= output.test.outputs.join("\n") %></code></pre>
-                                Program Output
-                                <pre class="language-diff line-numbers m-0 pt-0"
-                                     style="padding-left: 3.2em;"><code><%= output.stdout.join("\n") %></code></pre>
-                                Difference
-                                <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
-                                     style="padding-left: 3.2em;"><code><%= JSON.parse(output.diff).map((ln) => (ln.added)?`+ ${ln.value.join("\n")}`:(ln.removed)?`- ${ln.value.join("\n")}`:ln.value.join("\n")).join("\n") %></code></pre>
-                        </div>
-                    </div>
-                </div>
-                <br>
-            <% } %>
-            <% if(output.error_type.includes("stderr")){ %>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-title">Error Output</div>
-                            <div class="card-subtitle">The program had an incorrect error output</div>
-                            Expected Output
-                            <pre class="language-diff line-numbers m-0 pt-0"
-                                 style="padding-left: 3.2em;"><code><%= output.test.error.join("\n") %></code></pre>
-                            Program Output
-                            <pre class="language-diff line-numbers m-0 pt-0"
-                                 style="padding-left: 3.2em;"><code><%= output.stderr.join("\n") %></code></pre>
-                            Difference
-                            <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
-                                 style="padding-left: 3.2em;"><code><%= JSON.parse(output.error_diff).map((ln) => (ln.added)?`+ ${ln.value.join("\n")}`:(ln.removed)?`- ${ln.value.join("\n")}`:ln.value.join("\n")).join("\n") %></code></pre>
-                        </div>
-                    </div>
-                </div>
-            <% } %>
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
         </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
+                <%
+                let buttons = [];
+                %>
+                <%- include("partials/title.ejs", {title: `${output.test.name}`,
+                subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / <a href="/submit/${response.assignment._id}">${response.assignment.name}</a> / <a href="${back}">Attempt</a> / ${output.test.name}`,
+                buttons: buttons, backName: "Back", backLink: back}) %>
+                <div class="row">
+                    <div class="col-md-9">
+                        <% if(!output.error_type.includes("stdout") && !output.error_type.includes("stderr") && !output.error_type.includes("exit") && !output.error_type.includes("loop") && !output.error_type.includes("exec")){ %>
+                            <div class="card">
+                                <div class="card-title">Results</div>
+                                <div class="card-subtitle">The program's test results for
+                                    test <%= output.test.name %></div>
+                                <span class="text-success">Program passed all tests and had no issues.</span>
+                            </div>
+                        <% } %>
+                        <% if(output.error_type.includes("exit")){ %>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-title">Exit Code</div>
+                                        <div class="card-subtitle">The program had the incorrect exit code</div>
+                                        <p>Your program outputted the exit code <strong><%= output.exit %></strong>,
+                                            this test
+                                            requires the
+                                            exit code <strong><%= output.test.code %></strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        <% } %>
+                        <% if(output.error_type.includes("stdout")){ %>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-title">Standard Output</div>
+                                        <div class="card-subtitle">The program had an incorrect standard output</div>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="card w-100 mr-2">
+                                                <div class="card-title">Expected Output</div>
+                                                <div class="card-subtitle">The output provided by your instructor</div>
+                                                <div class="scroll-box">
+                                                <pre class="language-diff line-numbers m-0 pt-0"
+                                                     style="padding-left: 3.2em;"><code><%= output.test.outputs.join("\n") %></code></pre>
+                                                </div>
+                                            </div>
+                                            <div class="card w-100 ml-2">
+                                                <div class="card-title">Program Output</div>
+                                                <div class="card-subtitle">The uploaded program's output</div>
+                                                <div class="scroll-box">
+                                                <pre class="language-diff line-numbers m-0 pt-0"
+                                                     style="padding-left: 3.2em;"><code><%= JSON.parse(output.diff).map(element => element.value.map(val => ((element.added)?"+":"-") + val).join("\n")).join("\n") %></code></pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        <% } %>
+                        <% if(output.error_type.includes("stderr")){ %>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-title">Error Output</div>
+                                        <div class="card-subtitle">The program had an incorrect error output</div>
+                                        Expected Output
+                                        <pre class="language-diff line-numbers m-0 pt-0"
+                                             style="padding-left: 3.2em;"><code><%= output.test.error.join("\n") %></code></pre>
+                                        Program Output
+                                        <pre class="language-diff line-numbers m-0 pt-0"
+                                             style="padding-left: 3.2em;"><code><%= output.stderr.join("\n") %></code></pre>
+                                        Difference
+                                        <pre class="language-diff diff-highlight line-numbers m-0 pt-0"
+                                             style="padding-left: 3.2em;"><code><%= JSON.parse(output.error_diff).map((ln) => (ln.added) ? `+ ${ln.value.join("\n")}` : (ln.removed) ? `- ${ln.value.join("\n")}` : ln.value.join("\n")).join("\n") %></code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
 
-        <div class="col-4">
-            <div class="card m-0 p-0">
-                <div style="padding:16px; padding-bottom: 0;">
-                    <div class="card-title">Information</div>
-                    <div class="card-subtitle">Details about the program's test results</div>
+                    <div class="col-3">
+                        <div class="card m-0 p-0">
+                            <div style="padding:16px; padding-bottom: 0;">
+                                <div class="card-title">Information</div>
+                                <div class="card-subtitle">Details about the program's test results</div>
+                            </div>
+                            <ul class="list-group list-group-flush mb-1">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Total Runtime:</span>
+                                    <%= output.time %>ms
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Errors:</span>
+                                    <%= (output.error_type.length >= 1) ? output.error_type.join(", ") : "none" %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Signal:</span>
+                                    <%= (output.signal) ? output.signal : "none" %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Exit Code:</span>
+                                    <%= output.exit %>
+                                </li>
+                            </ul>
+
+
+                        </div>
+                    </div>
                 </div>
-                <ul class="list-group list-group-flush mb-1">
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Total Runtime:</span>
-                        <%= output.time %>ms
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Errors:</span>
-                        <%= (output.error_type.length >= 1) ? output.error_type.join(", ") : "none" %>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Signal:</span>
-                        <%= (output.signal) ? output.signal : "none" %>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Exit Code:</span>
-                        <%= output.exit %>
-                    </li>
-                </ul>
-
-
             </div>
         </div>
     </div>
 </div>
+
 </body>
 <script src="/js/prism.js"></script>
-<%- include("partials/footer.ejs") %>
 </html>

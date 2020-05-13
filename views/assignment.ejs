@@ -8,256 +8,262 @@
     }
 </style>
 <body class="preload">
-<div class="container">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
 
-    <%
-    const dropdown = `
-    <div class="dropdown ml-2">
-        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-           data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
-           aria-expanded="false">
-            Options
-        </a>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <a href="/assignments/edit/${assignment._id}/assign/${(assignment.assigned) ? 'false' : 'true'}"
-               class="dropdown-item "><i class="fas fa-paper-plane mr-2"></i>${(assignment.assigned) ? 'Unassign' :
-            'Assign'} ${assignment.name}</a>
-            <a href="#settings" data-toggle="modal" data-target="#settings" class="dropdown-item"><i class="fas fa-cog mr-2"></i>Settings</a>
-            <a href="" class="dropdown-item"><i class="fas fa-file-archive mr-2"></i>Save as Template</a>
-           <hr>
-            <a href="/assignments/${assignment._id}/delete" class="dropdown-item text-danger"><i class="fas fa-trash-alt mr-2"></i>Delete</a>
-        </div>
-    </div>
-        `;
-    let buttons = [
-        `<a href="/assignments/${assignment._id}/grades" class="mx-1">Grades</a>`,
-        dropdown];
-    %>
-    <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / ${assignment.name}`,
-    buttons: buttons, backName: "Home", backLink: "/"}) %>
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="card-title">Assignment Statistics</div>
-                        <div class="card-subtitle mb-0">Useful information about this assignment</div>
-                    </div>
-                    <div class="d-flex">
-                        <div class="d-flex mx-4">
-                            <div class="text-right">
-                                <b class="mr-2">Workspaces</b><br>
-                                <b class="mr-2">Test</b>
-                            </div>
-                            <div>
-                                <%= (assignment.workspaces) ? "Enabled" : "Disabled" %><br>
-                                <%= (assignment.type === "test") ? "yes" : "no" %>
-                            </div>
-                        </div>
-                        <div class="d-flex mx-4">
-                            <div class="text-right">
-                                <b class="mr-2">Due</b><br>
-                                <b class="mr-2">Late</b>
-                            </div>
-                            <div>
-                                <%= timeTill(new Date(assignment.duedate)) %><br>
-                                <%= timeTill(new Date(assignment.late)) %>
-                            </div>
-                        </div>
-                        <div class="d-flex mx-4">
-                            <div class="text-right">
-                                <b class="mr-2">Assigned</b><br>
-                                <b class="mr-2">Template</b>
-                            </div>
-                            <div>
-                                <%= assignment.assigned ? "yes" : "no" %><br>
-                                no
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <div class="text-right">
-                                <b class="mr-2">Compile Timeout</b><br>
-                                <b class="mr-2">Avg. Compile Time</b>
-                            </div>
-                            <div>
-                                <%= assignment.timeout %>ms<br>
-                                <%= assignment.responses.length >= 1 ? (assignment.responses.map(resp => parseFloat(resp.compile_time) || 0.0).reduce((acc, next) => acc + next) / assignment.responses.length).toFixed(2) + "ms" : "No data" %>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="card">
-                <div class="d-flex justify-content-between align-items-end">
-                    <div>
-                        <div class="card-title">Required Files</div>
-                        <div class="card-subtitle">Files will be required for submission</div>
-                    </div>
-                    <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post" class="">
-                        <div class="d-flex">
-                            <input type="text" class="form-control mr-3" id="name" name="name" placeholder="Filename">&nbsp;
-                            <input type="submit" class="btn btn-primary bnt-sm" value="Add File">
-                        </div>
-                        <small class="text-muted">Enter multiple with comma delimitation.</small>
-                    </form>
-                </div>
-                <div class="table-responsive">
-                    <table class="table ">
-                        <thead class="">
-                        <tr>
-                            <th scope="col">Filename</th>
-                            <th scope="col" style="width: 1em;">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <% assignment.files.forEach(file => {
-                        %>
-                            <tr>
-                                <td><%= file %></td>
-                                <td>
-                                    <a href="/assignments/edit/<%= assignment._id %>/files/<%= file %>/remove">Remove</a>
-                                </td>
-                            </tr>
-                        <% }); %>
-                        <% if(assignment.files.length == 0){ %>
-                            <tr>
-                                <td>No Files</td>
-                                <td></td>
-                            </tr>
-                        <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <% if(error != null){ %>
-                <div class="alert alert-danger border-danger" role="alert">
-                    <% if(error === "TAR_BAD_ARCHIVE"){ %>
-                        <a href="/assignments/edit/<%= assignment._id %>" class="no-bs">
-                            <div class="d-flex justify-content-between">
-                                <span><strong>Upload Failed</strong> The file you upload was not a valid tar file...</span>
-                                <span>Click to close this warning</span>
-                            </div>
+                <%
+                const dropdown = `
+                    <div class="dropdown ml-2">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                           aria-expanded="false">
+                            Options
                         </a>
-                    <% } %>
-                </div>
-            <% } %>
-            <div class="card">
-                <div class="d-flex justify-content-between align-items-end">
-                    <div>
-                        <div class="card-title">Shared Files</div>
-                        <div class="card-subtitle">Files will included in compilation</div>
-                    </div>
-                    <form action="/assignments/edit/<%= assignment._id %>/file/add" method="post"
-                          enctype="multipart/form-data">
-                        <div class="d-flex pb-3 align-items-center">
-                            <div class="custom-file mr-3">
-                                <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
-                                <label class="custom-file-label" for="inputGroupFile01" id="inputGroupFile01Label">Choose
-                                    file... (*.*)</label>
-                            </div>
-                            <input type="submit" class="btn btn-primary" value="Add Files">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a href="/assignments/edit/${assignment._id}/assign/${(assignment.assigned) ? 'false' : 'true'}"
+                               class="dropdown-item "><i class="fas fa-paper-plane mr-2"></i>${(assignment.assigned) ? 'Unassign' :
+                        'Assign'} ${assignment.name}</a>
+                            <a href="#settings" data-toggle="modal" data-target="#settings" class="dropdown-item"><i class="fas fa-cog mr-2"></i>Settings</a>
+                            <a href="" class="dropdown-item"><i class="fas fa-file-archive mr-2"></i>Save as Template</a>
+                           <hr>
+                            <a href="/assignments/${assignment._id}/delete" class="dropdown-item text-danger"><i class="fas fa-trash-alt mr-2"></i>Delete</a>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                        `;
+                let buttons = [
+                    `<a href="/assignments/${assignment._id}/grades" class="mx-1">Grades</a>`,
+                    dropdown];
+                %>
+                <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / ${assignment.name}`,
+                buttons: buttons, backName: "Home", backLink: "/"}) %>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="card-title">Assignment Statistics</div>
+                                    <div class="card-subtitle mb-0">Useful information about this assignment</div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="d-flex mx-4">
+                                        <div class="text-right">
+                                            <b class="mr-2">Workspaces</b><br>
+                                            <b class="mr-2">Test</b>
+                                        </div>
+                                        <div>
+                                            <%= (assignment.workspaces) ? "Enabled" : "Disabled" %><br>
+                                            <%= (assignment.type === "test") ? "yes" : "no" %>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mx-4">
+                                        <div class="text-right">
+                                            <b class="mr-2">Due</b><br>
+                                            <b class="mr-2">Late</b>
+                                        </div>
+                                        <div>
+                                            <%= timeTill(new Date(assignment.duedate)) %><br>
+                                            <%= timeTill(new Date(assignment.late)) %>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mx-4">
+                                        <div class="text-right">
+                                            <b class="mr-2">Assigned</b><br>
+                                            <b class="mr-2">Template</b>
+                                        </div>
+                                        <div>
+                                            <%= assignment.assigned ? "yes" : "no" %><br>
+                                            no
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <div class="text-right">
+                                            <b class="mr-2">Compile Timeout</b><br>
+                                            <b class="mr-2">Avg. Compile Time</b>
+                                        </div>
+                                        <div>
+                                            <%= assignment.timeout %>ms<br>
+                                            <%= assignment.responses.length >= 1 ? (assignment.responses.map(resp => parseFloat(resp.compile_time) || 0.0).reduce((acc, next) => acc + next) / assignment.responses.length).toFixed(2) + "ms" : "No data" %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="card-title">Required Files</div>
+                                    <div class="card-subtitle">Files will be required for submission</div>
+                                </div>
+                                <form action="/assignments/edit/<%= assignment._id %>/files/add" method="post" class="">
+                                    <div class="d-flex">
+                                        <input type="text" class="form-control mr-3" id="name" name="name"
+                                               placeholder="Filename">&nbsp;
+                                        <input type="submit" class="btn btn-primary bnt-sm" value="Add File">
+                                    </div>
+                                    <small class="text-muted">Enter multiple with comma delimitation.</small>
+                                </form>
+                            </div>
+                            <div class="table-responsive scroll-box">
+                                <table class="table ">
+                                    <thead class="">
+                                    <tr>
+                                        <th scope="col">Filename</th>
+                                        <th scope="col" style="width: 1em;">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% assignment.files.forEach(file => {
+                                    %>
+                                        <tr>
+                                            <td><%= file %></td>
+                                            <td>
+                                                <a href="/assignments/edit/<%= assignment._id %>/files/<%= file %>/remove">Remove</a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                    <% if(assignment.files.length == 0){ %>
+                                        <tr>
+                                            <td>No Files</td>
+                                            <td></td>
+                                        </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="card-title">Shared Files</div>
+                                    <div class="card-subtitle">Files will included in compilation</div>
+                                </div>
+                                <form action="/assignments/edit/<%= assignment._id %>/file/add" method="post"
+                                      enctype="multipart/form-data">
+                                    <div class="d-flex pb-3 align-items-center">
+                                        <div class="custom-file mr-3">
+                                            <input type="file" class="custom-file-input" name="input"
+                                                   id="inputGroupFile01">
+                                            <label class="custom-file-label" for="inputGroupFile01"
+                                                   id="inputGroupFile01Label">Choose
+                                                file... (*.*)</label>
+                                        </div>
+                                        <input type="submit" class="btn btn-primary" value="Add Files">
+                                    </div>
+                                </form>
+                            </div>
 
-                <div class="table-responsive">
-                    <table class="table ">
-                        <thead class="">
-                        <tr>
-                            <th scope="col">Filename</th>
-                            <th scope="col" style="width: 1em;">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <% assignment.shared_files.forEach(shared_file => {
-                        %>
-                            <tr>
-                                <td><a href="/file/<%= shared_file._id %>"><%= shared_file.name %></a></td>
-                                <td>
-                                    <a href="/assignments/edit/<%= assignment._id %>/file/remove/<%= shared_file._id %>">Remove</a>
-                                </td>
-                            </tr>
-                        <% }); %>
-                        <% if(assignment.shared_files.length == 0){ %>
-                            <tr>
-                                <td>No Files</td>
-                                <td></td>
-                            </tr>
-                        <% } %>
-                        </tbody>
-                    </table>
+                            <div class="table-responsive scroll-box">
+                                <table class="table ">
+                                    <thead class="">
+                                    <tr>
+                                        <th scope="col">Filename</th>
+                                        <th scope="col" style="width: 1em;">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% assignment.shared_files.forEach(shared_file => {
+                                    %>
+                                        <tr>
+                                            <td><a href="/file/<%= shared_file._id %>"><%= shared_file.name %></a></td>
+                                            <td>
+                                                <a href="/assignments/edit/<%= assignment._id %>/file/remove/<%= shared_file._id %>">Remove</a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                    <% if(assignment.shared_files.length == 0){ %>
+                                        <tr>
+                                            <td>No Files</td>
+                                            <td></td>
+                                        </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="card-title">Program Tests</div>
+                                    <div class="card-subtitle">Program must pass all visible tests to be marked
+                                        complete
+                                    </div>
+                                </div>
+                                <form action="/assignments/edit/<%= assignment._id %>/tar" method="post"
+                                      enctype="multipart/form-data">
+                                    <div class="d-flex pb-3 align-items-center">
+                                        <div class="custom-file mr-3">
+                                            <input type="file" class="custom-file-input" name="input"
+                                                   id="inputGroupFile01">
+                                            <label class="custom-file-label border-right-1" for="inputGroupFile01"
+                                                   id="inputGroupFile01Label">Choose
+                                                file... (*.tar)</label>
+                                        </div>
+                                        <input type="submit" class="btn btn-primary" value="Add tests">
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="table-responsive scroll-box">
+                                <table class="table ">
+                                    <thead class="">
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Visibility</th>
+                                        <th scope="col">Inputs</th>
+                                        <th scope="col">Outputs</th>
+                                        <th scope="col">Errors</th>
+                                        <th scope="col">Arguments</th>
+                                        <th scope="col">Timeout</th>
+                                        <th scope="col">Exit Code</th>
+                                        <th scope="col" style="width: 1em;">Actions</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody class="">
+                                        <% assignment.tests.forEach(function(test){
+                                        %>
+                                            <tr>
+                                                <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
+                                                <td><%= (test.hidden) ? "Hidden" : "Visible" %></td>
+                                                <td><%= test.inputs.length %></td>
+                                                <td><%= (test.provided.includes("out")) ? test.outputs.length : "Not Provided" %></td>
+                                                <td><%= (test.provided.includes("err")) ? test.error.length : "Not Provided" %></td>
+                                                <td><%= (test.provided.includes("cmd")) ? test.arguments : "Not Provided" %></td>
+                                                <td><%= (test.provided.includes("timeout")) ? test.timeout : "Not Provided" %></td>
+                                                <td><%= (test.provided.includes("exit")) ? test.code : "Not Provided" %></td>
+                                                <td>
+                                                    <a href="/assignments/edit/<%= assignment._id %>/test/<%= test._id %>/remove">Remove</a>
+                                            </tr>
+                                        <% }); %>
+                                        <% if(assignment.tests.length == 0){ %>
+                                            <tr>
+                                                <td>No Tests</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="d-flex justify-content-between align-items-end">
-                    <div>
-                        <div class="card-title">Program Tests</div>
-                        <div class="card-subtitle">Program must pass all visible tests to be marked complete</div>
-                    </div>
-                    <form action="/assignments/edit/<%= assignment._id %>/tar" method="post"
-                          enctype="multipart/form-data">
-                        <div class="d-flex pb-3 align-items-center">
-                            <div class="custom-file mr-3">
-                                <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
-                                <label class="custom-file-label border-right-1" for="inputGroupFile01"
-                                       id="inputGroupFile01Label">Choose
-                                    file... (*.tar)</label>
-                            </div>
-                            <input type="submit" class="btn btn-primary" value="Add tests">
-                        </div>
-                    </form>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table ">
-                        <thead class="">
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Visibility</th>
-                            <th scope="col">Inputs</th>
-                            <th scope="col">Outputs</th>
-                            <th scope="col">Errors</th>
-                            <th scope="col">Arguments</th>
-                            <th scope="col">Exit Code</th>
-                            <th scope="col" style="width: 1em;">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <% assignment.tests.forEach(function(test){
-                        %>
-                            <tr>
-                                <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
-                                <td><%= (test.hidden) ? "Hidden" : "Visible" %></td>
-                                <td><%= test.inputs.length %></td>
-                                <td><%= (test.provided.includes("out")) ? test.outputs.length : "Not Provided" %></td>
-                                <td><%= (test.provided.includes("err")) ? test.error.length : "Not Provided" %></td>
-                                <td><%= (test.provided.includes("cmd")) ? test.arguments : "Not Provided" %></td>
-                                <td><%= (test.provided.includes("exit")) ? test.code : "Not Provided" %></td>
-                                <td>
-                                    <a href="/assignments/edit/<%= assignment._id %>/test/<%= test._id %>/remove">Remove</a>
-                            </tr>
-                        <% }); %>
-                        <% if(assignment.tests.length == 0){ %>
-                            <tr>
-                                <td>No Tests</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
         </div>
     </div>
 </div>
@@ -272,12 +278,13 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <form>
+            <form method="post" action="/assignments/<%= assignment._id %>/update">
+                <div class="modal-body">
                     <div class="form-group">
                         <div class="form-check">
                             <input class="form-check-input"
-                                   type="checkbox" <%= assignment.workspaces ? 'checked' : '' %> id="workspaces">
+                                   type="checkbox" <%= assignment.workspaces ? 'checked' : '' %> id="workspaces"
+                                   name="workspaces">
                             <label class="form-check-label" for="workspaces">
                                 Allow Workspaces
                             </label>
@@ -288,7 +295,8 @@
                     <div class="form-group">
                         <div class="form-check">
                             <input class="form-check-input"
-                                   type="checkbox" <%= assignment.quick_edits ? 'checked' : '' %> id="quickedits">
+                                   type="checkbox" <%= assignment.quick_edits ? 'checked' : '' %> id="quick_edits"
+                                   name="quick_edits">
                             <label class="form-check-label" for="quickedits">
                                 Allow Quick Edits
                             </label>
@@ -298,25 +306,30 @@
                     </div>
                     <div class="form-group">
                         <label for="number">Compile Time Timeout (in milliseconds)</label>
-                        <input type="number" class="form-control w-50" min="1000" max="60000" step="500" unit="ms" id="timeout" aria-describedby="timeout" value="<%= assignment.timeout %>">
-                        <small id="emailHelp" class="form-text text-muted">This is how long the compiler waits before considering a compile as an error</small>
+                        <input type="number" class="form-control w-50" min="1000" max="60000" step="500" unit="ms"
+                               id="timeout" aria-describedby="timeout" name="timeout" value="<%= assignment.timeout %>">
+                        <small id="emailHelp" class="form-text text-muted">This is how long the compiler waits before
+                            considering a compile as an error</small>
                     </div>
                     <div class="form-group">
                         <label>Due date</label>
-                        <input type="date" class="form-control" name="assignmentDueDate" value="<%= new Date(assignment.date).toLocaleDateString() %>" placeholder="Date">
+                        <input type="date" class="form-control" name="duedate"
+                               value="<%= new Date(assignment.duedate).toISOString().substr(0, 10) %>"
+                               placeholder="Date">
                         <small class="text-muted">Late assignments will be accepted but flagged as late</small>
                     </div>
                     <div class="form-group">
                         <label>Late due date</label>
-                        <input type="date" class="form-control" name="assignmentLateDueDate" placeholder="Date">
+                        <input type="date" class="form-control" name="late"
+                               value="<%= new Date(assignment.late).toISOString().substr(0, 10) %>" placeholder="Date">
                         <small class="text-muted">Absolute cutoff for assignments</small>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -353,7 +366,6 @@
         </div>
     </div>
 </div>
-<%- include("partials/footer.ejs") %>
 </html>
 
 <script>

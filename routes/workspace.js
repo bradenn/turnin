@@ -4,6 +4,7 @@ let Test = require('../models/test');
 let Course = require('../models/course');
 let Workspace = require('../models/workspace');
 let Assignment = require('../models/assignment');
+let Result = require('../models/result');
 let rest = require('../services/rest');
 let submission = require('../services/submission');
 
@@ -15,6 +16,19 @@ router.get('/', async (req, res, next) => {
         courses: courses,
         workspaces: workspaces
     });
+});
+
+router.get('/quickedit/:result', async (req, res, next) => {
+    let result = await Result.findOne({_id: req.params.result}).exec();
+    Workspace.findOne({student: req.user._id, assignment: result.assignment._id}, (err, doc) => {
+        if (err) return next(new Error(`Fatal Error: ${err}`));
+        doc.files.forEach(file => File.deleteOne({_id: file._id}));
+        doc.files = result.files;
+        doc.save(((err1, product) => {
+            return res.redirect(`/workspace/${product._id}`);
+        }));
+    });
+
 });
 
 router.get('/:workspace/compile', async (req, res, next) => {

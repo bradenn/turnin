@@ -17,6 +17,7 @@ router.use('/profile', require('./profile.js'));
 
 router.get('/toggledarkmode', async (req, res) => {
     User.findOneAndUpdate({_id: req.user._id}, {darkmode: !req.user.darkmode}, (err, usr) =>{
+        req.session.info = `Switched to ${!usr.darkmode?'dark mode':'light mode'}.`;
         res.redirect('back');
     });
 });

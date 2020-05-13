@@ -4,64 +4,74 @@
 <%- include("partials/nav.ejs") %>
 
 <body class="preload">
-<div class="container">
-    <%
-    let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
+                <%
+                let buttons = [`<a class="d-inline-block float-right mr-1" data-toggle="modal" href="#joinClass">Enroll
                     in a course</a>`]
-    %>
-    <%- include("partials/title.ejs", {title: "Workspaces", subtitle: `<a href="/">Dashboard</a> / Workspaces`, buttons: buttons}) %>
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card">
-            <div class="card-title">Current Assignments</div>
-            <div class="card-subtitle">Assignments you can use Workspaces with</div>
-            <div class="table-responsive">
-                <table class="table ">
-                    <thead>
-                    <tr>
-                        <th scope="col">Assignment</th>
-                        <th scope="col">Course</th>
-                        <th scope="col">Due Date</th>
-                        <th scope="col">Cutoff</th>
-                        <th scope="col">Options</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% courses.forEach(course => {
-                        let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) > 0);
-                    assignments.forEach(assignment => {
-                        let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
-                    %>
-                    <tr>
-                        <td><strong><%= assignment.name %></strong></td>
-                        <td><%= course.name %>.<%= course.section %></td>
-                        <td><%= new Date(assignment.duedate).toLocaleDateString() %>
-                            - <%= timeTill(new Date(assignment.duedate)) %>
+                %>
+                <%- include("partials/title.ejs", {title: "Workspaces", subtitle: `<a href="/">Dashboard</a> / Workspaces`, buttons: buttons}) %>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-title">Current Assignments</div>
+                            <div class="card-subtitle">Assignments you can use Workspaces with</div>
+                            <div class="table-responsive">
+                                <table class="table ">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Assignment</th>
+                                        <th scope="col">Course</th>
+                                        <th scope="col">Due Date</th>
+                                        <th scope="col">Cutoff</th>
+                                        <th scope="col">Options</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% courses.forEach(course => {
+                                        let assignments = course.assignments.filter((assignment) => assignment.assigned && (new Date(assignment.late) - new Date()) > 0);
+                                    assignments.forEach(assignment => {
+                                        let attempts = assignment.responses.filter(response => response.student._id.toString() == user._id.toString())
+                                    %>
+                                    <tr>
+                                        <td><strong><%= assignment.name %></strong></td>
+                                        <td><%= course.name %>.<%= course.section %></td>
+                                        <td><%= new Date(assignment.duedate).toLocaleDateString() %>
+                                            - <%= timeTill(new Date(assignment.duedate)) %>
 
-                        </td>
-                        <td><%= new Date(assignment.late).toLocaleDateString() %>
-                            - <%= timeTill(new Date(assignment.late)) %>
-                        </td>
-                        <td>
-                            <% if(!workspaces.map(workspace => workspace.assignment.toString()).includes(assignment._id.toString())){ %>
-                                <a href="/workspace/create/<%= assignment._id %>">Create Workspace</a>
-                            <% }else{ %>
-                                <a href="/workspace/<%= workspaces.find(workspace => (workspace.assignment.toString() === assignment._id.toString()))._id %>">Open Workspace</a>
-                            <% } %>
-                        </td>
-                        <% }); %>
-                        <% }); if(courses.length === 0){ %>
-                            <td>You have no classes.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        <% } %>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                                        </td>
+                                        <td><%= new Date(assignment.late).toLocaleDateString() %>
+                                            - <%= timeTill(new Date(assignment.late)) %>
+                                        </td>
+                                        <td>
+                                            <% if(!workspaces.map(workspace => workspace.assignment.toString()).includes(assignment._id.toString())){ %>
+                                                <a href="/workspace/create/<%= assignment._id %>">Create Workspace</a>
+                                            <% }else{ %>
+                                                <a href="/workspace/<%= workspaces.find(workspace => (workspace.assignment.toString() === assignment._id.toString()))._id %>">Open
+                                                    Workspace</a>
+                                            <% } %>
+                                        </td>
+                                        <% }); %>
+                                        <% }); if(courses.length === 0){ %>
+                                            <td>You have no classes.</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        <% } %>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -88,7 +98,6 @@
         </div>
     </div>
 </div>
-<%- include("partials/footer.ejs") %>
 </html>
 
 <%

@@ -4,99 +4,108 @@
 <%- include("partials/nav.ejs") %>
 
 <body class="preload">
-<div class="container">
-    <%
-    let buttons = [`   <a href="/assignments/new" class="">Create Assignment</a>`]
-    %>
-    <%- include("partials/title.ejs", {title: "Assignments", subtitle: `<a href="/">Dashboard</a> / Assignments`,
-    buttons: buttons, backName: "Home", backLink: "/"}) %>
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
+                <%
+                let buttons = [`   <a href="/assignments/new" class="">Create Assignment</a>`]
+                %>
+                <%- include("partials/title.ejs", {title: "Assignments", subtitle: `<a href="/">Dashboard</a> / Assignments`,
+                buttons: buttons, backName: "Home", backLink: "/"}) %>
 
-    <div class="row">
-        <div class="col-12">
-            <% courses.forEach((course) => { %>
-                <div class="card mb-3">
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div>
-                            <div class="card-title"><%= course.name %>.<%= course.section %></div>
-                            <div class="card-subtitle">All assignments in this course</div>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Due Date</th>
-                                <th scope="col">Late</th>
-                                <th scope="col">Submissions</th>
-                                <th scope="col" style="width: 2em;">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% course.assignments.forEach(function(assignment){ %>
-                                <tr>
-                                    <td><%= assignment.name %></td>
-                                    <td>
-                                        <%= (assignment.assigned) ? "Assigned" : "Unassigned" %>
-                                    </td>
-                                    <td><span tabindex="0" data-toggle="tooltip"
-                                              title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span>
-                                    </td>
-                                    <td><span tabindex="0" data-toggle="tooltip"
-                                              title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span>
-                                    </td>
-                                    <td><%= assignment.responses.length %></td>
-                                    <td class="d-flex">
-                                        <a href="/assignments/<%= assignment._id %>/grades" class="mx-2">Grades</a>
-                                        <a href="/assignments/<%= assignment._id %>" class="">Edit</a></span>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                            <% if(course.assignments.length === 0) { %>
-                                <tr>
-                                    <td>No Assignments</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="confirmDeleteCourse" class="modal fade">
-                        <div class="modal-dialog modal-login">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Delete Course</h4>
-                                    <button type="button" class="close" data-dismiss="modal"
-                                            aria-hidden="true">&times;
-                                    </button>
+                <div class="row">
+                    <div class="col-12">
+                        <% courses.forEach((course) => { %>
+                            <div class="card mb-3">
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <div>
+                                        <div class="card-title"><%= course.name %>.<%= course.section %></div>
+                                        <div class="card-subtitle">All assignments in this course</div>
+                                    </div>
                                 </div>
-                                <div class="modal-body d-flex justify-content-between align-items-center">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Due Date</th>
+                                            <th scope="col">Late</th>
+                                            <th scope="col">Submissions</th>
+                                            <th scope="col" style="width: 2em;">Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <% course.assignments.forEach(function(assignment){ %>
+                                            <tr>
+                                                <td><%= assignment.name %></td>
+                                                <td>
+                                                    <%= (assignment.assigned) ? "Assigned" : "Unassigned" %>
+                                                </td>
+                                                <td><span tabindex="0" data-toggle="tooltip"
+                                                          title="<%= new Date(assignment.duedate).toLocaleDateString() %>"><%= timeTill(new Date(assignment.duedate)) %></span>
+                                                </td>
+                                                <td><span tabindex="0" data-toggle="tooltip"
+                                                          title="<%= new Date(assignment.late).toLocaleDateString() %>"><%= timeTill(new Date(assignment.late)) %></span>
+                                                </td>
+                                                <td><%= assignment.responses.length %></td>
+                                                <td class="d-flex">
+                                                    <a href="/assignments/<%= assignment._id %>/grades" class="mx-2">Grades</a>
+                                                    <a href="/assignments/<%= assignment._id %>"
+                                                       class="">Edit</a></span>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                        <% if(course.assignments.length === 0) { %>
+                                            <tr>
+                                                <td>No Assignments</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div id="confirmDeleteCourse" class="modal fade">
+                                    <div class="modal-dialog modal-login">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Delete Course</h4>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-hidden="true">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body d-flex justify-content-between align-items-center">
                                 <span>
                                     Delete course <strong><%= course.name %>.<%= course.section %></strong>?
                                 </span>
-                                    <span>
+                                                <span>
                                 <a class="btn btn-primary text-white" data-dismiss="modal">Cancel</a>
                                 <a class="btn btn-danger" href="/courses/<%= course._id %>/delete"><i
                                             class="fas fa-trash-alt"></i> Delete Course</a>
                                 </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <% }); %>
                     </div>
                 </div>
-            <% }); %>
+            </div>
         </div>
     </div>
 </div>
 </body>
-<%- include("partials/footer.ejs") %>
 </html>
 <%
 function timeTill(date) {

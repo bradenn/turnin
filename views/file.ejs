@@ -4,9 +4,15 @@
 <%- include("partials/nav.ejs") %>
 <link href="/css/prism.css" rel="stylesheet"/>
 <body class="preload">
-<div class="container">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+<div class="container-fluid">
     <%
-    let buttons = [];
+    let buttons = [``];
     %>
     <%- include("partials/title.ejs", {title: 'File Viewer', subtitle: `<strong>Uploaded by:</strong> ${file.student.firstname} ${file.student.lastname} (${file.student.username}) : ${new Date(file.date).toLocaleString()}`,
     buttons: buttons, backName: "Back", backLink: back}) %>
@@ -17,6 +23,9 @@
                 <div class="card-subtitle"><%= bytesToSize(file.content.reduce((a, b) => a + b).length) %></div>
                 <pre class="language-<%= (file.name === "Makefile")?"makefile":"cpp" %> line-numbers m-0 pt-0" style="padding-left: 3.2em;"><code><%= file.content.join("\n") %></code></pre>
             </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -31,5 +40,4 @@ function bytesToSize(bytes) {
 }
 %>
 <script src="/js/prism.js"></script>
-<%- include("partials/footer.ejs") %>
 </html>
