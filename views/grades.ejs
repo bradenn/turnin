@@ -63,7 +63,7 @@
                                     <tr>
                                         <th scope="col">Student</th>
                                         <th scope="col">Attempts</th>
-                                        <th scope="col">Final</th>
+                                        <th scope="col">Status</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -72,7 +72,7 @@
                                         let set = attempts.map(attempt => {
                                             let index = attempts.findIndex(attempt_ => attempt_ == attempt) + 1;
                                             let name = `Attempt ${(index <= 9) ? "0" : ""}${index}${(!attempt.compiled) ? " (Compile Failed)" : (!attempt.passed) ? " (Compile Successful)" : ""}`;
-                                            return `<a href="/response/${attempt._id}" class="dropdown-item text-${(attempt.passed) ? 'success' : (attempt.error_ === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
+                                            return `<a href="/response/${attempt._id}" class="text-${(attempt.passed) ? 'success' : (attempt.signal === "SIGTERM") ? 'warning' : 'danger'}">${name}</a>`
                                         });
                                     %>
                                     <tr>
@@ -81,25 +81,46 @@
                                             <i class="text-<%= (attempts.filter(attempt => attempt.passed).length >= 1) ? "success" : (attempts.length < 1) ? "muted" : "danger" %> far fa-dot-circle mr-2"></i><%= student.firstname %> <%= student.lastname %>
                                             (<%= student.username %>)
                                         </td>
-                                        <td>
+                                        <td class="d-flex">
+                                            <div class="pr-3">
+                                                <% if (set.length > 0){ %>
+                                                    <%- set[set.length - 1] %>
+                                                <% }else{ %>
+                                                    No Attempts
+                                                <% } %>
+                                            </div>
                                             <div class="dropdown">
-                                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                                   data-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                                <a class="dropdown-toggle" href="#" role="button"
+                                                   id="dropdownMenuLink"
+                                                   data-toggle="dropdown" data-boundary="viewport"
+                                                   aria-haspopup="true"
                                                    aria-expanded="false">
-                                                    All Attempts
+                                                    more
                                                 </a>
-                                                <div class="dropdown-menu" style="width:300px;"
+                                                <div class="dropdown-menu scrollable-menu" role="menu"
                                                      aria-labelledby="dropdownMenuLink">
                                                     <% if(set.length){ %>
-                                                        <%- set.join(""); %>
+                                                        <% set.forEach(item => { %>
+                                                            <div class="dropdown-item">
+                                                                <%- item %>
+                                                            </div>
+                                                        <% }); %>
                                                     <% }else{ %>
                                                         <span class="text-muted">No Attempts</span>
                                                     <% } %>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td><%= (attempts.filter(attempt => (attempt.passed)).length >= 1) ? "Passed" : "Failed" %>
-                                            : <%= attempts.length %> attempts
+                                        <td>
+                                            <% if(attempts.filter(attempt => attempt.passed).length >= 1){ %>
+                                                <span class="badge badge-success">Completed</span>
+                                            <% }else if(attempts.length > 0){ %>
+                                                <span class="badge badge-primary">Attempted</span>
+                                            <% }else if((new Date(assignment.duedate) - new Date()) > 0){ %>
+                                                <span class="badge badge-secondary">No Attempts</span>
+                                            <% }else { %>
+                                                <span class="badge badge-danger">Past Due</span>
+                                            <% } %>
                                         </td>
                                     </tr>
                                     <% }); %>

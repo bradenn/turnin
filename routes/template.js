@@ -9,7 +9,23 @@ router.get('/:template', (req, res, next) => {
     TemplateSchema.findById(req.params.template).exec().then(doc => {
         res.render('template', {template: doc})
     }).catch(err => {
+        next();
+    });
+});
 
+router.get('/:template/download/json', (req, res, next) => {
+    TemplateSchema.findById(req.params.template).exec().then(doc => {
+        const fileData = JSON.stringify(doc);
+        const fileName = `${doc.name.replace(' ', '_')}_template.json`;
+        const fileType = 'text/json';
+        res.writeHead(200, {
+            'Content-Disposition': `attachment; filename="${fileName}"`,
+            'Content-Type': fileType,
+        });
+        const download = Buffer.from(fileData, 'utf-8')
+        res.end(download)
+    }).catch(err => {
+        next();
     });
 });
 
@@ -22,7 +38,7 @@ router.get('/generate/:assignmentId', async (req, res, next) => {
         template.setName(doc.name);
         template.setCommand(doc.command);
         template.setTimeout(doc.timeout);
-        template.save().then(doc => {
+        template.save(req.user._id).then(doc => {
             req.session.info = "Template successfully created.";
             return res.redirect(`/template/${doc}`);
         }).catch(err => {

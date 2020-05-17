@@ -1,7 +1,7 @@
 {
   "name": "turnin",
-  "version": "2.4.1",
-  "description": "Turn in your shit",
+  "version": "2.4.2",
+  "description": "Turn in your assignments with ease.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

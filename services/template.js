@@ -50,10 +50,10 @@ class Template {
         this.timeout = timeout;
     }
 
-    save() {
+    save(userId) {
         return new Promise((resolve, reject) => {
             TemplateSchema.create({
-                name: this.name, course: this.course, timeout: this.timeout, command: this.command, content: JSON.stringify({
+                name: this.name, instructor: userId, course: this.course, timeout: this.timeout, command: this.command, content: JSON.stringify({
                     tests: this.tests,
                     files: this.files,
                     shared_files: this.shared_files,

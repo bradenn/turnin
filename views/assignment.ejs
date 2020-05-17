@@ -56,7 +56,11 @@
                             action: "Assign",
                             link: `/assignments/edit/${assignment._id}/assign/true`,
                             bind: "ctrl+a"
-                        }]
+                        },{
+                        action: "Delete Assignment",
+                        link: `/assignments/${assignment._id}/delete`,
+                        bind: "ctrl+shift+d"
+                    }]
                 }];
                 %>
                 <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / ${assignment.name}`,
@@ -73,7 +77,7 @@
                                     <div class="d-flex">
                                         <input type="text" class="form-control mr-3" id="name" name="name"
                                                placeholder="Filename">&nbsp;
-                                        <input type="submit" class="btn btn-primary bnt-sm" value="Add File">
+                                        <input type="submit" class="btn btn-primary bnt-md" value="Add File">
                                     </div>
                                     <small class="text-muted">Enter multiple with comma delimitation.</small>
                                 </form>
@@ -122,7 +126,7 @@
                                                    id="inputGroupFile01Label">Choose
                                                 file... (*.*)</label>
                                         </div>
-                                        <input type="submit" class="btn btn-primary" value="Add Files">
+                                        <input type="submit" class="btn btn-primary btn-md" value="Add Files">
                                     </div>
                                 </form>
                             </div>
