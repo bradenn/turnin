@@ -7,21 +7,22 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="/">Dashboard <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="/workspace">Workspaces</a>-->
-<!--                </li>-->
+                <!--                <li class="nav-item">-->
+                <!--                    <a class="nav-link" href="/">Dashboard <span class="sr-only">(current)</span></a>-->
+                <!--                </li>-->
+                <!--                <li class="nav-item">-->
+                <!--                    <a class="nav-link" href="/workspace">Workspaces</a>-->
+                <!--                </li>-->
             </ul>
 
             <ul class="navbar-nav mr-0">
-                    <li class="nav-item">
-                        <a href="/toggledarkmode" class="nav-link"> <span class="fa-stack nav-stack" style="vertical-align: top;">
+                <li class="nav-item">
+                    <a href="/toggledarkmode" class="nav-link"> <span class="fa-stack nav-stack"
+                                                                      style="vertical-align: top;">
                                   <i class="fas fa-circle fa-stack-2x"></i>
                                   <i class="fas fa-<%= user.darkmode ? "lightbulb" : "moon" %> fa-stack-1x fa-inverse"></i>
                                 </span></a>
-                    </li>
+                </li>
                 <% if(typeof user != "undefined" && user != null){ %>
                     <% if(user.type > 1){ %>
 
@@ -37,9 +38,6 @@
                             <%= user.username %>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/profile"><i class="fas fa-fw fa-user-edit fa-fw mr-2"></i>Profile</a>
-                            <a class="dropdown-item"
-                               href="/toggledarkmode"><%- (!user.darkmode) ? "<i class=\"fas fa-moon fa-fw mr-2\"></i>Darkmode" : "<i class=\"fas fa-lightbulb fa-fw mr-2\"></i>Lightmode" %></a>
                             <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-fw mr-2"></i>Logout</a>
                         </div>
                     </li>

@@ -56,7 +56,7 @@ app.locals.platform.instance = (process.env.NODE_ENV === "production") ? process
 app.use('/', publicRoutes);
 
 app.use(async (req, res, next) => {
-    const user = await User.findById(req.session.userId).exec();
+    const user = await User.findById(req.session.userId).populate('courses').exec();
     let courses = await Course.find({instructor: req.session.userId}).exec();
     if (user == null) {
         req.user = null;

@@ -8,6 +8,7 @@ let TestSchema = new mongoose.Schema({
     outputs: [String],
     error: [String],
     arguments: String,
+    timeout: Number,
     cmd: String,
     hidden: Boolean,
     provided: [{

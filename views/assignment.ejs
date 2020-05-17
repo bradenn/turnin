@@ -28,7 +28,6 @@
                             <a href="/assignments/edit/${assignment._id}/assign/${(assignment.assigned) ? 'false' : 'true'}"
                                class="dropdown-item "><i class="fas fa-paper-plane mr-2"></i>${(assignment.assigned) ? 'Unassign' :
                         'Assign'} ${assignment.name}</a>
-                            <a href="#settings" data-toggle="modal" data-target="#settings" class="dropdown-item"><i class="fas fa-cog mr-2"></i>Settings</a>
                             <a href="" class="dropdown-item"><i class="fas fa-file-archive mr-2"></i>Save as Template</a>
                            <hr>
                             <a href="/assignments/${assignment._id}/delete" class="dropdown-item text-danger"><i class="fas fa-trash-alt mr-2"></i>Delete</a>
@@ -38,63 +37,32 @@
                 let buttons = [
                     `<a href="/assignments/${assignment._id}/grades" class="mx-1">Grades</a>`,
                     dropdown];
+                let binds = [{
+                    name: "Tools",
+                    items: [
+                        {
+                            action: "Generate Template",
+                            link: `/template/generate/${assignment._id}`,
+                            bind: "ctrl+t"
+                        }]
+                },{
+                    name: "Edit",
+                    items: [
+                        {
+                            action: "Unassign",
+                            link: `/assignments/edit/${assignment._id}/assign/false`,
+                            bind: "ctrl+shift+a"
+                        },{
+                            action: "Assign",
+                            link: `/assignments/edit/${assignment._id}/assign/true`,
+                            bind: "ctrl+a"
+                        }]
+                }];
                 %>
                 <%- include("partials/title.ejs", {title: assignment.name, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / ${assignment.name}`,
-                buttons: buttons, backName: "Home", backLink: "/"}) %>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="card-title">Assignment Statistics</div>
-                                    <div class="card-subtitle mb-0">Useful information about this assignment</div>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="d-flex mx-4">
-                                        <div class="text-right">
-                                            <b class="mr-2">Workspaces</b><br>
-                                            <b class="mr-2">Test</b>
-                                        </div>
-                                        <div>
-                                            <%= (assignment.workspaces) ? "Enabled" : "Disabled" %><br>
-                                            <%= (assignment.type === "test") ? "yes" : "no" %>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex mx-4">
-                                        <div class="text-right">
-                                            <b class="mr-2">Due</b><br>
-                                            <b class="mr-2">Late</b>
-                                        </div>
-                                        <div>
-                                            <%= timeTill(new Date(assignment.duedate)) %><br>
-                                            <%= timeTill(new Date(assignment.late)) %>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex mx-4">
-                                        <div class="text-right">
-                                            <b class="mr-2">Assigned</b><br>
-                                            <b class="mr-2">Template</b>
-                                        </div>
-                                        <div>
-                                            <%= assignment.assigned ? "yes" : "no" %><br>
-                                            no
-                                        </div>
-                                    </div>
-                                    <div class="d-flex">
-                                        <div class="text-right">
-                                            <b class="mr-2">Compile Timeout</b><br>
-                                            <b class="mr-2">Avg. Compile Time</b>
-                                        </div>
-                                        <div>
-                                            <%= assignment.timeout %>ms<br>
-                                            <%= assignment.responses.length >= 1 ? (assignment.responses.map(resp => parseFloat(resp.compile_time) || 0.0).reduce((acc, next) => acc + next) / assignment.responses.length).toFixed(2) + "ms" : "No data" %>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
+                buttons: buttons, backName: "Home", backLink: "/", binds}) %>
+                <div class="row no-gutters">
+                    <div class="col-md-9">
                         <div class="card">
                             <div class="d-flex justify-content-between align-items-end">
                                 <div>
@@ -228,39 +196,102 @@
                                     </thead>
 
                                     <tbody class="">
-                                        <% assignment.tests.forEach(function(test){
-                                        %>
-                                            <tr>
-                                                <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
-                                                <td><%= (test.hidden) ? "Hidden" : "Visible" %></td>
-                                                <td><%= test.inputs.length %></td>
-                                                <td><%= (test.provided.includes("out")) ? test.outputs.length : "Not Provided" %></td>
-                                                <td><%= (test.provided.includes("err")) ? test.error.length : "Not Provided" %></td>
-                                                <td><%= (test.provided.includes("cmd")) ? test.arguments : "Not Provided" %></td>
-                                                <td><%= (test.provided.includes("timeout")) ? test.timeout : "Not Provided" %></td>
-                                                <td><%= (test.provided.includes("exit")) ? test.code : "Not Provided" %></td>
-                                                <td>
-                                                    <a href="/assignments/edit/<%= assignment._id %>/test/<%= test._id %>/remove">Remove</a>
-                                            </tr>
-                                        <% }); %>
-                                        <% if(assignment.tests.length == 0){ %>
-                                            <tr>
-                                                <td>No Tests</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        <% } %>
+                                    <% assignment.tests.forEach(function(test){
+                                    %>
+                                        <tr>
+                                            <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
+                                            <td><%= (test.hidden) ? "Hidden" : "Visible" %></td>
+                                            <td><%= test.inputs.length %></td>
+                                            <td><%= (test.provided.includes("out")) ? test.outputs.length : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("err")) ? test.error.length : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("cmd")) ? test.arguments : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("timeout")) ? `${test.timeout}ms` : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("exit")) ? test.code : "Not Provided" %></td>
+                                            <td>
+                                                <a href="/assignments/edit/<%= assignment._id %>/test/<%= test._id %>/remove">Remove</a>
+                                        </tr>
+                                    <% }); %>
+                                    <% if(assignment.tests.length == 0){ %>
+                                        <tr>
+                                            <td>No Tests</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    <% } %>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
 
+                    </div>
+                    <div class="col-md-3 pl-4">
+                        <div class="card p-0">
+                            <div style="padding:16px; padding-bottom: 16px;" class="d-flex justify-content-between">
+                                <div>
+                                    <div class="card-title"><%= (assignment.assigned) ? 'Assigned' : 'Unassigned' %></div>
+                                    <div class="card-subtitle mb-0">This
+                                        assignment <%= (assignment.assigned) ? 'is' : 'is not' %> visible to students.
+
+                                    </div>
+                                    <% if(assignment.files.length < 1){ %>
+                                        <div class="text-danger mt-2">Must have one required file to assign.</div>
+                                    <% } %>
+                                    <% if(assignment.tests.length < 1){ %>
+                                        <div class="text-danger mt-2">Must have one test to assign.</div>
+                                    <% } %>
+                                </div>
+                                <div>
+                                    <a href="/assignments/edit/<%= assignment._id %>/assign/<%= (assignment.assigned) ? 'false' : 'true' %>"><%= (assignment.assigned) ? 'Unassign' : 'Assign' %></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-0">
+                            <div style="padding:16px; padding-bottom: 0;" class="d-flex justify-content-between">
+                                <div>
+                                    <div class="card-title">Settings</div>
+                                    <div class="card-subtitle mb-0">Requirements for this assignment</div>
+                                </div>
+                                <div>
+                                    <a href="#" data-toggle="modal" data-target="#settings">Edit</a>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush mb-1">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Command:</span>
+                                    <%= assignment.command %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Workspaces:</span>
+                                    <%= (assignment.workspaces) ? "Allowed" : "Not Allowed" %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Quick Edits:</span>
+                                    <%= (assignment.quick_edits) ? "Allowed" : "Not Allowed" %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Compile Timeout:</span>
+                                    <%= assignment.timeout %>ms
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Average Compile:</span>
+                                    <%= assignment.responses.length >= 1 ? (assignment.responses.map(resp => parseFloat(resp.compile_time) || 0.0).reduce((acc, next) => acc + next) / assignment.responses.length).toFixed(2) + "ms" : "No data" %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Due Date:</span>
+                                    <%= new Date(assignment.duedate).toDateString() %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Deadline:</span>
+                                    <%= new Date(assignment.late).toDateString() %>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

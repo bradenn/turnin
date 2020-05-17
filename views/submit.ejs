@@ -22,20 +22,6 @@
                             <div class="d-flex justify-content-between">
                 <span class="card-subtitle">There <%= (assignment.tests.length == 1) ? "is" : "are" %> <%= assignment.tests.length %> test<%= (assignment.tests.length == 1) ? "" : "s" %>.
                   </span>
-                                <span>
-                                    <% if(typeof error != 'undefined') { %>
-                                        <% if(error == "nofile") { %>
-                                            <span class="text-danger">You must submit at least one file</span>
-                                        <% } %>
-                                        <% if(error == "noserver") { %>
-                                            <span class="text-danger">The grading servers are currently occupied. Please try again in a moment.</span>
-                                        <% } %>
-                                        <% if(error == "largefile") { %>
-                                            <span class="text-danger">That's quite the file you've got there... Lets try another one. 5mb max</span>
-                                        <% }else{ %>
-                                            <span class="text-danger"><%= error %></span>
-                                    <% } } %>
-                                </span>
                             </div>
                             <form method="post" id="files" action="/submit/<%= assignment._id %>"
                                   enctype="multipart/form-data">
@@ -58,10 +44,6 @@
                                 <% }); %>
                                 <br>
                                 <button type="submit" id="sendIt" class="btn btn-primary float-right">Submit</button>
-                                <small class="text-danger">
-                                    <% if(typeof error != 'undefined'){ if(error.type == "login"){ %> <%= error.message %>
-                                    <% } } %>
-                                </small>
                             </form>
 
                         </div>

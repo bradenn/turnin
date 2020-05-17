@@ -17,39 +17,38 @@
                 <%- include("partials/title.ejs", {title: "Manage", subtitle: `Admin managment`,
                 buttons: [], backName: "Home", backLink: "/"}) %>
                 <div class="row">
-
                     <div class="col-10">
                         <div style="border: var(--border); border-radius: var(--border-radius);">
                             <ul class="nav nav-tabs justify-content-between">
                                 <ul class="nav">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="pill" href="#students" role="tab">Students</a>
+                                        <a class="nav-link <%= (section === "students")?"show active":"" %>" href="/manage/students">Students</a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="pill" href="#instructors"
+                                        <a class="nav-link <%= (section === "instructors")?"show active":"" %>" href="/manage/instructors"
                                            role="tab">Instructors</a>
                                     </li>
                                     <li class="nav-item navbar-text" style="font-weight: 700;">
                                         |
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="pill" href="#courses"
+                                        <a class="nav-link <%= (section === "courses")?"show active":"" %>" href="/manage/courses"
                                            role="tab">Courses</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="pill" href="#assignments"
+                                        <a class="nav-link <%= (section === "assignments")?"show active":"" %>" href="/manage/assignments"
                                            role="tab">Assignments</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="pill" href="#files"
+                                        <a class="nav-link <%= (section === "files")?"show active":"" %>" href="/manage/files"
                                            role="tab">Files</a>
                                     </li>
                                     <li class="nav-item navbar-text" style="font-weight: 700;">
                                         |
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="pill" href="#institution"
+                                        <a class="nav-link <%= (section === "institution")?"show active":"" %>" href="/manage/institution"
                                            role="tab">Institution</a>
                                     </li>
 
@@ -58,7 +57,7 @@
                             <div class="tab-content card"
                                  style="border: none; border-top-left-radius: 0; border-top-right-radius: 0;"
                                  id="v-pills-tabContent">
-                                <div class="tab-pane show active" id="students" role="tabpanel"
+                                <div class="tab-pane <%= (section === "students")?"show active":"" %>" id="students" role="tabpanel"
                                      aria-labelledby="v-pills-profile-tab">
                                     <div class="card-title">Students</div>
                                     <div class="card-subtitle">There are <%= students.length %> students</div>
@@ -70,7 +69,7 @@
                                                 <th scope="col">Username</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Github</th>
-                                                <th scope="col">Options</th>
+                                                <th scope="col" style="width: 1em;">Options</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -80,14 +79,16 @@
                                                     <td><%= target.username %></td>
                                                     <td><%= target.email %></td>
                                                     <td><%= target.github %></td>
-                                                    <td>Edit</td>
+                                                    <td><a href="/manage/user/<%= target._id %>/delete"
+                                                           class="text-danger"><i class="fas fa-trash-alt"></i></a></td>
                                                 </tr>
                                             <% }); %>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="courses" role="tabpanel"
+
+                                <div class="tab-pane fade <%= (section === "courses")?"show active":"" %>" id="courses" role="tabpanel"
                                      aria-labelledby="v-pills-messages-tab">
                                     <div class="card-title">Courses</div>
                                     <div class="card-subtitle">There are <%= courses.length %> courses.</div>
@@ -115,7 +116,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="assignments" role="tabpanel"
+                                <div class="tab-pane fade <%= (section === "assignments")?"show active":"" %>" id="assignments" role="tabpanel"
                                      aria-labelledby="v-pills-messages-tab">
                                     <div class="card-title">Assignments</div>
                                     <div class="card-subtitle">There are <%= assignments.length %> assignments.</div>
@@ -144,15 +145,17 @@
                                     </div>
                                 </div>
 
-                                <div class="tab-pane fade" id="files" role="tabpanel"
+                                <div class="tab-pane fade <%= (section === "files")?"show active":"" %>" id="files" role="tabpanel"
                                      aria-labelledby="v-pills-messages-tab">
                                     <% let size = 0;
-                                        files.forEach(file => {
-                                            size+=(file.content.length >= 1)?file.content.reduce((a, b) => a + b).length:0
-                                        });
-                                     %>
+                                    files.forEach(file => {
+                                        size += (file.content.length >= 1) ? file.content.reduce((a, b) => a + b).length : 0
+                                    });
+                                    %>
                                     <div class="card-title">Files</div>
-                                    <div class="card-subtitle">There are <%= files.length %> files using <%= bytesToSize(size) %> of disk space</div>
+                                    <div class="card-subtitle">There are <%= files.length %> files
+                                        using <%= bytesToSize(size) %> of disk space
+                                    </div>
                                     <div class="table-responsive">
                                         <table class="table ">
                                             <thead class="">
@@ -166,16 +169,16 @@
                                             <tbody>
 
                                             <% files.forEach(target => {
-                                                let cache = (target.content.length >= 1)?target.content.reduce((a, b) => a + b).length:0;
-                                                size+=cache;
+                                                let cache = (target.content.length >= 1) ? target.content.reduce((a, b) => a + b).length : 0;
+                                                size += cache;
                                             %>
-                                                <tr>
-                                                    <td><%= target.name %></td>
-                                                    <td><%= target.student %></td>
-                                                    <td><%= bytesToSize(cache) %></td>
-                                                    <td></td>
-                                                    <td>Edit</td>
-                                                </tr>
+                                            <tr>
+                                                <td><%= target.name %></td>
+                                                <td><%= target.student %></td>
+                                                <td><%= bytesToSize(cache) %></td>
+                                                <td></td>
+                                                <td>Edit</td>
+                                            </tr>
                                             <% }); %>
                                             <%
                                             function bytesToSize(bytes) {
@@ -190,7 +193,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="instructors" role="tabpanel"
+                                <div class="tab-pane fade <%= (section === "instructors")?"show active":"" %>" id="instructors" role="tabpanel"
                                      aria-labelledby="v-pills-messages-tab">
                                     <div class="card-title">Instructors</div>
                                     <div class="card-subtitle">There are <%= instructors.length %> instructors.</div>
@@ -212,14 +215,15 @@
                                                     <td><%= target.username %></td>
                                                     <td><%= target.email %></td>
                                                     <td><%= target.github %></td>
-                                                    <td>Edit</td>
+                                                    <td><a href="/manage/user/<%= target._id %>/delete"
+                                                           class="text-danger"><i class="fas fa-trash-alt"></i></a></td>
                                                 </tr>
                                             <% }); %>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="institution" role="tabpanel"
+                                <div class="tab-pane fade <%= (section === "institution")?"show active":"" %>" id="institution" role="tabpanel"
                                      aria-labelledby="v-pills-settings-tab">
                                     ...
                                 </div>

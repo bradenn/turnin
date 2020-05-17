@@ -1,7 +1,6 @@
 <%
 let isActive = (givenUrl) => (givenUrl === url) ? "active" : "";
 %>
-
 <div class="menu ">
 
     <a href="/profile" onclick="" class="no-bs">
@@ -31,14 +30,18 @@ let isActive = (givenUrl) => (givenUrl === url) ? "active" : "";
         <% } %>
     </ul>
     <hr>
-    <ul class="list-group menu-list">
-        <%- include("menu-item.ejs", {name: "Assignments", target: "/assignments", icon: "fas fa-file-invoice"}) %>
-        <%- include("menu-item.ejs", {name: "Courses", target: "/courses", icon: "fas fa-users-cog"}) %>
-    </ul>
-    <hr>
+    <% if(user.type >= 1){ %>
+        <ul class="list-group menu-list">
+            <%- include("menu-item.ejs", {name: "Assignments", target: "/assignments", icon: "fas fa-file-invoice"}) %>
+            <%- include("menu-item.ejs", {name: "Courses", target: "/courses", icon: "fas fa-users-cog"}) %>
+            <%- include("menu-item.ejs", {name: "Templates", target: "/templates", icon: "fas fa-file-archive"}) %>
+        </ul>
+        <hr>
+    <% } %>
     <ul class="list-group menu-list">
         <% if(user.type >= 1){ %>
             <% if(user.instructing.length > 0){ %>
+                <span class="navbar-text">My Courses</span>
                 <% user.instructing.forEach(course => { %>
                     <%- include("menu-item.ejs", {name: course.name, target: `/courses/${course._id}`, icon: "fas fa-users"}) %>
                     <ul class="list-group menu-list pl-3">
@@ -51,12 +54,32 @@ let isActive = (givenUrl) => (givenUrl === url) ? "active" : "";
                         <% } %>
                     </ul>
                 <% }); %>
+                <hr>
             <% }else{ %>
                 No Courses
             <% } %>
+        <% }else{ %>
+            <% if(user.courses.length > 0){ %>
+                    <span class="navbar-text">My Courses</span>
+                <% user.courses.forEach(course => { %>
+                    <%- include("menu-item.ejs", {name: course.name, target: `#`, icon: "fas fa-users"}) %>
+                    <ul class="list-group menu-list pl-3">
+                        <% if(course.assignments){ %>
+                            <% course.assignments.filter(assignment => assignment.assigned).filter(assignment => (new Date(assignment.late) - new Date()) > 0).forEach(assignment => { %>
+                                <%- include("menu-item.ejs", {name: assignment.name, target: `/submit/${assignment._id}`, icon: "fas fa-file"}) %>
+                            <% }); %>
+                        <% }else{ %>
+                            <li class="list-group-item menu-list-item">No Assignments</li>
+                        <% } %>
+                    </ul>
+                <% }); %>
+                    <hr>
+            <% }else{ %>
+
+            <% } %>
         <% } %>
     </ul>
-    <hr>
+
     <% if(info != null || error != null){ %>
         <div class="d-flex flex-column align-items-end">
             <div class="w-100" style="max-width: 100%;">

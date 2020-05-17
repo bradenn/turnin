@@ -24,85 +24,80 @@
                 <%- include("partials/title.ejs", {title: `Submission Results`, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / <a href="/submit/${result.assignment._id}">${result.assignment.name}</a> / Attempt ${attempts} - ${(result.passed)?"Passed":"Failed"}`,
                 buttons: buttons, backName: "Back", backLink: back}) %>
                 <div class="row">
-                    <% if(!result.compiled){ %>
-                        <div class="col-8">
+                    <div class="col-8">
+                        <% if(!result.compiled){ %>
+
                             <div class="card pl-3 py-2">
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <span><i class="fas fa-times text-danger mr-2"></i></span>
-                                        <span>Failed</span>
+                                        <strong>Failed</strong>
                                     </div>
-                                    <div class="text-muted">
+                                    <div>
                                         Your program did not compile. Tests could not be completed.
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="card">
-                                <div class="card-title">Standard Output</div>
-                                <div class="card-subtitle">The program's standard output</div>
-                                <div class="scroll-box">
-                    <pre class="language-cpp line-numbers m-0 pt-0 ml-0"
-                         style="padding-left: 3.2em;"><code><%- (result.stdout) ? result.stdout.join("\n") : "none" %></code></pre>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-title">Error Output</div>
-                                <div class="card-subtitle">The program's error output</div>
-                                <div class="scroll-box">
-                    <pre class="language-cpp line-numbers m-0 pt-0"
-                         style="padding-left: 3.2em;"><code><%- (result.stderr) ? result.stderr.join("\n") : "none" %>
-                            %>
-                        </code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    <% }else{ %>
-                        <div class="col-8">
+                        <% }else{ %>
                             <div class="card">
                                 <div class="card-title">Tests</div>
                                 <div class="card-subtitle">Results of all test outputs</div>
                                 <div class="scroll-box">
-                                    <% result.outputs.forEach(function(test){ let pass = test.error_type.length < 1; %>
+                                    <div class="row no-gutters">
+                                        <% result.outputs.forEach(function(test){ let pass = test.error_type.length < 1; %>
+                                        <div class="col-md-6 px-1">
+                                            <a href="/response/output/<%= test._id %>" class="no-bs">
+                                                <div class="card pl-3 py-2 mb-2">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div>
+                                                            <span><strong><%= test.test.name.replace('t', "Test ") %></strong></span>
 
-                                    <a href="/response/output/<%= test._id %>" class="no-bs">
-                                        <div class="card pl-3 py-2 mb-2">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <span><i class="text-<%= (pass) ? "success" : "danger" %> far fa-dot-circle mr-2"></i></span>
-                                                    <span><%= test.test.name %></span>
-
+                                                        </div>
+                                                        <div class="text-muted">
+                                                            <% if(!pass){ %>
+                                                                <% if(test.error_type.includes("loop")){ %>
+                                                                    <span class="badge badge-primary">Infinite Loop</span>
+                                                                <% }else if(test.error_type.includes("stdout")){ %>
+                                                                    <span class="badge badge-danger">Incorrect stdout</span>
+                                                                <% }else if(test.error_type.includes("stderr")){ %>
+                                                                    <span class="badge badge-danger">Incorrect stderr</span>
+                                                                <% }else if(test.error_type.includes("exit")){ %>
+                                                                    <span class="badge badge-danger">Incorrect Exit</span>
+                                                                <% }else{ %>
+                                                                    <span class="badge badge-danger">Failed</span>
+                                                                <% } %>
+                                                            <% }else{ %>
+                                                                <span class="badge badge-success">Test Passed</span>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-muted">
-                                                    <% if(!pass){ %>
-                                                        <%= test.error_type.map(err => {
-                                                            return (err.includes("loop"))
-                                                                    ? "Infinite Loop; Program Terminated" : (err.includes("stdout"))
-                                                                            ? "Incorrect Output" : (err.includes("stderr"))
-                                                                                    ? "Incorrect Error" : (err.includes("exit"))
-                                                                                            ? "Incorrect Exit Code" : "Like idk";
-                                                        }).join(", "); %>
-                                                    <% }else{ %>
-                                                        Test Passed
-                                                    <% } %>
-                                                </div>
-                                            </div>
+                                            </a>
                                         </div>
-                                    </a>
-                                    <% }); %>
+                                        <% }); %>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card" style="margin-top: 1.5em;">
-                                <div class="card-title">Standard Output</div>
-                                <div class="card-subtitle">The compiler output</div>
-                                <div class="scroll-box">
+                        <% } %>
+                        <div class="card">
+                            <div class="card-title">Standard Output</div>
+                            <div class="card-subtitle">The program's standard output</div>
+                            <div class="scroll-box">
                     <pre class="language-cpp line-numbers m-0 pt-0 ml-0"
-                         style="padding-left: 3.2em;"><code><%- (result.stdout) ? result.stdout.join("\n") : "none" %></code></pre>
-                                </div>
+                         style="padding-left: 3.2em;"><code><%- (result.stdout) ? result.stdout.join("\n") : "" %>&nbsp;</code></pre>
                             </div>
                         </div>
-                    <% } %>
+                        <div class="card">
+                            <div class="card-title">Error Output</div>
+                            <div class="card-subtitle">The program's error output</div>
+                            <div class="scroll-box">
+                    <pre class="language-cpp line-numbers m-0 pt-0"
+                         style="padding-left: 3.2em;"><code><%- (result.stderr) ? result.stderr.join("\n") : "none" %>
+                            %>
+                        </code></pre>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="card m-0 p-0">
                             <div style="padding:16px; padding-bottom: 0;" class="d-flex justify-content-between">
@@ -129,8 +124,8 @@
                         <br>
                         <div class="card m-0 p-0">
                             <div style="padding:16px; padding-bottom: 0;">
-                                <div class="card-title">Information</div>
-                                <div class="card-subtitle">Details about the program's test results</div>
+                                <div class="card-title">Compile Information</div>
+                                <div class="card-subtitle">Details about the program compilation</div>
                             </div>
                             <ul class="list-group list-group-flush mb-1">
                                 <li class="list-group-item d-flex justify-content-between">
@@ -149,16 +144,13 @@
                                     <span>Exit Code:</span>
                                     <%= result.exit %>
                                 </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Test Server:</span>
+                                    <%= result.debug_server %>:<%= result.debug_node %>
+                                </li>
                             </ul>
                         </div>
-                        <br>
-                        <div class="card">
-                            <div>
-                                <div class="card-title">Server</div>
-                                <div class="card-subtitle">The server used to test the program</div>
-                            </div>
-                            <span class="m-1"><%= result.debug_server %>:<%= result.debug_node %></span>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -166,7 +158,8 @@
     </div>
 </div>
 
-<div class="modal fade " id="quickEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade " id="quickEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog " role="document">
         <div class="modal-content border-danger">
             <div class="modal-header">

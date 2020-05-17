@@ -16,7 +16,10 @@ router.post('/:assignment', upload.any(), async (req, res, next) => {
     // The file array from multer is defined as req.files, it is reassigned here to avoid cross call conflict
     const files = req.files;
     // If the wrong number of files is uploaded, throw the error to the next router
-    if (assignment.files.length !== files.length) next(new Error("Incorrect number of files."));
+    if (assignment.files.length !== files.length) {
+        req.session.error = "Incorrect number of files submitted.";
+        return res.redirect('back');
+    }
     // Take uploaded files and match them with required by name
     assignment.files.forEach(fileName => {
         let target = files.find(file => file.originalname === fileName);
@@ -29,7 +32,12 @@ router.post('/:assignment', upload.any(), async (req, res, next) => {
     // Set the make command from the assignment
     submission.setMake(assignment.command);
     // Once the submission completes, it redirects the user to the submission page
-    return res.redirect(`/response/${await submission.testSubmission(req.user, assignment._id)}`);
+    await submission.testSubmission(req.user, assignment._id).then(doc => {
+        return res.redirect(`/response/${doc}`);
+    }).catch(err => {
+        req.session.error = `Failed to grade assignment: ${err}`;
+        return res.redirect('back');
+    });
 });
 
 

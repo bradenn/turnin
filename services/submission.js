@@ -47,60 +47,81 @@ class Submission {
         };
     }
 
-    async formatSubmission() {
-        let results = await fetchResponse(this);
-        let response = {tests: [], compile: results.compile, debug: results.debug};
-        for (const test of results.tests) {
-            response.tests.push(getDifference(test, await Test.findById(test._id).exec()));
-        }
-        return response;
+    formatSubmission() {
+        return new Promise((resolve, reject) => {
+            fetchResponse(this).then(async results => {
+                let response = {tests: [], compile: results.compile, debug: results.debug};
+                for (const test of results.tests) {
+                    response.tests.push(getDifference(test, await Test.findById(test._id).exec()));
+                }
+                resolve(response);
+            }).catch(err => {
+                reject(err);
+            });
+        });
     }
 
-    async testSubmission(user, assignment) {
-        // Store all uploaded files to the database for later review
-        const files = await Promise.all(this.files.filter(file => !file.shared).map(file =>
-            File.create({
-                name: file.name,
-                student: user,
-                date: new Date(),
-                content: file.contents
-            })));
-        // Send the objects to be tested by turnin-worker
-        const results = await this.formatSubmission();
-        // Load the individual responses to each test
-        const outputs = await Promise.all(results.tests.map(test => Output.create({
-            test: test.test,
-            output: test.stdout,
-            diff: test.diff,
-            error_diff: test.error_diff,
-            error_type: test.error_type,
-            passed: test.passed,
-            exit: test.exit,
-            stdout: test.stdout,
-            stderr: test.stderr,
-            signal: test.signal,
-            time: test.time
-        })));
-        // Here the result container is made, holding info for about the compile, debug, files, and tests
-        const result = await Result.create({
-            student: user,
-            assignment: assignment,
-            outputs: outputs.map(output => output._id),
-            stderr: results.compile.stderr,
-            stdout: results.compile.stdout,
-            signal: results.compile.signal,
-            passed: outputs.reduce((acc, next) => acc && next.passed, true),
-            exit: results.compile.code,
-            compile_time: results.compile.time,
-            compiled: (results.compile.code === 0),
-            debug_server: results.debug.server,
-            debug_node: results.debug.node,
-            debug_instance: results.debug.instance,
-            files: files.map(file => file._id),
-            date: new Date()
+    testSubmission(user, assignment) {
+        return new Promise((resolve, reject) => {
+            // Store all uploaded files to the database for later review
+            Promise.all(this.files.filter(file => !file.shared).map(file =>
+                File.create({
+                    name: file.name,
+                    student: user,
+                    date: new Date(),
+                    content: file.contents
+                }))).then(files => {
+                this.formatSubmission().then(results => {
+                    // Load the individual responses to each test
+                    Promise.all(results.tests.map(test => Output.create({
+                        test: test.test,
+                        output: test.stdout,
+                        diff: test.diff,
+                        error_diff: test.error_diff,
+                        error_type: test.error_type,
+                        passed: test.passed,
+                        exit: test.exit,
+                        stdout: test.stdout,
+                        stderr: test.stderr,
+                        signal: test.signal,
+                        time: test.time
+                    }))).then(outputs => {
+                        Result.create({
+                            student: user,
+                            assignment: assignment,
+                            outputs: outputs.map(output => output._id),
+                            stderr: results.compile.stderr,
+                            stdout: results.compile.stdout,
+                            signal: results.compile.signal,
+                            passed: outputs.reduce((acc, next) => acc && next.passed, true),
+                            exit: results.compile.code,
+                            compile_time: results.compile.time,
+                            compiled: (results.compile.code === 0),
+                            debug_server: results.debug.server,
+                            debug_node: results.debug.node,
+                            debug_instance: results.debug.instance,
+                            files: files.map(file => file._id),
+                            date: new Date()
+                        }).then(result => {
+                            // Here the result container is made, holding info for about the compile, debug, files, and test
+                            Assignment.findOneAndUpdate({_id: assignment}, {$push: {responses: result._id}}).exec().then(doc => {
+                                resolve(result._id);
+                            }).catch(err => {
+                                reject(err);
+                            });
+                        }).catch(err => {
+                            reject(err);
+                        });
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
         });
-        await Assignment.findOneAndUpdate({_id: assignment}, {$push: {responses: result._id}}).exec();
-        return result._id;
     }
 }
 
@@ -192,7 +213,13 @@ const fetchResponse = (submission) => new Promise((resolve, reject) => {
             chunk += d;
         });
         res.on('end', d => {
-            resolve(JSON.parse(String(chunk)));
+            let response;
+            try {
+                response = JSON.parse(String(chunk));
+            } catch {
+                reject(new Error("Unable to reach remote server. Test failed."))
+            }
+            resolve(response);
         });
     })
 

@@ -17,7 +17,189 @@
 
             </div>
         </div>
-        <hr>
+        <%
+        let config = [{
+            name: "File",
+            items: [
+                {
+                    action: "New Assignment",
+                    link: "/assignments/new",
+                    bind: "ctrl+n"
+                },
+                {
+                    action: "New Courses",
+                    link: "/courses/new",
+                    bind: "ctrl+shift+n"
+                }]
+        }, {
+            name: "Edit",
+            items: []
+        }, {
+            name: "View",
+            items: [
+                {
+                    action: "Toggle Darkmode",
+                    link: "/toggledarkmode",
+                    bind: "ctrl+m"
+                }]
+        }, {
+            name: "Tools",
+            items: []
+        }, {
+            name: "Help",
+            items: [
+                {
+                    action: "Show Shortcut Menu",
+                    link: "#help",
+                    bind: "ctrl+h"
+                }
+            ]
+        }];
+        %>
+        <% if(user.type !== 0){ %>
+            <div class="row no-gutters">
+                <div class="col-md-12">
+                    <div class="menu-bar d-flex">
+                        <a href="#" class="no-bs" data-toggle="modal" data-target="#system">
+                            <div class="menu-bar-item menu-bar-title">
+                                <i class="fas fa-code mr-2"></i>Turnin
+                            </div>
+                        </a>
+                        <% config.forEach(item => { %>
+                            <div class="dropdown menu-bar-item">
+                                <a class="dropdown no-bs" href="#" role="button" id="dropdownMenuLink"
+                                   data-toggle="dropdown" data-boundary="viewport">
+                                    <%= item.name %>
+                                </a>
+                                <div class="dropdown-menu menu-bar-menu" role="menu"
+                                     aria-labelledby="dropdownMenuLink">
+                                    <%
+                                        if (typeof binds !== 'undefined') {
+                                            let target = binds.find(bind => bind.name === item.name);
+                                            if (target != null) {
+                                                target.items.forEach(elem => item.items.push(elem));
+                                            }
+                                        }
+                                    %>
+                                    <% if(item.items.length < 1){ %>
+                                        <div class="dropdown-item d-flex justify-content-between">
+                                            <div>
+                                                No Shortcuts
+                                            </div>
+                                            <div>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    <% item.items.forEach(action => { %>
+                                        <a href="<%= action.link %>" <%= (action.link.startsWith('#')) ? `data-toggle=modal data-target=${action.link}` : `` %>
+                                           class="no-bs">
+                                            <div class="dropdown-item d-flex justify-content-between">
+                                                <div>
+                                                    <%= action.action %>
+                                                </div>
+                                                <div>
+                                                    <script>$(document).bind('keydown', '<%= action.bind %>', () => {
+                                                            <% if (action.link.startsWith('#')) { %>
+                                                            $("<%= action.link %>").modal();
+                                                            <% } else { %>
+                                                            window.location.href = "<%= action.link %>";
+                                                            <% } %>
+
+                                                        });</script>
+                                                    <%= action.bind.toUpperCase().replace('SHIFT+', '⇧').replace('CTRL+', '⌃') %>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="system" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Turnin System</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Version: <%= platform.version %><br>
+                            Container: <%= platform.hostname %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Shortcuts</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <% if(typeof binds !== 'undefined'){ %>
+                                <h5>This page</h5>
+                                <% binds.forEach(bind => { %>
+                                    <div class="card">
+                                        <h6><%= bind.name %></h6>
+                                        <% bind.items.forEach(item => { %>
+                                            <div class="d-flex justify-content-between pl-2 w-75">
+                                                <div><%= item.action %></div>
+                                                <div><%= item.bind.toUpperCase().replace('SHIFT+', '⇧').replace('CTRL+', '⌃') %></div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                <% }); %>
+                            <% } %>
+                            <h5>All Shortcuts</h5>
+                            <% config.forEach(bind => { %>
+                                <div class="card">
+                                    <h6><%= bind.name %></h6>
+                                    <% bind.items.forEach(item => { %>
+                                        <div class="d-flex justify-content-between pl-2 w-75">
+                                            <div><%= item.action %></div>
+                                            <div><%= item.bind.toUpperCase().replace('SHIFT+', '⇧').replace('CTRL+', '⌃') %></div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% }); %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }else{ %>
+            <hr>
+        <% } %>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

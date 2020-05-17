@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+<style>
+    .card {
+        margin-bottom: 1.5em;
+    }
+</style>
+<body class="preload">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
+
+                <%
+                let binds = [{
+                    name: "Tools",
+                    items: [
+                        {
+                            action: "Create Assignment from Template",
+                            link: `/`,
+                            bind: "ctrl+t"
+                        }]
+                },{
+                    name: "Edit",
+                    items: [
+                        {
+                            action: "Download JSON",
+                            link: `/`,
+                            bind: "ctrl+d"
+                        },{
+                            action: "Download tar.gz",
+                            link: `/`,
+                            bind: "ctrl+shift+d"
+                        }]
+                }];
+                %>
+                <%- include("partials/title.ejs", {title: `Template: ` + template.name, subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Templates</a> / ${template.name}`,
+                buttons: [], backName: "Home", backLink: "/", binds}) %>
+                <%
+                let assignment = JSON.parse(template.content);
+                %>
+                <div class="row no-gutters">
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="card-title">Required Files</div>
+                                    <div class="card-subtitle">Files will be required for submission</div>
+                                </div>
+                            </div>
+                            <div class="table-responsive scroll-box">
+                                <table class="table ">
+                                    <thead class="">
+                                    <tr>
+                                        <th scope="col">Filename</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% assignment.files.forEach(file => {
+                                    %>
+                                        <tr>
+                                            <td><%= file %></td>
+                                        </tr>
+                                    <% }); %>
+                                    <% if(assignment.files.length == 0){ %>
+                                        <tr>
+                                            <td>No Files</td>
+                                            <td></td>
+                                        </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="card-title">Shared Files</div>
+                                    <div class="card-subtitle">Files will included in compilation</div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive scroll-box">
+                                <table class="table ">
+                                    <thead class="">
+                                    <tr>
+                                        <th scope="col">Filename</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% assignment.shared_files.forEach(shared_file => {
+                                    %>
+                                        <tr>
+                                            <td><a href="/file/<%= shared_file._id %>"><%= shared_file.name %></a></td>
+                                        </tr>
+                                    <% }); %>
+                                    <% if(assignment.shared_files.length == 0){ %>
+                                        <tr>
+                                            <td>No Files</td>
+                                            <td></td>
+                                        </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="card-title">Program Tests</div>
+                                    <div class="card-subtitle">Program must pass all visible tests to be marked
+                                        complete
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive scroll-box">
+                                <table class="table ">
+                                    <thead class="">
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Visibility</th>
+                                        <th scope="col">Inputs</th>
+                                        <th scope="col">Outputs</th>
+                                        <th scope="col">Errors</th>
+                                        <th scope="col">Arguments</th>
+                                        <th scope="col">Timeout</th>
+                                        <th scope="col">Exit Code</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody class="">
+                                    <% assignment.tests.forEach(function(test){
+                                    %>
+                                        <tr>
+                                            <td><a href="/test/<%= test._id %>"><%= test.name %></a></td>
+                                            <td><%= (test.hidden) ? "Hidden" : "Visible" %></td>
+                                            <td><%= test.stdin.length %></td>
+                                            <td><%= (test.provided.includes("out")) ? test.stdout.length : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("err")) ? test.stderr.length : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("cmd")) ? test.arguments : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("timeout")) ? test.timeout : "Not Provided" %></td>
+                                            <td><%= (test.provided.includes("exit")) ? test.exit : "Not Provided" %></td>
+                                        </tr>
+                                    <% }); %>
+                                    <% if(assignment.tests.length == 0){ %>
+                                        <tr>
+                                            <td>No Tests</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-3 pl-4">
+                        <div class="card p-0">
+                            <div style="padding:16px; padding-bottom: 0;" class="d-flex justify-content-between">
+                                <div>
+                                    <div class="card-title">Settings</div>
+                                    <div class="card-subtitle mb-0">Requirements for this assignment</div>
+                                </div>
+
+                            </div>
+                            <ul class="list-group list-group-flush mb-1">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Command:</span>
+                                    <%= template.command %>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Compile Timeout:</span>
+                                    <%= template.timeout %>ms
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<div id="newtest" class="modal fade">
+    <div class="modal-dialog modal-login">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New Test</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <form action="/assignments/edit/<%= assignment._id %>/single" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" name="testName" placeholder="Name">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
+                            <label class="custom-file-label" for="inputGroupFile01">t.in</label>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="output" id="inputGroupFile01">
+                            <label class="custom-file-label" for="inputGroupFile01">t.out</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary pull-right" value="Add Test">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>
+
+<%
+function timeTill(date) {
+
+    var seconds = Math.floor((date - new Date()) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+%>

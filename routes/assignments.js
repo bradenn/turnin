@@ -9,6 +9,7 @@ let utils = require('../services/utils');
 let File = require('../models/file');
 
 router.get('/', async (req, res) => {
+
     let courses = await Course.find({instructor: req.user._id}).populate("assignments", "tests").exec();
     res.render("assignments", {courses: courses});
 });
@@ -92,7 +93,7 @@ router.get('/edit/:assignment/test/:test/remove/', async (req, res, next) => {
 router.post('/edit/:assignment/files/add', async (req, res, next) => {
     let input = req.body.name.replace(' ', "").split(",");
     Assignment.findOneAndUpdate({_id: req.params.assignment}, {$push: {files: input}}, (err, assignment) => {
-        req.session.info = `Successfully added file${(input.length > 1)?"s":""} '${input.join(", ")}'.`;
+        req.session.info = `Successfully added file${(input.length > 1) ? "s" : ""} '${input.join(", ")}'.`;
         res.redirect("back");
     });
 });
@@ -121,6 +122,7 @@ utils.postRouteWithUserAndFiles('/edit/:assignment/file/add', router, (req, res,
 
 });
 
+
 utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (req, res, user) {
     Assignment.findById(req.params.assignment, function (err, assignment) {
         Test.create({
@@ -142,11 +144,16 @@ utils.postRouteWithUserAndFiles('/edit/:assignment/single', router, function (re
 utils.getRouteWithUser('/edit/:assignment/assign/:assign', router, (req, res, user) => {
     Assignment.findById(req.params.assignment, function (err, assignment) {
         if (user.type >= 1) {
-            assignment.assigned = req.params.assign;
-            assignment.save((err, assignment) => {
-                req.session.info = `Successfully ${(assignment.assigned)?"assigned":"unassigned"} ${assignment.name}.`;
-                res.redirect(req.get('referer'));
-            });
+            if (assignment.files.length >= 1 && assignment.tests.length >= 1) {
+                assignment.assigned = req.params.assign;
+                assignment.save((err, assignment) => {
+                    req.session.info = `Successfully ${(assignment.assigned) ? "assigned" : "unassigned"} ${assignment.name}.`;
+                    res.redirect(req.get('referer'));
+                });
+            }else{
+                req.session.error = "You must have at least one required file and one test to assign.";
+                res.redirect('back');
+            }
         }
     });
 });
@@ -158,7 +165,7 @@ const upload = multer({storage: multer.memoryStorage()});
 
 router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
     let tarFile = req.files[0];
-    if(!tarFile.originalname.endsWith(".tar.gz")){
+    if (!tarFile.originalname.endsWith(".tar.gz")) {
         req.session.error = `Only .tar.gz files are accepted; unable to process '${tarFile.originalname}'`;
         res.redirect('back');
     }
@@ -237,7 +244,7 @@ router.post('/edit/:assignment/tar', upload.any(), async (req, res, next) => {
             Test.create(formattedData, (err, tests) => {
                 tests.forEach(test => assignment.tests.push(test._id));
                 assignment.save((err, save) => {
-                    req.session.info = `Successfully added ${tests.length} test${(tests.length > 1)?"s":""}.`;
+                    req.session.info = `Successfully added ${tests.length} test${(tests.length > 1) ? "s" : ""}.`;
                     res.redirect(req.get('referer'));
                 });
             });
