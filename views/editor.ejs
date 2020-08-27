@@ -24,10 +24,6 @@
                         <div class="editor-container">
                             <ul class="nav nav-tabs justify-content-between">
                                 <ul class="nav">
-                     <span class="navbar-text text-white">
-                    <i class="fas fa-code"></i>
-                    </span>
-
                                     <% workspace.files.forEach(file => { %>
                                         <li class="nav-item">
                                             <a class="nav-link <%= (workspace.files.indexOf(file) == 0) ? "active" : "" %>"

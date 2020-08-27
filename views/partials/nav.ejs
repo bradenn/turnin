@@ -16,12 +16,22 @@
             </ul>
 
             <ul class="navbar-nav mr-0">
-                <li class="nav-item">
+                <li class="nav-item d-flex">
                     <a href="/toggledarkmode" class="nav-link"> <span class="fa-stack nav-stack"
                                                                       style="vertical-align: top;">
                                   <i class="fas fa-circle fa-stack-2x"></i>
                                   <i class="fas fa-<%= user.darkmode ? "lightbulb" : "moon" %> fa-stack-1x fa-inverse"></i>
                                 </span></a>
+                    <a data-toggle="modal" href="#joinClass" class="nav-link"> <span class="fa-stack nav-stack"
+                                                                      style="vertical-align: top;">
+                                  <i class="fas fa-circle fa-stack-2x"></i>
+                                  <i class="fas fa-plus fa-stack-1x fa-inverse"></i>
+                                </span></a>
+                    <a href="/toggledarkmode" class="nav-link"> <span class="fa-stack nav-stack"
+                                                                      style="vertical-align: top;">
+                                  <i class="fas fa-circle fa-stack-2x"></i>
+                                  <i class="fas fa-bell fa-stack-1x fa-inverse"></i>
+                        </span><span class="badge badge-pill badge-primary notifications">0</span></a>
                 </li>
                 <% if(typeof user != "undefined" && user != null){ %>
                     <% if(user.type > 1){ %>

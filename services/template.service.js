@@ -1,7 +1,7 @@
 const Assignment = require('../models/assignment');
 const TemplateSchema = require('../models/template.model');
 
-class Template {
+class TemplateService {
     constructor() {
         this.tests = [];
         this.files = [];
@@ -76,4 +76,6 @@ class Template {
     }
 }
 
-module.exports = Template;
+
+
+module.exports = TemplateService;

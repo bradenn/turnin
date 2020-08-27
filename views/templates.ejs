@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body class="preload">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
+                <%
+                let buttons = []
+                %>
+                <%- include("partials/title.ejs", {title: "Templates", subtitle: `<a href="/">Dashboard</a> / Templates`, buttons: []}) %>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-title">Templates</div>
+                            <div class="card-subtitle">All templates belonging to you</div>
+                            <% if(templates.length >= 1){ %>
+                                <div class="table-responsive">
+                                    <table class="table ">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Course</th>
+                                            <th scope="col">Tests</th>
+                                            <th scope="col">Required Files</th>
+                                            <th scope="col">Shared Files</th>
+                                            <th scope="col">Size</th>
+                                            <th scope="col" style="width: 1em;">Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <% templates.forEach(template => {
+                                            let parsedTemplate = JSON.parse(template.content);
+                                        %>
+                                        <tr>
+                                            <td><strong><a href="/templates/<%= template._id %>"><%= template.name %></a></strong></td>
+                                            <td><%= template.course %></td>
+                                            <td><%= parsedTemplate.tests.length %> tests</td>
+                                            <td><%= parsedTemplate.files.join(", ") %></td>
+                                            <td><%= parsedTemplate.shared_files.map(file => file.name).join(", ") %></td>
+                                            <td><%= bytesToSize(template.content.length) %></td>
+                                            <td><a href="/templates/<%= template._id %>/delete">Remove</a></td>
+                                        </tr>
+                                        <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="card">
+                                    <span>You do not have any templates.</span>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<%
+function bytesToSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+    if (bytes === 0) return '0 B'
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10)
+    if (i === 0) return `${bytes} ${sizes[i]}`
+    return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`
+}
+%>
+<%
+function timeTill(date) {
+
+    var seconds = Math.floor((date - new Date()) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " year" : " years");
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " month" : " months");
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " day" : " days");
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " hour" : " hours");
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+        return interval + ((interval == 1) ? " minute" : " minutes");
+    }
+    return Math.floor(seconds) + " seconds";
+}
+%>

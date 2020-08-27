@@ -10,6 +10,10 @@ router.get('/', async (req, res, next) => {
     res.render("courses", {user: req.user, courses: courses});
 });
 
+router.get('/new', async (req, res, next) => {
+    res.render("newcourse");
+});
+
 router.post('/', async (req, res, next) => {
     let user = await User.findById(req.session.userId).exec();
     if (utils.authenticateUser(user)) return res.redirect("/");

@@ -22,8 +22,8 @@
                     items: [
                         {
                             action: "Create Assignment from Template",
-                            link: `/`,
-                            bind: "ctrl+t"
+                            link: `#assignment`,
+                            bind: "ctrl+shift+t"
                         }]
                 },{
                     name: "Edit",
@@ -196,34 +196,40 @@
 </div>
 </body>
 
-<div id="newtest" class="modal fade">
+<div id="assignment" class="modal fade">
     <div class="modal-dialog modal-login">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">New Test</h4>
+                <h4 class="modal-title">New Assignment</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
-            <form action="/assignments/edit/<%= assignment._id %>/single" method="post" enctype="multipart/form-data">
+            <form action="/templates/<%= template._id %>/assignment" method="post">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input class="form-control" name="testName" placeholder="Name">
+                        <label>Course</label>
+                        <select class="form-control" name="course">
+                            <% courses.forEach(function(course){ %>
+                                <option value="<%= course._id %>"><%= course.name %>.<%= course.section %></option>
+                            <% }); %>
+                        </select>
+                        <small class="text-muted">Only courses you own are shown</small>
                     </div>
-                    <div class="input-group mb-3">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="input" id="inputGroupFile01">
-                            <label class="custom-file-label" for="inputGroupFile01">t.in</label>
-                        </div>
+                    <div class="form-group">
+                        <label>Due date</label>
+                        <input type="date" class="form-control" name="assignmentDueDate"
+                               placeholder="Date">
+                        <small class="text-muted">Late assignments will be accepted but flagged as
+                            late</small>
                     </div>
-                    <div class="input-group mb-3">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="output" id="inputGroupFile01">
-                            <label class="custom-file-label" for="inputGroupFile01">t.out</label>
-                        </div>
+                    <div class="form-group">
+                        <label>Late due date</label>
+                        <input type="date" class="form-control" name="assignmentLateDueDate"
+                               placeholder="Date">
+                        <small class="text-muted">Absolute cutoff for assignments</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary pull-right" value="Add Test">
+                    <input type="submit" class="btn btn-primary pull-right" value="Create Assignment">
                 </div>
             </form>
         </div>

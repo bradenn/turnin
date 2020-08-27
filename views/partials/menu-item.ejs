@@ -1,5 +1,5 @@
 <a href="<%= target %>" class="menu-link">
-    <li class="list-group-item menu-list-item <%= (target === url) ? "active" : "" %>">
+    <li class="list-group-item menu-list-item <%= (target === url) ? "active" : ((target === '/manage' && url.includes('manage')) ? 'active': '') %>">
         <div class="d-flex justify-content-between">
             <span><i class="<%= icon %> fa-fw mr-2"></i>&nbsp;<%= name %></span>
         </div>

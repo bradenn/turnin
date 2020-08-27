@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/header.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<body class="preload">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row no-gutters">
+        <div class="col-md-2 pr-2">
+            <%- include("partials/sidebar.ejs") %>
+        </div>
+        <div class="col-md-10">
+            <div class="container-fluid">
+                <%
+                let buttons = [` `];
+                %>
+                <%- include("partials/title.ejs", {title: "New Assignment", subtitle: `<a href="/">Dashboard</a> / <a href="/assignments">Assignments</a> / New Assignment`,
+                buttons: buttons, backName: "Courses", backLink: "/courses"}); %>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card g-flex justify-content-between">
+                            <div class="card-title">Create Course</div>
+                            <div class="card-subtitle">You will be able to make changes before assigning.</div>
+                            <form action="/courses" method="post">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Section</label>
+                                        <input type="number" class="form-control" name="section" id="section" placeholder="0">
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" value="Create Course">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

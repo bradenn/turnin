@@ -10,6 +10,20 @@ router.get('/', (req, res, next) => {
     return res.redirect('/manage/students');
 });
 
+router.get('/purge/:user', (req, res, next) => {
+    if (req.params.user.toString() === req.user._id.toString() && req.user.type === 2) {
+        Assignment.deleteMany({}).exec().then(() => {
+            File.deleteMany({}).exec().then(() => {
+                Course.deleteMany({}).exec().then(() => {
+                    req.params.info = "Purged Mutables";
+                    res.redirect('back');
+                }).catch(err => res.send(err));
+            }).catch(err => res.send(err));
+        }).catch(err => res.send(err));
+    }
+});
+
+
 router.get('/:section', async (req, res, next) => {
     if (req.user.type <= 1) next(new Error("Authentication Error."));
     let courses = await Course.find({}).populate("instructor").exec();
