@@ -1,6 +1,9 @@
 ## Turnin
 Turnin was made to grade programming assignments written in C++.
 
+#### SECURITY NOTICE
+As of Oct 1st, 2020, this program is no longer secure. Session collisions could cause a serious data breach.
+
 ### Uploading Tests:
 
 Turnin records program outputs by using output redirection. The workers run the program and redirect a test input
