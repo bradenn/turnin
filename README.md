@@ -2,7 +2,8 @@
 Turnin was made to grade programming assignments written in C++.
 
 #### SECURITY NOTICE
-As of Oct 1st, 2020, this program is no longer secure. Session collisions could cause a serious data breach.
+Patched Session Jacking vulnerability, ensure use of the latest version
+Damage: If two users create a session within 1 event-loop cycle of eachother, their sessions may swap. This could show the wround assignments or wrong class to the user. Upon redirecting or interacting, the system would have detected and reset the session.
 
 ### Uploading Tests:
 
